@@ -58,4 +58,35 @@ describe('HeuristicParser', () => {
     expect(data.tastingNotes).toContain('chocolate');
     expect(data.tastingNotes).toContain('caramelo');
   });
+
+  it('decodes HTML entities like &#039; into clean quotes and clean coffee names', () => {
+    const mockHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Comprar Café de especialidad Honduras &#039;La Paz&#039;</title>
+          <meta property="og:site_name" content="Cafés el Criollo" />
+          <meta property="og:description" content="Café de Honduras &#039;La Paz&#039; con notas de chocolate y avellana" />
+        </head>
+        <body>
+          <table>
+            <tr><th>País</th><td>Honduras</td></tr>
+            <tr><th>Altitud</th><td>1535 msnm</td></tr>
+            <tr><th>Variedad</th><td>Caturra</td></tr>
+            <tr><th>Proceso</th><td>Lavado</td></tr>
+            <tr><th>Perfil sensorial</th><td>chocolate, avellana</td></tr>
+          </table>
+        </body>
+      </html>
+    `;
+
+    const data = HeuristicParser.parse(mockHtml, 'https://cafeselcriollo.com/producto/cafe-especialidad-honduras', 'cafeselcriollo.com');
+
+    expect(data.name).toBe("Honduras 'La Paz'");
+    expect(data.name).not.toContain('&#039;');
+    expect(data.name).not.toContain('&');
+    expect(data.originCountry).toBe('Honduras');
+    expect(data.altitudeMasl).toBe(1535);
+    expect(data.variety).toBe('Caturra');
+  });
 });

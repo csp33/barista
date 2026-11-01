@@ -3,15 +3,16 @@ import { CoffeeProps } from '@/core/domain/coffee/Coffee';
 
 export class HeuristicParser {
   static parse(html: string, url: string, domain: string): ScrapedCoffeeData {
-    const rawTitle = (html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] || '').trim();
-    const ogSite = html.match(/<meta\s+(?:property|name)=["']og:site_name["']\s+content=["']([^"']+)["']/i)?.[1]?.trim();
-    const ogImage = html.match(/<meta\s+(?:property|name)=["']og:image["']\s+content=["']([^"']+)["']/i)?.[1]?.trim();
-    const ogDesc = html.match(/<meta\s+(?:property|name)=["']og:description["']\s+content=["']([^"']+)["']/i)?.[1]?.trim() || '';
+    const decoded = this.decodeHtmlEntities(html);
+    const rawTitle = (decoded.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1] || '').trim();
+    const ogSite = decoded.match(/<meta\s+(?:property|name)=["']og:site_name["']\s+content=["']([^"']+)["']/i)?.[1]?.trim();
+    const ogImage = decoded.match(/<meta\s+(?:property|name)=["']og:image["']\s+content=["']([^"']+)["']/i)?.[1]?.trim();
+    const ogDesc = decoded.match(/<meta\s+(?:property|name)=["']og:description["']\s+content=["']([^"']+)["']/i)?.[1]?.trim() || '';
 
     const roaster = ogSite || this.detectRoaster(domain, rawTitle);
     const name = this.cleanCoffeeName(rawTitle, roaster);
-    const tableSpecs = this.extractTableSpecs(html);
-    const cleanText = this.extractCleanText(html);
+    const tableSpecs = this.extractTableSpecs(decoded);
+    const cleanText = this.extractCleanText(decoded);
     const summaryText = `${rawTitle} ${ogDesc} ${cleanText.substring(0, 3000)}`.toLowerCase();
 
     return {
@@ -26,6 +27,27 @@ export class HeuristicParser {
       sourceUrl: url,
       imageUrl: ogImage,
     };
+  }
+
+  static decodeHtmlEntities(str: string): string {
+    return str
+      .replace(/&quot;/gi, '"')
+      .replace(/&apos;/gi, "'")
+      .replace(/&amp;/gi, '&')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&ndash;/gi, '–')
+      .replace(/&mdash;/gi, '—')
+      .replace(/&#0*39;?/gi, "'")
+      .replace(/&#(\d+);?/g, (_, dec) => {
+        const c = parseInt(dec, 10);
+        return c >= 32 && c <= 65535 ? String.fromCharCode(c) : '';
+      })
+      .replace(/&#x([0-9a-f]+);?/gi, (_, hex) => {
+        const c = parseInt(hex, 16);
+        return c >= 32 && c <= 65535 ? String.fromCharCode(c) : '';
+      });
   }
 
   static isComplete(data: ScrapedCoffeeData): boolean {
@@ -69,7 +91,7 @@ export class HeuristicParser {
   }
 
   private static cleanCoffeeName(title: string, roaster: string): string {
-    let name = title
+    let name = this.decodeHtmlEntities(title)
       .replace(/^comprar\s+/gi, '')
       .replace(new RegExp(roaster, 'gi'), '')
       .replace(/cafés?\s+el\s+criollo/gi, '')
@@ -116,7 +138,7 @@ export class HeuristicParser {
   }
 
   private static detectVariety(table: Record<string, string>, text: string): string {
-    const raw = table['variedades'] || table['variedad'];
+    const raw = table['variedades'] || table['variedad'] || table['varietal'];
     if (raw && raw.length > 2) return raw.trim();
 
     const varieties = [
