@@ -98,8 +98,13 @@ export class RecipeCalculator {
         notes.push('Adjusted: coarser grind & lower yield to tame bitterness');
         break;
       case 'channeled':
-        nextGrind += 0.5;
-        notes.push('Channelling detected: ensure thorough WDT distribution');
+        if (feedback.actualTimeSeconds > 32) {
+          nextGrind += 0.5;
+          notes.push('Choking & pressure crack: grind +0.5 coarser and distribute with WDT');
+        } else {
+          nextGrind = Math.max(0, nextGrind - 0.5);
+          notes.push('Fast channeling / low resistance: grind -0.5 finer and de-clump with WDT');
+        }
         break;
       case 'balanced':
         notes.push(`Dialed-in sweet spot confirmed at DF64 #${feedback.actualGrindSetting}`);

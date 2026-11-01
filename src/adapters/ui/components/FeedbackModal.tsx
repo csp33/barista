@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { TasteProfile } from '@/core/domain/recipe/ExtractionFeedback';
@@ -22,14 +22,23 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   const { t } = useTranslation();
   const { recipe } = item;
 
-  const [grind, setGrind] = useState(recipe?.grindSetting ?? 16);
+  const [grind, setGrind] = useState(recipe?.grindSetting ?? 12);
   const [dose, setDose] = useState(recipe?.doseGrams ?? 18);
-  const [actualYield, setActualYield] = useState(recipe?.yieldGrams ?? 38);
+  const [actualYield, setActualYield] = useState(recipe?.yieldGrams ?? 36);
   const [time, setTime] = useState(28);
   const [taste, setTaste] = useState<TasteProfile>('balanced');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (recipe) {
+      setGrind(recipe.grindSetting);
+      setDose(recipe.doseGrams);
+      setActualYield(recipe.yieldGrams);
+      setTime(recipe.targetTimeSeconds || 28);
+    }
+  }, [recipe?.id, recipe?.grindSetting, isOpen]);
 
   if (!isOpen || !recipe) return null;
 
@@ -94,51 +103,20 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3 bg-[#120F0D] p-3.5 rounded-2xl border border-[#30261E]">
             <div>
-              <label className="text-[11px] text-[#A8988B] block mb-1">
-                {t.grindSetting}
-              </label>
-              <input
-                type="number"
-                step="0.5"
-                value={grind}
-                onChange={e => setGrind(parseFloat(e.target.value))}
-                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
-              />
+              <label className="text-[11px] text-[#A8988B] block mb-1">{t.grindSetting}</label>
+              <input type="number" step="0.5" value={grind} onChange={e => setGrind(parseFloat(e.target.value))} className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]" />
             </div>
             <div>
-              <label className="text-[11px] text-[#A8988B] block mb-1">
-                {t.time} (s)
-              </label>
-              <input
-                type="number"
-                value={time}
-                onChange={e => setTime(parseInt(e.target.value, 10))}
-                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
-              />
+              <label className="text-[11px] text-[#A8988B] block mb-1">{t.time} (s)</label>
+              <input type="number" value={time} onChange={e => setTime(parseInt(e.target.value, 10))} className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]" />
             </div>
             <div>
-              <label className="text-[11px] text-[#A8988B] block mb-1">
-                {t.dose} (g)
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                value={dose}
-                onChange={e => setDose(parseFloat(e.target.value))}
-                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
-              />
+              <label className="text-[11px] text-[#A8988B] block mb-1">{t.dose} (g)</label>
+              <input type="number" step="0.1" value={dose} onChange={e => setDose(parseFloat(e.target.value))} className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]" />
             </div>
             <div>
-              <label className="text-[11px] text-[#A8988B] block mb-1">
-                {t.yield} (g)
-              </label>
-              <input
-                type="number"
-                step="0.5"
-                value={actualYield}
-                onChange={e => setActualYield(parseFloat(e.target.value))}
-                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
-              />
+              <label className="text-[11px] text-[#A8988B] block mb-1">{t.yield} (g)</label>
+              <input type="number" step="0.5" value={actualYield} onChange={e => setActualYield(parseFloat(e.target.value))} className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]" />
             </div>
           </div>
 
@@ -152,7 +130,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   key={opt.id}
                   type="button"
                   onClick={() => setTaste(opt.id)}
-                  className={`w-full text-left text-xs p-3.5 rounded-xl border flex items-center justify-between transition-colors ${
+                  className={`w-full text-left text-xs p-3 rounded-xl border flex items-center justify-between transition-colors ${
                     taste === opt.id
                       ? `bg-[#291F18] ${opt.tone} ring-1 ring-current font-medium`
                       : 'bg-[#120F0D] border-[#30261E] text-[#A8988B]'
@@ -166,9 +144,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           </div>
 
           <div>
-            <label className="text-[11px] text-[#A8988B] block mb-1">
-              Notas adicionales
-            </label>
+            <label className="text-[11px] text-[#A8988B] block mb-1">Notas adicionales</label>
             <input
               type="text"
               value={notes}

@@ -175,6 +175,7 @@ function BaristaDashboard() {
 
       {activeItem && (
         <FeedbackModal
+          key={`${activeItem.coffee.id}-${activeItem.recipe?.id}-${activeItem.recipe?.grindSetting}`}
           isOpen={isFeedbackModalOpen}
           item={activeItem}
           onClose={() => setIsFeedbackModalOpen(false)}

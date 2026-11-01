@@ -100,4 +100,34 @@ describe('RecipeCalculator Domain Service', () => {
     expect(adjusted.yieldGrams).toBe(initial.yieldGrams + 2);
     expect(adjusted.notes.some(n => n.includes('finer grind'))).toBe(true);
   });
+
+  it('adjusts recipe finer when shot suffers from fast flow channeling (under-extracted)', () => {
+    const coffee = new Coffee({
+      id: 'c4',
+      roaster: 'San Jorge Coffee',
+      name: 'Fazenda Dutra',
+      originCountry: 'Brazil',
+      variety: 'Red Catuai',
+      process: 'natural',
+      roastLevel: 'medium',
+      tastingNotes: ['chocolate'],
+    });
+
+    const initial = RecipeCalculator.calculateInitial(coffee); // 12.5
+    const feedback = new ExtractionFeedback({
+      id: 'fb-channeled',
+      recipeId: initial.id,
+      actualGrindSetting: 9.0,
+      actualDoseGrams: 18.0,
+      actualYieldGrams: 36,
+      actualTimeSeconds: 20, // fast flow channeling
+      tasteProfile: 'channeled',
+    });
+
+    const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback);
+
+    // Fast channeling -> grind finer (-0.5) to build puck resistance
+    expect(adjusted.grindSetting).toBe(8.5);
+    expect(adjusted.notes.some(n => n.includes('finer'))).toBe(true);
+  });
 });
