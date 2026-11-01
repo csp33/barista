@@ -34,6 +34,7 @@ Directory boundaries are strictly enforced by automated architecture tests (`npm
 - **Maximum 200 lines per file** across all files in `src/`.
 - Every feature must be accompanied by unit tests and pass `npm run test:arch`.
 - Adhere to Single Responsibility Principle (SRP) and keep domain models immutable.
+- **Mandatory Test Verification**: Always run the complete test and build verification suite (`npm test`, `npm run test:arch`, `npm run lint`, `npm run build`) after finishing every feature before pushing or considering work done.
 
 ## 4. Coffee & Equipment Specifications
 - **Target Grinder**: DF64 Gen II (stepless dial 0 to 90, 64mm flat burrs, single-dose bellows).

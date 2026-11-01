@@ -19,6 +19,22 @@ jobs:
   build-test:
     name: Test & Typecheck
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: barista
+          POSTGRES_PASSWORD: baristasecret
+          POSTGRES_DB: barista_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://barista:baristasecret@localhost:5432/barista_db
     outputs:
       short_sha: ${{ steps.vars.outputs.short_sha }}
       image_tag: ${{ steps.vars.outputs.image_tag }}
