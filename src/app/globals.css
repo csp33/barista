@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+:root {
+  --background: #12100E;
+  --foreground: #F5EFEB;
+  --card-bg: #1B1815;
+  --card-border: #2C2621;
+  --accent-terracotta: #D96B27;
+  --accent-amber: #E29D52;
+  --accent-sage: #4E8765;
+  --text-muted: #9E9288;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Technical coffee variables monospace styling */
+.font-metric {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Subtle scrollbar for active stash carousel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

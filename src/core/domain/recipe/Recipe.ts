@@ -1,0 +1,49 @@
+import { SageTemperatureSetting } from '../equipment/EspressoMachine';
+
+export interface RecipeProps {
+  id: string;
+  coffeeId: string;
+  grinderId: string;
+  machineId: string;
+  doseGrams: number;
+  yieldGrams: number;
+  ratio: string;
+  grindSetting: number;
+  machineTemperature: SageTemperatureSetting;
+  targetTimeSeconds: number;
+  recommendedRestDays: number;
+  notes: string[];
+}
+
+export class Recipe {
+  readonly id: string;
+  readonly coffeeId: string;
+  readonly grinderId: string;
+  readonly machineId: string;
+  readonly doseGrams: number;
+  readonly yieldGrams: number;
+  readonly ratio: string;
+  readonly grindSetting: number;
+  readonly machineTemperature: SageTemperatureSetting;
+  readonly targetTimeSeconds: number;
+  readonly recommendedRestDays: number;
+  readonly notes: string[];
+
+  constructor(props: RecipeProps) {
+    if (props.doseGrams <= 0) throw new Error('Dose must be greater than 0');
+    if (props.yieldGrams <= 0) throw new Error('Yield must be greater than 0');
+
+    this.id = props.id;
+    this.coffeeId = props.coffeeId;
+    this.grinderId = props.grinderId;
+    this.machineId = props.machineId;
+    this.doseGrams = props.doseGrams;
+    this.yieldGrams = props.yieldGrams;
+    this.ratio = props.ratio;
+    this.grindSetting = props.grindSetting;
+    this.machineTemperature = props.machineTemperature;
+    this.targetTimeSeconds = props.targetTimeSeconds;
+    this.recommendedRestDays = props.recommendedRestDays;
+    this.notes = props.notes;
+  }
+}

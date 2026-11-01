@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Coffee {
+  id                   String        @id @default(uuid())
+  roaster              String
+  name                 String
+  originCountry        String
+  region               String?
+  producer             String?
+  altitudeMasl         Int?
+  variety              String
+  process              String
+  roastLevel           String
+  tastingNotes         String        // JSON array of strings
+  recommendedRestDays  Int
+  sourceUrl            String?       @unique
+  createdAt            DateTime      @default(now())
+
+  recipes              Recipe[]
+  stashItems           StashItem[]
+
+  @@index([roaster, name])
+}
+
+model Recipe {
+  id                   String        @id @default(uuid())
+  coffeeId             String
+  grinderId            String
+  machineId            String
+  doseGrams            Float
+  yieldGrams           Float
+  ratio                String
+  grindSetting         Float
+  machineTemperature   String
+  targetTimeSeconds    Int
+  recommendedRestDays  Int
+  notes                String        // JSON array of strings
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  coffee               Coffee        @relation(fields: [coffeeId], references: [id], onDelete: Cascade)
+  feedbacks            ExtractionFeedback[]
+
+  @@index([coffeeId])
+}
+
+model ExtractionFeedback {
+  id                   String        @id @default(uuid())
+  recipeId             String
+  actualGrindSetting   Float
+  actualDoseGrams      Float
+  actualYieldGrams     Float
+  actualTimeSeconds    Float
+  tasteProfile         String
+  userNotes            String?
+  createdAt            DateTime      @default(now())
+
+  recipe               Recipe        @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+}
+
+model StashItem {
+  id                   String        @id @default(uuid())
+  userId               String        @default("default-user")
+  coffeeId             String
+  roastDate            DateTime?
+  openedAt             DateTime?
+  status               String        @default("active") // "active", "finished", "resting"
+  remainingGrams       Float?
+  rating               Float?
+  createdAt            DateTime      @default(now())
+
+  coffee               Coffee        @relation(fields: [coffeeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+}
