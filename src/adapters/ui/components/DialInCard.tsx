@@ -6,7 +6,7 @@ import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase'
 import { Df64DialGauge } from './Df64DialGauge';
 import { SageTempSelector } from './SageTempSelector';
 import { RecipeRationaleCard } from './RecipeRationaleCard';
-import { ArrowUpRight, Edit, Gauge } from 'lucide-react';
+import { ArrowUpRight, Edit, Gauge, Coffee as CoffeeIcon } from 'lucide-react';
 
 interface DialInCardProps {
   item: StashItemDTO;
@@ -127,17 +127,18 @@ export const DialInCard: React.FC<DialInCardProps> = ({
           </div>
         </div>
 
-        {/* Localized Barista Recommendations & Rationales */}
-        <RecipeRationaleCard coffee={coffee} recipe={recipe} />
-
-        {/* CTA Pull Shot Button */}
+        {/* Primary CTA: Pull Shot Button placed directly below brew parameters */}
         <button
           onClick={onOpenFeedback}
-          className="w-full bg-[#D96B27] hover:bg-[#E29D52] text-[#141210] font-bold text-sm py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 transition-transform active:scale-[0.98] shadow-lg shadow-[#D96B27]/25"
+          className="w-full bg-gradient-to-r from-[#D96B27] via-[#E29D52] to-[#D96B27] hover:brightness-110 text-[#141210] font-bold text-sm py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg shadow-[#D96B27]/30 border border-[#F7F2EB]/15"
         >
+          <CoffeeIcon className="w-4 h-4 stroke-[2.5]" />
           <span>{t.pullShotAndDialIn}</span>
           <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
         </button>
+
+        {/* Localized Barista Recommendations & Rationales */}
+        <RecipeRationaleCard coffee={coffee} recipe={recipe} />
       </div>
     </article>
   );
