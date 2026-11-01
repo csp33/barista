@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { container } from '@/adapters/ServiceContainer';
 import { Logger } from '@/adapters/out/logger/Logger';
+import { DuplicateCoffeeError } from '@/core/domain/coffee/DuplicateCoffeeError';
 
 export async function GET() {
   Logger.info('API', 'GET /api/coffees - Fetching coffee stash');
@@ -35,7 +36,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
     Logger.error('API', 'POST /api/coffees error', error);
+    const isDuplicate = error instanceof DuplicateCoffeeError;
     const msg = error instanceof Error ? error.message : 'Failed to add coffee';
-    return NextResponse.json({ success: false, error: msg }, { status: 400 });
+    return NextResponse.json(
+      { success: false, error: msg, code: isDuplicate ? 'DUPLICATE_COFFEE' : undefined },
+      { status: isDuplicate ? 409 : 400 }
+    );
   }
 }

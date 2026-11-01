@@ -74,7 +74,7 @@ const INITIAL_COFFEES: Coffee[] = [
     process: 'washed',
     roastLevel: 'medium',
     tastingNotes: ['Cereal', 'Spices', 'Cedar', 'Dark Cocoa'],
-    sourceUrl: 'https://cafeselcriollo.com/producto/cafe-india-malabar-monsooned',
+    sourceUrl: 'https://cafeselcriollo.com/producto/cafe-india/',
     imageUrl: 'https://cafeselcriollo.com/wp-content/uploads/2020/10/Cafe-india.webp',
     recommendedRestDays: 14,
     status: 'active',

@@ -6,6 +6,7 @@ export const es: Translations = {
   gearSetup: 'DF64 Gen II • Sage Touch Impress',
   activeBeans: 'En Rotación',
   addCoffee: 'Añadir Café',
+  coffeeAlreadyExists: 'Este café ya existe en tu colección',
   editCoffee: 'Ficha Técnica',
   editCoffeeSpecs: 'Especificaciones del Grano',
   addCoffeeUrlPlaceholder: 'Pega la URL de la ficha del tostador (Nomad, San Jorge...)',

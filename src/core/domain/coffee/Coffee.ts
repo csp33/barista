@@ -88,4 +88,44 @@ export class Coffee {
     if (roast === 'medium') return 8;
     return 6;
   }
+
+  static normalizeRoaster(roaster: string): string {
+    return roaster
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/^cafes?\s+(de\s+)?/gi, '')
+      .replace(/\s+(?:coffee\s*roasters?|coffee|roasters?|tostadores?)\b/gi, '')
+      .replace(/[^a-z0-9]/g, '')
+      .trim();
+  }
+
+  static normalizeName(name: string): string {
+    return name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/^cafes?\s+(de\s+)?/gi, '')
+      .replace(/[^a-z0-9]/g, '')
+      .trim();
+  }
+
+  static normalizeUrl(url: string): string {
+    try {
+      const parsed = new URL(url);
+      const host = parsed.hostname.replace(/^www\./, '').toLowerCase();
+      const pathname = parsed.pathname.replace(/\/+$/, '').toLowerCase();
+      return `${host}${pathname}`;
+    } catch {
+      return url.trim().toLowerCase().replace(/\/+$/, '');
+    }
+  }
+
+  matches(roaster: string, name: string): boolean {
+    const r1 = Coffee.normalizeRoaster(this.roaster);
+    const r2 = Coffee.normalizeRoaster(roaster);
+    const n1 = Coffee.normalizeName(this.name);
+    const n2 = Coffee.normalizeName(name);
+    return r1 === r2 && n1 === n2;
+  }
 }

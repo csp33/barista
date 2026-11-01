@@ -6,6 +6,7 @@ export interface Translations {
   gearSetup: string;
   activeBeans: string;
   addCoffee: string;
+  coffeeAlreadyExists: string;
   editCoffee: string;
   editCoffeeSpecs: string;
   addCoffeeUrlPlaceholder: string;

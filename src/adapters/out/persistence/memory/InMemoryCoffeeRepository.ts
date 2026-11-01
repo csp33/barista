@@ -15,8 +15,9 @@ export class InMemoryCoffeeRepository implements CoffeeRepositoryPort {
   }
 
   async findByUrl(url: string): Promise<Coffee | null> {
+    const norm = Coffee.normalizeUrl(url);
     for (const coffee of this.coffees.values()) {
-      if (coffee.sourceUrl && coffee.sourceUrl.toLowerCase() === url.toLowerCase()) {
+      if (coffee.sourceUrl && Coffee.normalizeUrl(coffee.sourceUrl) === norm) {
         return coffee;
       }
     }
@@ -25,10 +26,7 @@ export class InMemoryCoffeeRepository implements CoffeeRepositoryPort {
 
   async findByRoasterAndName(roaster: string, name: string): Promise<Coffee | null> {
     for (const coffee of this.coffees.values()) {
-      if (
-        coffee.roaster.toLowerCase() === roaster.toLowerCase() &&
-        coffee.name.toLowerCase() === name.toLowerCase()
-      ) {
+      if (coffee.matches(roaster, name)) {
         return coffee;
       }
     }

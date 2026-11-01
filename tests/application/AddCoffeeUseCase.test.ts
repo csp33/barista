@@ -5,6 +5,7 @@ import { RecipeRepositoryPort } from '@/core/application/ports/out/RecipeReposit
 import { RoasterScraperPort } from '@/core/application/ports/out/RoasterScraperPort';
 import { Coffee } from '@/core/domain/coffee/Coffee';
 import { Recipe } from '@/core/domain/recipe/Recipe';
+import { DuplicateCoffeeError } from '@/core/domain/coffee/DuplicateCoffeeError';
 
 describe('AddCoffeeUseCase', () => {
   it('returns cached coffee and recipe when URL already exists in database', async () => {
@@ -105,5 +106,109 @@ describe('AddCoffeeUseCase', () => {
     expect(result.recipe.doseGrams).toBe(18);
     expect(mockCoffeeRepo.save).toHaveBeenCalled();
     expect(mockRecipeRepo.save).toHaveBeenCalled();
+  });
+
+  it('throws DuplicateCoffeeError when adding manual coffee that already exists', async () => {
+    const existingCoffee = new Coffee({
+      id: 'existing-elcriollo',
+      roaster: 'Cafés el Criollo',
+      name: 'India Malabar Monsooned',
+      originCountry: 'India',
+      variety: 'Kent',
+      process: 'washed',
+      roastLevel: 'medium',
+      tastingNotes: ['cereal'],
+    });
+
+    const mockCoffeeRepo: CoffeeRepositoryPort = {
+      findById: vi.fn(),
+      findByUrl: vi.fn().mockResolvedValue(null),
+      findByRoasterAndName: vi.fn().mockResolvedValue(existingCoffee),
+      save: vi.fn(),
+      findAll: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    const mockRecipeRepo: RecipeRepositoryPort = {
+      findByCoffeeId: vi.fn(),
+      save: vi.fn(),
+      saveFeedback: vi.fn(),
+      getFeedbackHistory: vi.fn(),
+      deleteByCoffeeId: vi.fn(),
+    };
+
+    const mockScraper: RoasterScraperPort = {
+      scrapeCoffeeUrl: vi.fn(),
+    };
+
+    const useCase = new AddCoffeeUseCase(mockCoffeeRepo, mockRecipeRepo, mockScraper);
+
+    await expect(
+      useCase.execute({
+        manualData: {
+          roaster: 'Cafés El Criollo',
+          name: 'Café India Malabar Monsooned',
+          originCountry: 'India',
+          variety: 'Kent',
+          process: 'washed',
+          roastLevel: 'medium',
+          tastingNotes: ['cereal'],
+        },
+      })
+    ).rejects.toThrow(DuplicateCoffeeError);
+
+    expect(mockCoffeeRepo.save).not.toHaveBeenCalled();
+  });
+
+  it('returns cached coffee when scraped roaster & name matches existing coffee', async () => {
+    const existingCoffee = new Coffee({
+      id: 'existing-elcriollo',
+      roaster: 'Cafés el Criollo',
+      name: 'India Malabar Monsooned',
+      originCountry: 'India',
+      variety: 'Kent',
+      process: 'washed',
+      roastLevel: 'medium',
+      tastingNotes: ['cereal'],
+      sourceUrl: 'https://cafeselcriollo.com/producto/cafe-india/',
+    });
+
+    const mockCoffeeRepo: CoffeeRepositoryPort = {
+      findById: vi.fn(),
+      findByUrl: vi.fn().mockResolvedValue(null),
+      findByRoasterAndName: vi.fn().mockResolvedValue(existingCoffee),
+      save: vi.fn(),
+      findAll: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    const mockRecipeRepo: RecipeRepositoryPort = {
+      findByCoffeeId: vi.fn().mockResolvedValue(null),
+      save: vi.fn(),
+      saveFeedback: vi.fn(),
+      getFeedbackHistory: vi.fn(),
+      deleteByCoffeeId: vi.fn(),
+    };
+
+    const mockScraper: RoasterScraperPort = {
+      scrapeCoffeeUrl: vi.fn().mockResolvedValue({
+        roaster: 'Cafés el Criollo',
+        name: 'India Malabar Monsooned',
+        originCountry: 'India',
+        variety: 'Kent',
+        process: 'washed',
+        roastLevel: 'medium',
+        tastingNotes: ['cereal'],
+        sourceUrl: 'https://cafeselcriollo.com/producto/cafe-india/',
+      }),
+    };
+
+    const useCase = new AddCoffeeUseCase(mockCoffeeRepo, mockRecipeRepo, mockScraper);
+
+    const result = await useCase.execute({ url: 'https://cafeselcriollo.com/producto/cafe-india/' });
+
+    expect(result.fromCache).toBe(true);
+    expect(result.coffee.id).toBe('existing-elcriollo');
+    expect(mockCoffeeRepo.save).not.toHaveBeenCalled();
   });
 });

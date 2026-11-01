@@ -31,6 +31,19 @@ export async function POST(request: Request) {
     const data = await container.visionScanner.scanCoffeeBagImage(base64, mime);
     Logger.info('API', `Vision scanner result: ${data.name} (${data.roaster})`);
 
+    const existing = await container.coffeeRepo.findByRoasterAndName(data.roaster, data.name);
+    if (existing) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `El café "${existing.name}" (${existing.roaster}) ya existe en tu colección`,
+          isExisting: true,
+          data: existing,
+        },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json({ success: true, data });
   } catch (err) {
     Logger.error('API', 'POST /api/coffees/scan-image failed', err);

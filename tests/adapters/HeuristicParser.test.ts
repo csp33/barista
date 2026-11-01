@@ -27,7 +27,7 @@ describe('HeuristicParser', () => {
     const data = HeuristicParser.parse(mockHtml, 'https://cafeselcriollo.com/producto/cafe-india/', 'cafeselcriollo.com');
 
     expect(data.roaster).toBe('Cafés el Criollo');
-    expect(data.name).toBe('Café India Malabar Monsooned');
+    expect(data.name).toBe('India Malabar Monsooned');
     expect(data.originCountry).toBe('India');
     expect(data.altitudeMasl).toBe(2000);
     expect(data.variety).toBe('Kent, Catimor, Selection 9');

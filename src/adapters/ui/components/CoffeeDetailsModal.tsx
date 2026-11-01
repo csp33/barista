@@ -84,6 +84,7 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
       roastLevel: formData.roastLevel,
       tastingNotes: formData.notesStr.split(',').map(s => s.trim()).filter(Boolean),
       recommendedRestDays: formData.restDays ? parseInt(formData.restDays, 10) : undefined,
+      sourceUrl: (coffee as Coffee).sourceUrl || undefined,
       imageUrl: formData.imageUrl || undefined,
       status: formData.status,
     };
@@ -95,20 +96,26 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ manualData: payload }),
         });
-        if (!res.ok) throw new Error('Create failed');
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || t.coffeeAlreadyExists);
+        }
       } else {
         const res = await fetch(`/api/coffees/${(coffee as Coffee).id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        if (!res.ok) throw new Error('Update failed');
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || 'Update failed');
+        }
       }
 
       onSuccess();
       onClose();
-    } catch {
-      setError('Error al guardar datos del café');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al guardar datos del café');
     } finally {
       setSaving(false);
     }

@@ -101,10 +101,11 @@ export class HeuristicParser {
       .replace(/arábica\s+100%/gi, '')
       .replace(/specialty\s+coffee/gi, '')
       .replace(/café\s+de\s+especialidad/gi, '')
+      .replace(/^(?:cafés?|cafe)\s+/gi, '')
       .trim();
 
     name = name.replace(/[-–]\s*(?:tienda|shop|comprar|online).*$/gi, '').trim();
-    name = name.replace(/[-–|]+$/, '').trim();
+    name = name.replace(/[-–|]+$/, '').replace(/^(?:cafés?|cafe)\s+/gi, '').trim();
     return name || 'Single Origin Espresso';
   }
 
