@@ -27,27 +27,44 @@ export class LogFeedbackUseCase {
     adjustedRecipe: Recipe;
   }> {
     const coffeeId = request.recipeId.replace('recipe-', '');
-    const currentRecipe = await this.recipeRepo.findByCoffeeId(coffeeId);
+    let currentRecipe = await this.recipeRepo.findByCoffeeId(coffeeId);
+    const coffee = this.coffeeRepo ? await this.coffeeRepo.findById(coffeeId) : null;
+
     if (!currentRecipe) {
-      throw new Error(`Recipe not found for ID ${request.recipeId}`);
+      if (coffee) {
+        currentRecipe = RecipeCalculator.calculateInitial(coffee);
+      } else {
+        currentRecipe = new Recipe({
+          id: request.recipeId,
+          coffeeId,
+          grinderId: 'df64-gen-2',
+          machineId: 'sage-touch-impress',
+          doseGrams: request.actualDoseGrams || 18,
+          yieldGrams: request.actualYieldGrams || 36,
+          ratio: '1:2.0',
+          grindSetting: request.actualGrindSetting || 12.0,
+          machineTemperature: 'normal',
+          targetTimeSeconds: request.actualTimeSeconds || 28,
+          recommendedRestDays: 14,
+          notes: ['Auto-calibrated baseline recipe'],
+        });
+      }
+      await this.recipeRepo.save(currentRecipe);
     }
 
     let aiDiagnosis: string | undefined;
-    if (this.coffeeRepo && this.sommelier) {
-      const coffee = await this.coffeeRepo.findById(coffeeId);
-      if (coffee) {
-        const tempFeedback = new ExtractionFeedback({
-          id: 'temp',
-          recipeId: request.recipeId,
-          actualGrindSetting: request.actualGrindSetting,
-          actualDoseGrams: request.actualDoseGrams,
-          actualYieldGrams: request.actualYieldGrams,
-          actualTimeSeconds: request.actualTimeSeconds,
-          tasteProfile: request.tasteProfile,
-          userNotes: request.userNotes,
-        });
-        aiDiagnosis = await this.sommelier.diagnoseExtraction(tempFeedback, coffee);
-      }
+    if (coffee && this.sommelier) {
+      const tempFeedback = new ExtractionFeedback({
+        id: 'temp',
+        recipeId: request.recipeId,
+        actualGrindSetting: request.actualGrindSetting,
+        actualDoseGrams: request.actualDoseGrams,
+        actualYieldGrams: request.actualYieldGrams,
+        actualTimeSeconds: request.actualTimeSeconds,
+        tasteProfile: request.tasteProfile,
+        userNotes: request.userNotes,
+      });
+      aiDiagnosis = await this.sommelier.diagnoseExtraction(tempFeedback, coffee);
     }
 
     const feedback = new ExtractionFeedback({

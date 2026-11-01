@@ -118,10 +118,11 @@ class ServiceContainer {
   }
 
   public static getInstance(): ServiceContainer {
-    if (!ServiceContainer.instance) {
-      ServiceContainer.instance = new ServiceContainer();
+    const g = globalThis as unknown as { __baristaContainer?: ServiceContainer };
+    if (!g.__baristaContainer) {
+      g.__baristaContainer = new ServiceContainer();
     }
-    return ServiceContainer.instance;
+    return g.__baristaContainer;
   }
 }
 

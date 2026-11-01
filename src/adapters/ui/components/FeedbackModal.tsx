@@ -29,12 +29,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   const [taste, setTaste] = useState<TasteProfile>('balanced');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen || !recipe) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
       const res = await fetch('/api/recipes/feedback', {
@@ -51,12 +53,15 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
         }),
       });
 
-      if (!res.ok) throw new Error('Feedback submission failed');
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.error || 'Feedback submission failed');
+      }
 
       onSuccess();
       onClose();
-    } catch {
-      alert('Could not record feedback');
+    } catch (err: any) {
+      setError(err.message || 'Error al registrar el feedback');
     } finally {
       setLoading(false);
     }
@@ -172,6 +177,12 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               className="w-full bg-[#120F0D] border border-[#30261E] rounded-xl p-2.5 text-xs text-[#F7F2EB] outline-none"
             />
           </div>
+
+          {error && (
+            <div className="p-2.5 rounded-xl bg-red-950/70 border border-red-800 text-red-300 text-xs">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
