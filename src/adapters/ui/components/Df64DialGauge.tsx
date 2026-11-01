@@ -54,7 +54,7 @@ export const Df64DialGauge: React.FC<Df64DialGaugeProps> = ({ setting }) => {
             #{setting.toFixed(1)}
           </span>
           <span className="text-[9px] text-[#A8988B] uppercase tracking-wider font-metric">
-            {language === 'es' ? 'Micrométrico' : 'Micrometric'}
+            Stepless 0–90
           </span>
         </div>
 

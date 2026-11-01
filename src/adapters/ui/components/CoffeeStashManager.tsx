@@ -77,7 +77,6 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
               <CoffeeCardItem
                 key={item.coffee.id}
                 item={item}
-                isSelected={item.coffee.id === activeId}
                 onSelectForBrew={onSelectForBrew}
                 onEditCoffee={onEditCoffee}
                 onToggleStatus={onToggleStatus}
@@ -121,7 +120,7 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
                     </button>
                     <button
                       onClick={() => onToggleStatus(c.id, c.status)}
-                      className="bg-[#241C16] hover:bg-[#33271F] border border-[#3D2F24] text-[#D96B27] px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors"
+                      className="text-[11px] text-[#A8988B] hover:text-[#E29D52] hover:bg-[#201813] border border-[#2F241C] px-2.5 py-1 rounded-lg transition-colors"
                     >
                       {t.moveToActive}
                     </button>

@@ -35,8 +35,8 @@ export const EquipmentView: React.FC = () => {
 
         <p className="text-xs text-[#C8B8AB] leading-relaxed">
           {isEs
-            ? 'Muelas planas de 64mm con collarín micrométrico stepless (0–90). Retención cercana a cero con fuelle.'
-            : '64mm custom flat burrs with stepless micrometric collar (0–90). Zero retention silicone bellows.'}
+            ? 'Muelas planas de 64mm con collarín de ajuste continuo stepless (0–90). Retención cercana a cero con fuelle.'
+            : '64mm custom flat burrs with stepless continuous collar (0–90). Zero retention silicone bellows.'}
         </p>
 
         <div className="bg-[#120F0D] border border-[#2B211A] rounded-xl p-3 text-xs space-y-1.5 font-metric">
