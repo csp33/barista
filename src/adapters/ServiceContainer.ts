@@ -63,6 +63,22 @@ const INITIAL_COFFEES: Coffee[] = [
     recommendedRestDays: 12,
     status: 'history',
   }),
+  new Coffee({
+    id: 'coffee-elcriollo-malabar',
+    roaster: 'Cafés el Criollo',
+    name: 'India Malabar Monsooned',
+    originCountry: 'India',
+    region: 'Malabar Coast',
+    altitudeMasl: 1200,
+    variety: 'Kent, Catimor',
+    process: 'washed',
+    roastLevel: 'medium',
+    tastingNotes: ['Cereal', 'Spices', 'Cedar', 'Dark Cocoa'],
+    sourceUrl: 'https://cafeselcriollo.com/producto/cafe-india-malabar-monsooned',
+    imageUrl: 'https://cafeselcriollo.com/wp-content/uploads/2020/10/Cafe-india.webp',
+    recommendedRestDays: 14,
+    status: 'active',
+  }),
 ];
 
 class ServiceContainer {
