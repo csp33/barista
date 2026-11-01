@@ -9,6 +9,7 @@ export type TasteProfile =
 export interface ExtractionFeedbackProps {
   id: string;
   recipeId: string;
+  userId: string;
   actualGrindSetting: number;
   actualDoseGrams: number;
   actualYieldGrams: number;
@@ -22,6 +23,7 @@ export interface ExtractionFeedbackProps {
 export class ExtractionFeedback {
   readonly id: string;
   readonly recipeId: string;
+  readonly userId: string;
   readonly actualGrindSetting: number;
   readonly actualDoseGrams: number;
   readonly actualYieldGrams: number;
@@ -32,8 +34,13 @@ export class ExtractionFeedback {
   readonly createdAt: Date;
 
   constructor(props: ExtractionFeedbackProps) {
+    if (!props.userId || props.userId.trim().length === 0) {
+      throw new Error('ExtractionFeedback userId is required');
+    }
+
     this.id = props.id;
     this.recipeId = props.recipeId;
+    this.userId = props.userId.trim();
     this.actualGrindSetting = props.actualGrindSetting;
     this.actualDoseGrams = props.actualDoseGrams;
     this.actualYieldGrams = props.actualYieldGrams;

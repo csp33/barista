@@ -10,6 +10,7 @@ export interface AiRationale {
 export interface RecipeProps {
   id: string;
   coffeeId: string;
+  userId: string;
   grinderId: string;
   machineId: string;
   doseGrams: number;
@@ -26,6 +27,7 @@ export interface RecipeProps {
 export class Recipe {
   readonly id: string;
   readonly coffeeId: string;
+  readonly userId: string;
   readonly grinderId: string;
   readonly machineId: string;
   readonly doseGrams: number;
@@ -39,11 +41,15 @@ export class Recipe {
   readonly aiRationale?: AiRationale;
 
   constructor(props: RecipeProps) {
+    if (!props.userId || props.userId.trim().length === 0) {
+      throw new Error('Recipe userId is required');
+    }
     if (props.doseGrams <= 0) throw new Error('Dose must be greater than 0');
     if (props.yieldGrams <= 0) throw new Error('Yield must be greater than 0');
 
     this.id = props.id;
     this.coffeeId = props.coffeeId;
+    this.userId = props.userId.trim();
     this.grinderId = props.grinderId;
     this.machineId = props.machineId;
     this.doseGrams = props.doseGrams;

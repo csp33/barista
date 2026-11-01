@@ -2,6 +2,30 @@ import { describe, it, expect } from 'vitest';
 import { Coffee } from '../../src/core/domain/coffee/Coffee';
 import { RecipeCalculator } from '../../src/core/domain/recipe/RecipeCalculator';
 import { RecipeExplainer } from '../../src/core/domain/recipe/RecipeExplainer';
+import { Grinder } from '../../src/core/domain/equipment/Grinder';
+import { EspressoMachine } from '../../src/core/domain/equipment/EspressoMachine';
+
+const testGrinder: Grinder = {
+  id: 'df64-gen-2',
+  brand: 'DF64',
+  model: 'Gen 2',
+  burrSizeMm: 64,
+  burrType: 'flat',
+  minDial: 0,
+  maxDial: 90,
+  defaultEspressoBaseline: 12.0,
+};
+
+const testMachine: EspressoMachine = {
+  id: 'sage-barista-touch-impress',
+  brand: 'Sage',
+  model: 'Barista Touch Impress',
+  portafilterSizeMm: 54,
+  standardDoseGrams: 18.0,
+  availableTemperatures: ['low', 'normal', 'high', 'very_high'],
+};
+
+const testUserId = 'test-user';
 
 describe('RecipeExplainer', () => {
   it('explains monsooned malabar low density grind requirement', () => {
@@ -17,7 +41,7 @@ describe('RecipeExplainer', () => {
       recommendedRestDays: 14,
     });
 
-    const recipe = RecipeCalculator.calculateInitial(coffee);
+    const recipe = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
     const rationale = RecipeExplainer.explain(coffee, recipe);
 
     expect(rationale.grindWhy.es).toContain('Grano monsonado poroso');
@@ -39,7 +63,7 @@ describe('RecipeExplainer', () => {
       recommendedRestDays: 14,
     });
 
-    const recipe = RecipeCalculator.calculateInitial(coffee);
+    const recipe = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
     const rationale = RecipeExplainer.explain(coffee, recipe);
 
     expect(rationale.grindWhy.es).toContain('Brasil');
@@ -61,7 +85,7 @@ describe('RecipeExplainer', () => {
       recommendedRestDays: 21,
     });
 
-    const recipe = RecipeCalculator.calculateInitial(coffee);
+    const recipe = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
     const rationale = RecipeExplainer.explain(coffee, recipe);
 
     expect(rationale.tempWhy.es).toContain('Muy Alta (96°C)');

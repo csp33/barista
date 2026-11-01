@@ -12,23 +12,23 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## 1. Language & Naming Conventions
 - **100% English** for all code, domain models, functions, interfaces, comments, commit messages, and tests.
-- **Bilingual UI (English + Spanish)**: All user-facing strings must be localized via typed dictionaries (`src/adapters/ui/i18n/`).
+- **Bilingual UI (English + Spanish)**: All user-facing strings must be localized via typed dictionaries (`src/infrastructure/ui/i18n/`).
 
 ## 2. Hexagonal Architecture (Ports and Adapters)
 Directory boundaries are strictly enforced by automated architecture tests (`npm run test:arch`):
 
 - `src/core/domain/`:
   - Contains entities, value objects, domain errors, and pure business logic.
-  - **Zero external dependencies**: Must NEVER import from `core/application`, `adapters`, React, Next.js, or Prisma.
+  - **Zero external dependencies**: Must NEVER import from `core/application`, `infrastructure`, React, Next.js, or Prisma.
 - `src/core/application/`:
   - Contains use cases and ports (interfaces):
     - `ports/in/`: Primary/Driver ports (use cases).
     - `ports/out/`: Secondary/Driven ports (repository interfaces, scraper interfaces, LLM extractor interfaces).
   - Can only import from `core/domain` and other application ports.
-  - Must NEVER import from `adapters`, React, Next.js, or Prisma.
-- `src/adapters/`:
+  - Must NEVER import from `infrastructure`, React, Next.js, or Prisma.
+- `src/infrastructure/`:
   - `in/`: Controllers, API Route Handlers, UI components, hooks.
-  - `out/`: Database repositories (Prisma), external roaster web scrapers, LLM parser adapters.
+  - `out/`: Database repositories (Prisma), external roaster web scrapers, LLM parser infrastructure.
 
 ## 3. Strict Code Quality & File Limits
 - **Maximum 200 lines per file** across all files in `src/`.

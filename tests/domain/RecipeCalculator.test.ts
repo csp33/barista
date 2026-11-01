@@ -2,6 +2,30 @@ import { describe, it, expect } from 'vitest';
 import { Coffee } from '@/core/domain/coffee/Coffee';
 import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
 import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
+import { Grinder } from '@/core/domain/equipment/Grinder';
+import { EspressoMachine } from '@/core/domain/equipment/EspressoMachine';
+
+const testGrinder: Grinder = {
+  id: 'df64-gen-2',
+  brand: 'DF64',
+  model: 'Gen 2',
+  burrSizeMm: 64,
+  burrType: 'flat',
+  minDial: 0,
+  maxDial: 90,
+  defaultEspressoBaseline: 12.0,
+};
+
+const testMachine: EspressoMachine = {
+  id: 'sage-barista-touch-impress',
+  brand: 'Sage',
+  model: 'Barista Touch Impress',
+  portafilterSizeMm: 54,
+  standardDoseGrams: 18.0,
+  availableTemperatures: ['low', 'normal', 'high', 'very_high'],
+};
+
+const testUserId = 'test-user';
 
 describe('RecipeCalculator Domain Service', () => {
   it('calculates optimal recipe for light roast, washed, high altitude Ethiopian coffee', () => {
@@ -17,7 +41,7 @@ describe('RecipeCalculator Domain Service', () => {
       tastingNotes: ['peach', 'jasmine', 'bergamot'],
     });
 
-    const recipe = RecipeCalculator.calculateInitial(ethiopia);
+    const recipe = RecipeCalculator.calculateInitial(ethiopia, testGrinder, testMachine, testUserId);
 
     expect(recipe.doseGrams).toBe(18.5);
     expect(recipe.machineTemperature).toBe('very_high');
@@ -41,7 +65,7 @@ describe('RecipeCalculator Domain Service', () => {
       tastingNotes: ['milk chocolate', 'hazelnut', 'brown sugar'],
     });
 
-    const recipe = RecipeCalculator.calculateInitial(brazil);
+    const recipe = RecipeCalculator.calculateInitial(brazil, testGrinder, testMachine, testUserId);
 
     expect(recipe.doseGrams).toBe(18.0);
     expect(recipe.machineTemperature).toBe('normal');
@@ -64,7 +88,7 @@ describe('RecipeCalculator Domain Service', () => {
       tastingNotes: ['cacao', 'spices', 'tobacco'],
     });
 
-    const recipe = RecipeCalculator.calculateInitial(indiaMalabar);
+    const recipe = RecipeCalculator.calculateInitial(indiaMalabar, testGrinder, testMachine, testUserId);
 
     // Monsooned beans lose density and require fine grind to build 9 bar resistance
     expect(recipe.grindSetting).toBe(5.5);
@@ -83,10 +107,11 @@ describe('RecipeCalculator Domain Service', () => {
       tastingNotes: ['tropical fruit'],
     });
 
-    const initial = RecipeCalculator.calculateInitial(coffee);
+    const initial = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
     const feedback = new ExtractionFeedback({
       id: 'fb-1',
       recipeId: initial.id,
+      userId: testUserId,
       actualGrindSetting: initial.grindSetting,
       actualDoseGrams: 18.0,
       actualYieldGrams: initial.yieldGrams,
@@ -94,7 +119,7 @@ describe('RecipeCalculator Domain Service', () => {
       tasteProfile: 'sour',
     });
 
-    const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback);
+    const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback, testGrinder);
 
     // Sour -> grind finer (subtract 0.5) and raise yield
     expect(adjusted.grindSetting).toBe(initial.grindSetting - 0.5);
@@ -114,10 +139,11 @@ describe('RecipeCalculator Domain Service', () => {
       tastingNotes: ['chocolate'],
     });
 
-    const initial = RecipeCalculator.calculateInitial(coffee); // 12.5
+    const initial = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId); // 12.5
     const feedback = new ExtractionFeedback({
       id: 'fb-channeled',
       recipeId: initial.id,
+      userId: testUserId,
       actualGrindSetting: 9.0,
       actualDoseGrams: 18.0,
       actualYieldGrams: 36,
@@ -125,10 +151,37 @@ describe('RecipeCalculator Domain Service', () => {
       tasteProfile: 'channeled',
     });
 
-    const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback);
+    const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback, testGrinder);
 
     // Fast channeling -> grind finer (-0.5) to build puck resistance
     expect(adjusted.grindSetting).toBe(8.5);
     expect(adjusted.notes.some(n => n.includes('finer'))).toBe(true);
+  });
+
+  it('enforces 0.5 increments for grind settings on all grinders (e.g. Kingrinder K6)', () => {
+    const k6Grinder: Grinder = {
+      id: 'kingrinder-k6',
+      brand: 'KINGrinder',
+      model: 'K6',
+      burrSizeMm: 48,
+      burrType: 'conical',
+      minDial: 0,
+      maxDial: 180,
+      defaultEspressoBaseline: 35.0,
+    };
+    const coffee = new Coffee({
+      id: 'c-malabar-k6',
+      roaster: 'Café de Especialidad',
+      name: 'India Malabar Monsooned',
+      originCountry: 'India',
+      variety: 'Kent',
+      process: 'washed',
+      roastLevel: 'medium',
+    });
+
+    const recipe = RecipeCalculator.calculateInitial(coffee, k6Grinder, testMachine, testUserId);
+    // 35 * 0.46 = 16.1 -> rounded to nearest 0.5 = 16.0
+    expect(recipe.grindSetting).toBe(16.0);
+    expect(recipe.grindSetting % 0.5).toBe(0);
   });
 });

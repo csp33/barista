@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Barista • Specialty Coffee & Dial-in",
-  description: "Specialty coffee stash and espresso recipe dial-in for DF64 Gen II & Sage Touch Impress",
+  description: "Specialty coffee stash and espresso recipe dial-in for home baristas",
   icons: {
     icon: "/icon.svg",
   },

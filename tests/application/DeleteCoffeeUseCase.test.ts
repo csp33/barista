@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { Coffee } from '../../src/core/domain/coffee/Coffee';
 import { RecipeCalculator } from '../../src/core/domain/recipe/RecipeCalculator';
-import { InMemoryCoffeeRepository } from '../../src/adapters/out/persistence/memory/InMemoryCoffeeRepository';
-import { InMemoryRecipeRepository } from '../../src/adapters/out/persistence/memory/InMemoryRecipeRepository';
+import { InMemoryCoffeeRepository } from '../../src/infrastructure/out/persistence/memory/InMemoryCoffeeRepository';
+import { InMemoryRecipeRepository } from '../../src/infrastructure/out/persistence/memory/InMemoryRecipeRepository';
 import { DeleteCoffeeUseCase } from '../../src/core/application/usecases/DeleteCoffeeUseCase';
 
 describe('DeleteCoffeeUseCase', () => {
@@ -66,7 +66,12 @@ describe('DeleteCoffeeUseCase', () => {
       status: 'history',
       tastingNotes: ['chocolate'],
     });
-    const recipe = RecipeCalculator.calculateInitial(coffee);
+    const recipe = RecipeCalculator.calculateInitial(
+      coffee,
+      { id: 'df64', brand: 'DF64', model: 'Gen 2', burrSizeMm: 64, burrType: 'flat', minDial: 0, maxDial: 90, defaultEspressoBaseline: 12 },
+      { id: 'sage', brand: 'Sage', model: 'Touch', portafilterSizeMm: 54, standardDoseGrams: 18, availableTemperatures: ['normal'] },
+      'admin-user'
+    );
 
     await coffeeRepo.save(coffee);
     await recipeRepo.save(recipe);

@@ -8,14 +8,3 @@ export interface Grinder {
   readonly maxDial: number;
   readonly defaultEspressoBaseline: number;
 }
-
-export const DF64_GEN_2: Grinder = {
-  id: 'df64-gen-2',
-  brand: 'DF64',
-  model: 'Gen 2',
-  burrSizeMm: 64,
-  burrType: 'flat',
-  minDial: 0,
-  maxDial: 90,
-  defaultEspressoBaseline: 12.0,
-};

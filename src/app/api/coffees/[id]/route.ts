@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { container } from '@/adapters/ServiceContainer';
-import { Logger } from '@/adapters/out/logger/Logger';
+import { container } from '@/infrastructure/ServiceContainer';
+import { Logger } from '@/infrastructure/out/logger/Logger';
 
 export async function PUT(
   request: Request,

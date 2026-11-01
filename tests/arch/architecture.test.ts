@@ -57,7 +57,7 @@ describe('Clean & Hexagonal Architecture Enforcement', () => {
     ).toEqual([]);
   });
 
-  it('enforces Domain layer purity (no application, adapter, or framework imports)', () => {
+  it('enforces Domain layer purity (no application, infrastructure, or framework imports)', () => {
     const domainDir = path.join(SRC_DIR, 'core/domain');
     const domainFiles = getAllFiles(domainDir);
     const violations: { file: string; illegalImport: string }[] = [];
@@ -66,10 +66,13 @@ describe('Clean & Hexagonal Architecture Enforcement', () => {
       /application/,
       /adapters/,
       /@\/adapters/,
+      /infrastructure/,
+      /@\/infrastructure/,
       /@\/core\/application/,
       /^react$/,
       /^next/,
-      /@prisma\/client/
+      /@prisma\/client/,
+      /^pg$/
     ];
 
     for (const file of domainFiles) {
@@ -91,7 +94,7 @@ describe('Clean & Hexagonal Architecture Enforcement', () => {
     ).toEqual([]);
   });
 
-  it('enforces Application layer purity (no adapter, React, or framework imports)', () => {
+  it('enforces Application layer purity (no infrastructure, React, or framework imports)', () => {
     const appDir = path.join(SRC_DIR, 'core/application');
     const appFiles = getAllFiles(appDir);
     const violations: { file: string; illegalImport: string }[] = [];
@@ -99,9 +102,12 @@ describe('Clean & Hexagonal Architecture Enforcement', () => {
     const forbiddenPatterns = [
       /adapters/,
       /@\/adapters/,
+      /infrastructure/,
+      /@\/infrastructure/,
       /^react$/,
       /^next/,
-      /@prisma\/client/
+      /@prisma\/client/,
+      /^pg$/
     ];
 
     for (const file of appFiles) {

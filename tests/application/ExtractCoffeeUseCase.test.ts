@@ -34,6 +34,7 @@ describe('ExtractCoffeeUseCase', () => {
     const mockRecipe = new Recipe({
       id: 'r-1',
       coffeeId: existingCoffee.id,
+      userId: 'default-user',
       grinderId: 'df64',
       machineId: 'sage',
       doseGrams: 18,

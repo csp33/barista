@@ -24,8 +24,8 @@ export class RecipeExplainer {
 
     if (isMonsooned) {
       grindWhy = {
-        es: `Grano monsonado poroso y de baja densidad celular: requiere molienda muy fina (#${recipe.grindSetting}) para compactar la pastilla en la cesta de 54mm y permitir que la bomba alcance 9 bares sin canalizar.`,
-        en: `Monsooned beans have expanded porous cell structure: fine grind (#${recipe.grindSetting}) creates necessary puck resistance in the 54mm basket for 9 bar extraction without channeling.`,
+        es: `Grano monsonado poroso y de baja densidad celular: requiere molienda muy fina (#${recipe.grindSetting}) para compactar la pastilla en la cesta del portafiltro y permitir que la bomba alcance 9 bares sin canalizar.`,
+        en: `Monsooned beans have expanded porous cell structure: fine grind (#${recipe.grindSetting}) creates necessary puck resistance in the portafilter basket for 9 bar extraction without channeling.`,
       };
     } else if (coffee.originCountry.toLowerCase().includes('brazil') || coffee.originCountry.toLowerCase().includes('brasil')) {
       grindWhy = {

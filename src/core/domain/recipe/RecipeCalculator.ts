@@ -1,83 +1,86 @@
 import { Coffee } from '../coffee/Coffee';
-import { DF64_GEN_2, Grinder } from '../equipment/Grinder';
-import {
-  SAGE_BARISTA_TOUCH_IMPRESS,
-  EspressoMachine,
-  SageTemperatureSetting,
-} from '../equipment/EspressoMachine';
+import { Grinder } from '../equipment/Grinder';
+import { EspressoMachine, SageTemperatureSetting } from '../equipment/EspressoMachine';
 import { Recipe } from './Recipe';
 import { ExtractionFeedback } from './ExtractionFeedback';
 
 export class RecipeCalculator {
   static calculateInitial(
     coffee: Coffee,
-    grinder: Grinder = DF64_GEN_2,
-    machine: EspressoMachine = SAGE_BARISTA_TOUCH_IMPRESS
+    grinder: Grinder,
+    machine: EspressoMachine,
+    userId: string
   ): Recipe {
+    if (!userId || userId.trim().length === 0) {
+      throw new Error('UserId is required to calculate recipe');
+    }
+
     const coffeeNameLower = coffee.name.toLowerCase();
     const isMonsooned =
       coffeeNameLower.includes('monsooned') ||
       coffeeNameLower.includes('malabar') ||
       (coffee.originCountry.toLowerCase().includes('india') && coffeeNameLower.includes('monsoon'));
 
-    // Dynamic dose based on bean density & roast level in 54mm basket
-    let doseGrams = machine.standardDoseGrams; // 18.0 base
+    let doseGrams = machine.standardDoseGrams;
     if (isMonsooned) {
-      doseGrams = 16.5; // Monsooned beans expand heavily; 16.5g gives optimal headspace
+      if (machine.portafilterSizeMm <= 51) doseGrams = 13.5;
+      else if (machine.portafilterSizeMm <= 54) doseGrams = 16.5;
+      else doseGrams = 17.5;
     } else if (coffee.roastLevel === 'light' || (coffee.altitudeMasl && coffee.altitudeMasl >= 1800)) {
-      doseGrams = 18.5; // Dense beans occupy less volume; 18.5g fills 54mm basket
+      if (machine.portafilterSizeMm <= 51) doseGrams = 15.0;
+      else if (machine.portafilterSizeMm <= 54) doseGrams = 18.5;
+      else doseGrams = 19.5;
     } else if (coffee.roastLevel === 'medium_dark' || coffee.roastLevel === 'dark') {
-      doseGrams = 17.0; // Dark roasts expand; 17g prevents contact with shower screen
+      if (machine.portafilterSizeMm <= 51) doseGrams = 14.0;
+      else if (machine.portafilterSizeMm <= 54) doseGrams = 17.0;
+      else doseGrams = 18.0;
     }
 
     const { ratioMultiplier, ratio, temperature } = this.getRoastParams(coffee);
     const yieldGrams = Math.round(doseGrams * ratioMultiplier);
 
-    let grindSetting = grinder.defaultEspressoBaseline; // Base 12.0
+    let grindSetting = grinder.defaultEspressoBaseline;
+    const dialStep = grinder.maxDial <= 10 ? 0.2 : 1.0;
 
     if (isMonsooned) {
-      // Monsooned coffees expand and lose density; require grinding much finer
-      grindSetting = 5.5;
+      grindSetting = this.roundToHalfStep(grinder.defaultEspressoBaseline * 0.46);
     } else {
-      // Adjust for roast level
-      if (coffee.roastLevel === 'light') grindSetting -= 2.0;
-      else if (coffee.roastLevel === 'medium_light') grindSetting -= 1.0;
-      else if (coffee.roastLevel === 'medium_dark') grindSetting += 1.0;
-      else if (coffee.roastLevel === 'dark') grindSetting += 2.0;
+      if (coffee.roastLevel === 'light') grindSetting -= dialStep * 2;
+      else if (coffee.roastLevel === 'medium_light') grindSetting -= dialStep;
+      else if (coffee.roastLevel === 'medium_dark') grindSetting += dialStep;
+      else if (coffee.roastLevel === 'dark') grindSetting += dialStep * 2;
 
-      // Adjust for processing method (naturals & anaerobics produce more fines)
       if (['natural', 'anaerobic', 'honey', 'experimental'].includes(coffee.process)) {
-        grindSetting += 0.5;
+        grindSetting += dialStep * 0.5;
       }
-
-      // High altitude beans (>1800m) are very dense
       if (coffee.altitudeMasl && coffee.altitudeMasl >= 1800) {
-        grindSetting -= 1.0;
+        grindSetting -= dialStep;
       }
     }
 
+    grindSetting = this.roundToHalfStep(
+      Math.max(grinder.minDial, Math.min(grinder.maxDial, grindSetting))
+    );
+
     const notes = [
-      `Initial recipe tuned for ${coffee.roaster} - ${coffee.name}`,
+      `Tuned for ${coffee.roaster} - ${coffee.name} on ${grinder.brand} & ${machine.brand}`,
       `Ideal rest window: ${coffee.recommendedRestDays} days after roast`,
     ];
 
     if (isMonsooned) {
-      notes.push('Monsooned Malabar: baja densidad y grano expandido: dosis reducida a 16.5g y molienda fina para 9 bar');
-    } else if (coffee.process === 'natural' || coffee.process === 'anaerobic') {
-      notes.push('Naturals produce fines: grind slightly coarser to prevent stalling');
+      notes.push('Monsooned Malabar: baja densidad y grano expandido: dosis adaptada');
     }
 
-    notes.push('Tamp manual: desapelmazar con agujas WDT y prensar a nivel con tamper manual para sellar la cesta de 54mm');
-
     return new Recipe({
-      id: `recipe-${coffee.id}`,
+      id: `recipe-${userId}-${coffee.id}`,
       coffeeId: coffee.id,
+      userId,
       grinderId: grinder.id,
       machineId: machine.id,
       doseGrams,
       yieldGrams,
       ratio,
-      grindSetting: Number(grindSetting.toFixed(1)),
+      grindSetting,
       machineTemperature: temperature,
       targetTimeSeconds: 28,
       recommendedRestDays: coffee.recommendedRestDays,
@@ -85,37 +88,44 @@ export class RecipeCalculator {
     });
   }
 
-  static adjustFromFeedback(currentRecipe: Recipe, feedback: ExtractionFeedback): Recipe {
+  static adjustFromFeedback(
+    currentRecipe: Recipe,
+    feedback: ExtractionFeedback,
+    grinder?: Grinder
+  ): Recipe {
     let nextGrind = feedback.actualGrindSetting;
     let nextTemp = currentRecipe.machineTemperature;
     let nextYield = feedback.actualYieldGrams;
     const notes = [...currentRecipe.notes];
+    const dialStep = grinder && grinder.maxDial <= 10 ? 0.2 : 0.5;
+    const minDial = grinder ? grinder.minDial : 0;
+    const maxDial = grinder ? grinder.maxDial : 90;
 
     switch (feedback.tasteProfile) {
       case 'sour':
-        nextGrind = Math.max(0, nextGrind - 0.5);
+        nextGrind = Math.max(minDial, nextGrind - dialStep);
         nextTemp = this.raiseTemperature(nextTemp);
         nextYield += 2;
         notes.push('Adjusted: finer grind & slightly higher ratio to eliminate sourness');
         break;
       case 'bitter':
       case 'astringent':
-        nextGrind += 0.5;
+        nextGrind = Math.min(maxDial, nextGrind + dialStep);
         nextTemp = this.lowerTemperature(nextTemp);
         nextYield = Math.max(20, nextYield - 2);
         notes.push('Adjusted: coarser grind & lower yield to tame bitterness');
         break;
       case 'channeled':
         if (feedback.actualTimeSeconds > 32) {
-          nextGrind += 0.5;
-          notes.push('Choking & pressure crack: grind +0.5 coarser and distribute with WDT');
+          nextGrind = Math.min(maxDial, nextGrind + dialStep);
+          notes.push(`Choking & pressure crack: grind +${dialStep} coarser and distribute with WDT`);
         } else {
-          nextGrind = Math.max(0, nextGrind - 0.5);
-          notes.push('Fast channeling / low resistance: grind -0.5 finer and de-clump with WDT');
+          nextGrind = Math.max(minDial, nextGrind - dialStep);
+          notes.push(`Fast channeling: grind -${dialStep} finer and de-clump with WDT`);
         }
         break;
       case 'balanced':
-        notes.push(`Dialed-in sweet spot confirmed at DF64 #${feedback.actualGrindSetting}`);
+        notes.push(`Dialed-in sweet spot confirmed at #${feedback.actualGrindSetting}`);
         break;
     }
 
@@ -123,13 +133,17 @@ export class RecipeCalculator {
 
     return new Recipe({
       ...currentRecipe,
-      id: `recipe-${currentRecipe.coffeeId}`,
-      grindSetting: Number(nextGrind.toFixed(1)),
+      id: currentRecipe.id,
+      grindSetting: this.roundToHalfStep(nextGrind),
       yieldGrams: Math.round(nextYield),
       machineTemperature: nextTemp,
       ratio,
       notes,
     });
+  }
+
+  private static roundToHalfStep(value: number): number {
+    return Math.round(value * 2) / 2;
   }
 
   private static getRoastParams(coffee: Coffee): {
