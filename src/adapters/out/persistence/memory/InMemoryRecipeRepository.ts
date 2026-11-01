@@ -25,7 +25,8 @@ export class InMemoryRecipeRepository implements RecipeRepositoryPort {
   }
 
   async getFeedbackHistory(recipeId: string): Promise<ExtractionFeedback[]> {
-    return this.feedbacks.filter(f => f.recipeId === recipeId);
+    const cleanId = recipeId.replace(/-\d{13,}$/, '');
+    return this.feedbacks.filter(f => f.recipeId === cleanId || f.recipeId === recipeId);
   }
 
   async deleteByCoffeeId(coffeeId: string): Promise<boolean> {

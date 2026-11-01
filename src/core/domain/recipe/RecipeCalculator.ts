@@ -123,7 +123,7 @@ export class RecipeCalculator {
 
     return new Recipe({
       ...currentRecipe,
-      id: `recipe-${currentRecipe.coffeeId}-${Date.now()}`,
+      id: `recipe-${currentRecipe.coffeeId}`,
       grindSetting: Number(nextGrind.toFixed(1)),
       yieldGrams: Math.round(nextYield),
       machineTemperature: nextTemp,

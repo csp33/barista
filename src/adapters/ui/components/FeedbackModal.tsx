@@ -53,6 +53,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           recipeId: recipe.id,
+          coffeeId: item.coffee.id,
           actualGrindSetting: grind,
           actualDoseGrams: dose,
           actualYieldGrams: actualYield,

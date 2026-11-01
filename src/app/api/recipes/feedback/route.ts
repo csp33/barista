@@ -7,6 +7,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       recipeId,
+      coffeeId,
       actualGrindSetting,
       actualDoseGrams,
       actualYieldGrams,
@@ -31,6 +32,7 @@ export async function POST(request: Request) {
 
     const result = await container.logFeedbackUseCase.execute({
       recipeId,
+      coffeeId,
       actualGrindSetting: Number(actualGrindSetting),
       actualDoseGrams: Number(actualDoseGrams),
       actualYieldGrams: Number(actualYieldGrams),

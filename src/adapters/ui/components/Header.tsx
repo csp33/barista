@@ -4,14 +4,23 @@ import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { Coffee, Globe, Sliders, Shield, ShieldCheck } from 'lucide-react';
 
-export const Header: React.FC = () => {
+interface HeaderProps {
+  onGoHome?: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ onGoHome }) => {
   const { t, language, toggleLanguage, isAdmin, toggleAdmin } = useTranslation();
 
   return (
     <header className="sticky top-0 z-30 bg-[#120F0D]/90 backdrop-blur-md border-b border-[#30261E] px-4 py-3.5">
       <div className="max-w-2xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D96B27] to-[#B35216] flex items-center justify-center text-[#141210] shadow-md shadow-[#D96B27]/20">
+        <button
+          onClick={onGoHome}
+          className="flex items-center gap-3 text-left hover:opacity-85 transition-opacity cursor-pointer group"
+          title="Ir a Mi Café"
+          type="button"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#D96B27] to-[#B35216] flex items-center justify-center text-[#141210] shadow-md shadow-[#D96B27]/20 group-hover:scale-105 transition-transform">
             <Coffee className="w-5 h-5 stroke-[2.5]" />
           </div>
           <div>
@@ -28,7 +37,7 @@ export const Header: React.FC = () => {
               {t.gearSetup}
             </p>
           </div>
-        </div>
+        </button>
 
         <div className="flex items-center gap-2">
           <button

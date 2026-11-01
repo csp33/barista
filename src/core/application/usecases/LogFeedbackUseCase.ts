@@ -7,6 +7,7 @@ import { CoffeeSommelierPort } from '../ports/out/CoffeeSommelierPort';
 
 export interface LogFeedbackRequest {
   recipeId: string;
+  coffeeId?: string;
   actualGrindSetting: number;
   actualDoseGrams: number;
   actualYieldGrams: number;
@@ -26,7 +27,9 @@ export class LogFeedbackUseCase {
     feedback: ExtractionFeedback;
     adjustedRecipe: Recipe;
   }> {
-    const coffeeId = request.recipeId.replace('recipe-', '');
+    const rawId = request.coffeeId || request.recipeId;
+    const coffeeId = rawId.replace(/^recipe-/, '').replace(/-\d{13,}$/, '');
+    const canonicalRecipeId = `recipe-${coffeeId}`;
     let currentRecipe = await this.recipeRepo.findByCoffeeId(coffeeId);
     const coffee = this.coffeeRepo ? await this.coffeeRepo.findById(coffeeId) : null;
 
@@ -35,7 +38,7 @@ export class LogFeedbackUseCase {
         currentRecipe = RecipeCalculator.calculateInitial(coffee);
       } else {
         currentRecipe = new Recipe({
-          id: request.recipeId,
+          id: canonicalRecipeId,
           coffeeId,
           grinderId: 'df64-gen-2',
           machineId: 'sage-touch-impress',
@@ -56,7 +59,7 @@ export class LogFeedbackUseCase {
     if (coffee && this.sommelier) {
       const tempFeedback = new ExtractionFeedback({
         id: 'temp',
-        recipeId: request.recipeId,
+        recipeId: canonicalRecipeId,
         actualGrindSetting: request.actualGrindSetting,
         actualDoseGrams: request.actualDoseGrams,
         actualYieldGrams: request.actualYieldGrams,
@@ -69,7 +72,7 @@ export class LogFeedbackUseCase {
 
     const feedback = new ExtractionFeedback({
       id: `feedback-${Date.now()}`,
-      recipeId: request.recipeId,
+      recipeId: canonicalRecipeId,
       actualGrindSetting: request.actualGrindSetting,
       actualDoseGrams: request.actualDoseGrams,
       actualYieldGrams: request.actualYieldGrams,
