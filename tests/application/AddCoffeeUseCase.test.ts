@@ -26,6 +26,7 @@ describe('AddCoffeeUseCase', () => {
       findByRoasterAndName: vi.fn(),
       save: vi.fn(),
       findAll: vi.fn(),
+      delete: vi.fn(),
     };
 
     const mockRecipe = new Recipe({
@@ -48,6 +49,7 @@ describe('AddCoffeeUseCase', () => {
       save: vi.fn(),
       saveFeedback: vi.fn(),
       getFeedbackHistory: vi.fn(),
+      deleteByCoffeeId: vi.fn(),
     };
 
     const mockScraper: RoasterScraperPort = {
@@ -70,6 +72,7 @@ describe('AddCoffeeUseCase', () => {
       findByRoasterAndName: vi.fn(),
       save: vi.fn().mockResolvedValue(undefined),
       findAll: vi.fn(),
+      delete: vi.fn(),
     };
 
     const mockRecipeRepo: RecipeRepositoryPort = {
@@ -77,6 +80,7 @@ describe('AddCoffeeUseCase', () => {
       save: vi.fn().mockResolvedValue(undefined),
       saveFeedback: vi.fn(),
       getFeedbackHistory: vi.fn(),
+      deleteByCoffeeId: vi.fn(),
     };
 
     const mockScraper: RoasterScraperPort = {
