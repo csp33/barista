@@ -28,10 +28,16 @@ export async function POST(request: Request) {
     }
 
     Logger.info('API', 'POST /api/coffees/scan-image - Running vision OCR scanner');
-    const data = await container.visionScanner.scanCoffeeBagImage(base64, mime);
-    Logger.info('API', `Vision scanner result: ${data.name} (${data.roaster})`);
+    const result = await container.extractCoffeeUseCase.execute({
+      imageBase64: base64,
+      mimeType: mime,
+    });
+    Logger.info('API', `Vision scanner result: ${result.coffee.name} (${result.coffee.roaster})`, {
+      hasStory: Boolean(result.coffee.sommelierStory),
+      hasAiRationale: Boolean(result.coffee.aiRationale),
+    });
 
-    const existing = await container.coffeeRepo.findByRoasterAndName(data.roaster, data.name);
+    const existing = await container.coffeeRepo.findByRoasterAndName(result.coffee.roaster, result.coffee.name);
     if (existing) {
       return NextResponse.json(
         {
@@ -44,7 +50,12 @@ export async function POST(request: Request) {
       );
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({
+      success: true,
+      data: result.coffee,
+      recipe: result.recipe,
+      isExisting: result.isExisting,
+    });
   } catch (err) {
     Logger.error('API', 'POST /api/coffees/scan-image failed', err);
     return NextResponse.json(

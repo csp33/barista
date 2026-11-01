@@ -61,7 +61,10 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({ isOpen, onClose,
         });
         const data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.error || (data.isExisting ? t.coffeeAlreadyExists : 'Vision scan failed'));
-        onClose(); onScraped(data.data);
+        setStepIdx(3);
+        await new Promise(r => setTimeout(r, 450));
+        onClose();
+        onScraped(data.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Vision scan failed');
       } finally { setLoading(false); }
@@ -80,7 +83,11 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({ isOpen, onClose,
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || (data.isExisting ? t.coffeeAlreadyExists : 'Failed to extract coffee'));
-      setUrl(''); onClose(); onScraped(data.data);
+      setStepIdx(3);
+      await new Promise(r => setTimeout(r, 450));
+      setUrl('');
+      onClose();
+      onScraped(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Scraping failed');
     } finally { setLoading(false); }

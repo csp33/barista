@@ -1,5 +1,5 @@
 import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
-import { Recipe } from '@/core/domain/recipe/Recipe';
+import { Recipe, AiRationale } from '@/core/domain/recipe/Recipe';
 import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
 import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { RoasterScraperPort } from '../ports/out/RoasterScraperPort';
@@ -9,7 +9,8 @@ import { DuplicateCoffeeError } from '@/core/domain/coffee/DuplicateCoffeeError'
 
 export interface AddCoffeeRequest {
   url?: string;
-  manualData?: Partial<CoffeeProps>;
+  manualData?: Partial<CoffeeProps> & { aiRationale?: AiRationale };
+  aiRationale?: AiRationale;
 }
 
 export interface AddCoffeeResult {
@@ -96,7 +97,11 @@ export class AddCoffeeUseCase {
         id: `coffee-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       });
       let recipe = RecipeCalculator.calculateInitial(coffee);
-      if (this.sommelier) {
+      
+      const precomputedRationale = request.manualData.aiRationale || request.aiRationale;
+      if (precomputedRationale) {
+        recipe = new Recipe({ ...recipe, aiRationale: precomputedRationale });
+      } else if (this.sommelier) {
         try {
           const aiRationale = await this.sommelier.generateRationale(coffee, recipe);
           recipe = new Recipe({ ...recipe, aiRationale });

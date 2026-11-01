@@ -72,6 +72,7 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
     setSaving(true);
     setError(null);
 
+    const coffeeProps = coffee as CoffeeProps & { aiRationale?: unknown };
     const payload = {
       roaster: formData.roaster,
       name: formData.name,
@@ -84,9 +85,11 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
       roastLevel: formData.roastLevel,
       tastingNotes: formData.notesStr.split(',').map(s => s.trim()).filter(Boolean),
       recommendedRestDays: formData.restDays ? parseInt(formData.restDays, 10) : undefined,
-      sourceUrl: (coffee as Coffee).sourceUrl || undefined,
       imageUrl: formData.imageUrl || undefined,
       status: formData.status,
+      sourceUrl: coffeeProps.sourceUrl || undefined,
+      sommelierStory: coffeeProps.sommelierStory || undefined,
+      aiRationale: coffeeProps.aiRationale || undefined,
     };
 
     try {
@@ -144,6 +147,15 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
             </p>
           </div>
         </div>
+
+        {(coffee as CoffeeProps).sommelierStory && (
+          <div className="mb-4 bg-[#130F0D] border border-[#2E241D] border-l-2 border-l-[#D96B27] rounded-xl p-3 text-xs text-[#D8C7B9] leading-relaxed italic">
+            <span className="font-serif not-italic font-bold text-[#E29D52] block text-[10px] uppercase tracking-wider mb-0.5 font-metric">
+              Notas de Sommelier & Terroir (IA)
+            </span>
+            &ldquo;{(coffee as CoffeeProps).sommelierStory}&rdquo;
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <CoffeeFormFields formData={formData} onChange={handleChange} />

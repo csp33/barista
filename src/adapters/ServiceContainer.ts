@@ -6,6 +6,7 @@ import { RoasterScraperAdapter } from './out/scraping/RoasterScraperAdapter';
 import { OpenAiVisionScannerAdapter } from './out/ai/OpenAiVisionScannerAdapter';
 import { OpenAiSommelierAdapter } from './out/ai/OpenAiSommelierAdapter';
 import { AddCoffeeUseCase } from '@/core/application/usecases/AddCoffeeUseCase';
+import { ExtractCoffeeUseCase } from '@/core/application/usecases/ExtractCoffeeUseCase';
 import { LogFeedbackUseCase } from '@/core/application/usecases/LogFeedbackUseCase';
 import { GetCoffeeStashUseCase } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { UpdateCoffeeUseCase } from '@/core/application/usecases/UpdateCoffeeUseCase';
@@ -91,6 +92,7 @@ class ServiceContainer {
   readonly sommelier: OpenAiSommelierAdapter;
 
   readonly addCoffeeUseCase: AddCoffeeUseCase;
+  readonly extractCoffeeUseCase: ExtractCoffeeUseCase;
   readonly logFeedbackUseCase: LogFeedbackUseCase;
   readonly getCoffeeStashUseCase: GetCoffeeStashUseCase;
   readonly updateCoffeeUseCase: UpdateCoffeeUseCase;
@@ -112,6 +114,13 @@ class ServiceContainer {
       this.coffeeRepo,
       this.recipeRepo,
       this.scraper,
+      this.sommelier
+    );
+    this.extractCoffeeUseCase = new ExtractCoffeeUseCase(
+      this.coffeeRepo,
+      this.recipeRepo,
+      this.scraper,
+      this.visionScanner,
       this.sommelier
     );
     this.logFeedbackUseCase = new LogFeedbackUseCase(
