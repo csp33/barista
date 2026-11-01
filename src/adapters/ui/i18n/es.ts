@@ -63,7 +63,7 @@ export const es: Translations = {
     dark: 'Oscuro',
   },
   baristaTips: {
-    wdt: 'Usar técnica WDT para desapelmazar antes de accionar la palanca Impress',
+    wdt: 'Desapelmazar con técnica WDT y prensar a nivel con tamper manual en la cesta de 54mm',
     naturals: 'Los naturales generan más finos: moler un punto más grueso para evitar atascos',
     restWindow: 'Reposo óptimo: {days} días tras la fecha de tueste',
     tunedFor: 'Receta calibrada para {roaster} - {name}',

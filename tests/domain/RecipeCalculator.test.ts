@@ -19,9 +19,9 @@ describe('RecipeCalculator Domain Service', () => {
 
     const recipe = RecipeCalculator.calculateInitial(ethiopia);
 
-    expect(recipe.doseGrams).toBe(18.0);
+    expect(recipe.doseGrams).toBe(18.5);
     expect(recipe.machineTemperature).toBe('very_high');
-    expect(recipe.yieldGrams).toBe(41);
+    expect(recipe.yieldGrams).toBe(43);
     expect(recipe.ratio).toBe('1:2.3');
     // Base 12 - 2.0 (light) - 1.0 (high altitude > 1800m) = 9.0
     expect(recipe.grindSetting).toBe(9.0);
@@ -68,6 +68,7 @@ describe('RecipeCalculator Domain Service', () => {
 
     // Monsooned beans lose density and require fine grind to build 9 bar resistance
     expect(recipe.grindSetting).toBe(5.5);
+    expect(recipe.doseGrams).toBe(16.5);
   });
 
   it('adjusts recipe when coffee is under-extracted (sour)', () => {

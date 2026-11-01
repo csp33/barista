@@ -63,7 +63,7 @@ export const en: Translations = {
     dark: 'Dark',
   },
   baristaTips: {
-    wdt: 'Use WDT to de-clump before pulling the Impress tamp lever',
+    wdt: 'De-clump with WDT needles and tamp level by hand in the 54mm basket',
     naturals: 'Naturals produce fines: grind slightly coarser to prevent stalling',
     restWindow: 'Ideal rest window: {days} days after roast',
     tunedFor: 'Recipe tuned for {roaster} - {name}',

@@ -14,16 +14,26 @@ export class RecipeCalculator {
     grinder: Grinder = DF64_GEN_2,
     machine: EspressoMachine = SAGE_BARISTA_TOUCH_IMPRESS
   ): Recipe {
-    const doseGrams = machine.standardDoseGrams;
-    const { yieldGrams, ratio, temperature } = this.getRoastParams(coffee);
-
-    let grindSetting = grinder.defaultEspressoBaseline; // Base 12.0
-
     const coffeeNameLower = coffee.name.toLowerCase();
     const isMonsooned =
       coffeeNameLower.includes('monsooned') ||
       coffeeNameLower.includes('malabar') ||
-      coffee.originCountry.toLowerCase().includes('india') && coffeeNameLower.includes('monsoon');
+      (coffee.originCountry.toLowerCase().includes('india') && coffeeNameLower.includes('monsoon'));
+
+    // Dynamic dose based on bean density & roast level in 54mm basket
+    let doseGrams = machine.standardDoseGrams; // 18.0 base
+    if (isMonsooned) {
+      doseGrams = 16.5; // Monsooned beans expand heavily; 16.5g gives optimal headspace
+    } else if (coffee.roastLevel === 'light' || (coffee.altitudeMasl && coffee.altitudeMasl >= 1800)) {
+      doseGrams = 18.5; // Dense beans occupy less volume; 18.5g fills 54mm basket
+    } else if (coffee.roastLevel === 'medium_dark' || coffee.roastLevel === 'dark') {
+      doseGrams = 17.0; // Dark roasts expand; 17g prevents contact with shower screen
+    }
+
+    const { ratioMultiplier, ratio, temperature } = this.getRoastParams(coffee);
+    const yieldGrams = Math.round(doseGrams * ratioMultiplier);
+
+    let grindSetting = grinder.defaultEspressoBaseline; // Base 12.0
 
     if (isMonsooned) {
       // Monsooned coffees expand and lose density; require grinding much finer
@@ -52,14 +62,12 @@ export class RecipeCalculator {
     ];
 
     if (isMonsooned) {
-      notes.push('Monsooned Malabar: low bean density requires fine grind (5-6) for 9 bar');
+      notes.push('Monsooned Malabar: baja densidad y grano expandido: dosis reducida a 16.5g y molienda fina para 9 bar');
     } else if (coffee.process === 'natural' || coffee.process === 'anaerobic') {
       notes.push('Naturals produce fines: grind slightly coarser to prevent stalling');
     }
 
-    if (machine.hasAssistedTamping) {
-      notes.push('Use WDT to de-clump before pulling the Impress tamp lever');
-    }
+    notes.push('Tamp manual: desapelmazar con agujas WDT y prensar a nivel con tamper manual para sellar la cesta de 54mm');
 
     return new Recipe({
       id: `recipe-${coffee.id}`,
@@ -125,20 +133,20 @@ export class RecipeCalculator {
   }
 
   private static getRoastParams(coffee: Coffee): {
-    yieldGrams: number;
+    ratioMultiplier: number;
     ratio: string;
     temperature: SageTemperatureSetting;
   } {
     switch (coffee.roastLevel) {
       case 'light':
-        return { yieldGrams: 41, ratio: '1:2.3', temperature: 'very_high' };
+        return { ratioMultiplier: 2.3, ratio: '1:2.3', temperature: 'very_high' };
       case 'medium_light':
-        return { yieldGrams: 39, ratio: '1:2.2', temperature: 'high' };
+        return { ratioMultiplier: 2.2, ratio: '1:2.2', temperature: 'high' };
       case 'medium':
-        return { yieldGrams: 36, ratio: '1:2.0', temperature: 'normal' };
+        return { ratioMultiplier: 2.0, ratio: '1:2.0', temperature: 'normal' };
       case 'medium_dark':
       case 'dark':
-        return { yieldGrams: 32, ratio: '1:1.8', temperature: 'low' };
+        return { ratioMultiplier: 1.8, ratio: '1:1.8', temperature: 'low' };
     }
   }
 
