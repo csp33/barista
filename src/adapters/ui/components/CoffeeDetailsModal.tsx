@@ -40,6 +40,7 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
   });
 
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Sync state whenever coffee changes
   useEffect(() => {
@@ -69,6 +70,7 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setError(null);
 
     const payload = {
       roaster: formData.roaster,
@@ -106,7 +108,7 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
       onSuccess();
       onClose();
     } catch {
-      alert('Error saving coffee data');
+      setError('Error al guardar datos del café');
     } finally {
       setSaving(false);
     }
@@ -138,6 +140,12 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <CoffeeFormFields formData={formData} onChange={handleChange} />
+
+          {error && (
+            <p className="text-xs text-red-400 bg-red-950/40 border border-red-800 p-2.5 rounded-xl">
+              {error}
+            </p>
+          )}
 
           <div className="flex gap-2.5 pt-2">
             <button
