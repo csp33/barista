@@ -91,4 +91,5 @@ export const en: Translations = {
   moveToHistory: 'Archive',
   moveToActive: 'Put on Bar',
   extractionsCount: '{count} shots pulled',
+  backToStash: 'Back to My Stash',
 };

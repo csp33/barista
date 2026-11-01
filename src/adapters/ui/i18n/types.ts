@@ -78,4 +78,5 @@ export interface Translations {
   moveToHistory: string;
   moveToActive: string;
   extractionsCount: string;
+  backToStash: string;
 }

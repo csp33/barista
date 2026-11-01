@@ -21,15 +21,15 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   const tabs: { id: NavTab; label: string; icon: React.ReactNode; badge?: number }[] = [
     {
-      id: 'bar',
-      label: t.navBar,
-      icon: <Coffee className="w-5 h-5 stroke-[2.2]" />,
-    },
-    {
       id: 'stash',
       label: t.navStash,
       icon: <Layers className="w-5 h-5 stroke-[2.2]" />,
       badge: activeCount,
+    },
+    {
+      id: 'bar',
+      label: t.navBar,
+      icon: <Coffee className="w-5 h-5 stroke-[2.2]" />,
     },
     {
       id: 'gear',

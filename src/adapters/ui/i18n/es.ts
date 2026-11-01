@@ -91,4 +91,5 @@ export const es: Translations = {
   moveToHistory: 'Archivar',
   moveToActive: 'Poner en Uso',
   extractionsCount: '{count} extracciones',
+  backToStash: 'Volver a Mi Café',
 };

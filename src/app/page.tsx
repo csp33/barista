@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { LanguageProvider } from '@/adapters/ui/i18n/LanguageContext';
+import { LanguageProvider, useTranslation } from '@/adapters/ui/i18n/LanguageContext';
 import { Header } from '@/adapters/ui/components/Header';
 import { DialInCard } from '@/adapters/ui/components/DialInCard';
 import { AddCoffeeModal } from '@/adapters/ui/components/AddCoffeeModal';
@@ -12,10 +12,11 @@ import { CoffeeStashManager } from '@/adapters/ui/components/CoffeeStashManager'
 import { EquipmentView } from '@/adapters/ui/components/EquipmentView';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
-import { Loader2, Plus, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, ArrowLeft } from 'lucide-react';
 
 function BaristaDashboard() {
-  const [activeTab, setActiveTab] = useState<NavTab>('bar');
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<NavTab>('stash');
   const [items, setItems] = useState<StashItemDTO[]>([]);
   const [activeCoffeeId, setActiveCoffeeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,15 +66,9 @@ function BaristaDashboard() {
     }
   };
 
-  const handleScraped = (scraped: Partial<CoffeeProps>) => {
-    setEditingCoffee(scraped);
-    setIsNewCoffeeReview(true);
-  };
-
-  const handleOpenEdit = (coffee: Coffee) => {
-    setEditingCoffee(coffee);
-    setIsNewCoffeeReview(false);
-  };
+  const handleScraped = (s: Partial<CoffeeProps>) => { setEditingCoffee(s); setIsNewCoffeeReview(true); };
+  const handleOpenEdit = (c: Coffee) => { setEditingCoffee(c); setIsNewCoffeeReview(false); };
+  const handleSelectBrew = (id: string) => { setActiveCoffeeId(id); setActiveTab('bar'); };
 
   return (
     <div className="min-h-screen bg-[#14100D] text-[#F7F2EB] flex flex-col">
@@ -91,7 +86,20 @@ function BaristaDashboard() {
           <>
             {/* TAB 1: BARISTA / EXTRACTION */}
             {activeTab === 'bar' && (
-              <div className="px-4 py-4 pb-24 space-y-4">
+              <div className="px-4 py-3 pb-24 space-y-3">
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => setActiveTab('stash')}
+                    className="flex items-center gap-1.5 text-xs text-[#E29D52] hover:text-[#F7F2EB] font-medium transition-colors py-1.5 px-3 rounded-xl bg-[#1C1612] border border-[#3A2D23] active:scale-95"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5 text-[#D96B27]" />
+                    <span>{t.backToStash}</span>
+                  </button>
+                  <span className="text-[10px] font-metric text-[#8C7B6E] bg-[#14100D] px-2.5 py-1 rounded-full border border-[#2B211A] uppercase">
+                    Sage 54mm + DF64 II
+                  </span>
+                </div>
+
                 {activeItem ? (
                   <DialInCard
                     item={activeItem}
@@ -125,10 +133,7 @@ function BaristaDashboard() {
               <CoffeeStashManager
                 items={items}
                 activeId={activeCoffeeId}
-                onSelectForBrew={(id) => {
-                  setActiveCoffeeId(id);
-                  setActiveTab('bar');
-                }}
+                onSelectForBrew={handleSelectBrew}
                 onEditCoffee={handleOpenEdit}
                 onToggleStatus={handleToggleStatus}
                 onOpenAddModal={() => setIsAddModalOpen(true)}
@@ -141,11 +146,7 @@ function BaristaDashboard() {
         )}
       </main>
 
-      <BottomNav
-        activeTab={activeTab}
-        onChangeTab={setActiveTab}
-        activeCount={activeCount}
-      />
+      <BottomNav activeTab={activeTab} onChangeTab={setActiveTab} activeCount={activeCount} />
 
       <AddCoffeeModal
         isOpen={isAddModalOpen}
@@ -159,10 +160,7 @@ function BaristaDashboard() {
           isOpen={Boolean(editingCoffee)}
           coffee={editingCoffee}
           isNew={isNewCoffeeReview}
-          onClose={() => {
-            setEditingCoffee(null);
-            setIsNewCoffeeReview(false);
-          }}
+          onClose={() => { setEditingCoffee(null); setIsNewCoffeeReview(false); }}
           onSuccess={fetchStash}
         />
       )}

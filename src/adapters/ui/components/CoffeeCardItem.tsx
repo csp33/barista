@@ -34,7 +34,11 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
           : 'border-[#332820] hover:border-[#4A3B2F]'
       }`}
     >
-      <div className="flex gap-3.5 p-3.5">
+      <div
+        onClick={() => onSelectForBrew(c.id)}
+        className="flex gap-3.5 p-3.5 cursor-pointer hover:bg-[#201915] transition-colors"
+        title={t.selectForBrew}
+      >
         <div className="w-20 h-24 rounded-xl bg-[#120F0D] border border-[#2D231C] overflow-hidden flex-shrink-0 relative">
           {c.imageUrl ? (
             <img src={c.imageUrl} alt={c.name} className="w-full h-full object-cover" />
