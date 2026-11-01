@@ -1,7 +1,7 @@
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Recipe } from '@/core/domain/recipe/Recipe';
-import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
-import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { Recipe } from '@/domain/recipe/Recipe';
+import { ExtractionFeedback } from '@/domain/recipe/ExtractionFeedback';
+import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { UserProfileRepositoryPort } from '../ports/out/UserProfileRepositoryPort';

@@ -1,5 +1,5 @@
-import { UserProfile, UserRole } from '@/core/domain/user/UserProfile';
-import { UserProfileRepositoryPort } from '@/core/application/ports/out/UserProfileRepositoryPort';
+import { UserProfile, UserRole } from '@/domain/user/UserProfile';
+import { UserProfileRepositoryPort } from '@/application/ports/out/UserProfileRepositoryPort';
 import { pool, initDatabase } from '../db/postgres';
 
 export class PostgresUserProfileRepository implements UserProfileRepositoryPort {

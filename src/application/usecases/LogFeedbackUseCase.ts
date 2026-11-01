@@ -1,6 +1,6 @@
-import { Recipe } from '@/core/domain/recipe/Recipe';
-import { ExtractionFeedback, TasteProfile } from '@/core/domain/recipe/ExtractionFeedback';
-import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
+import { Recipe } from '@/domain/recipe/Recipe';
+import { ExtractionFeedback, TasteProfile } from '@/domain/recipe/ExtractionFeedback';
+import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { CoffeeSommelierPort } from '../ports/out/CoffeeSommelierPort';

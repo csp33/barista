@@ -1,8 +1,8 @@
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Recipe, AiRationale } from '@/core/domain/recipe/Recipe';
-import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
-import { Grinder } from '@/core/domain/equipment/Grinder';
-import { EspressoMachine } from '@/core/domain/equipment/EspressoMachine';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { Recipe, AiRationale } from '@/domain/recipe/Recipe';
+import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
+import { Grinder } from '@/domain/equipment/Grinder';
+import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
 import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { RoasterScraperPort, ScrapedCoffeeData } from '../ports/out/RoasterScraperPort';

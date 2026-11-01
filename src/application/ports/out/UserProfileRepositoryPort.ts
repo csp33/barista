@@ -1,4 +1,4 @@
-import { UserProfile } from '@/core/domain/user/UserProfile';
+import { UserProfile } from '@/domain/user/UserProfile';
 
 export interface UserProfileRepositoryPort {
   findAll(): Promise<UserProfile[]>;

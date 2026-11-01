@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { LogFeedbackUseCase } from '@/core/application/usecases/LogFeedbackUseCase';
-import { InMemoryRecipeRepository } from '@/infrastructure/out/persistence/memory/InMemoryRecipeRepository';
-import { InMemoryCoffeeRepository } from '@/infrastructure/out/persistence/memory/InMemoryCoffeeRepository';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
+import { LogFeedbackUseCase } from '@/application/usecases/LogFeedbackUseCase';
+import { MockRecipeRepository as InMemoryRecipeRepository } from '../mocks/MockRecipeRepository';
+import { MockCoffeeRepository as InMemoryCoffeeRepository } from '../mocks/MockCoffeeRepository';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 
 describe('LogFeedbackUseCase', () => {
   it('repeatedly recalibrates grind setting on successive channeling feedbacks', async () => {

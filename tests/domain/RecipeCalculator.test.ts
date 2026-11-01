@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
-import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
-import { Grinder } from '@/core/domain/equipment/Grinder';
-import { EspressoMachine } from '@/core/domain/equipment/EspressoMachine';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
+import { ExtractionFeedback } from '@/domain/recipe/ExtractionFeedback';
+import { Grinder } from '@/domain/equipment/Grinder';
+import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
 
 const testGrinder: Grinder = {
   id: 'df64-gen-2',
@@ -177,6 +177,7 @@ describe('RecipeCalculator Domain Service', () => {
       variety: 'Kent',
       process: 'washed',
       roastLevel: 'medium',
+      tastingNotes: ['cacao', 'spices'],
     });
 
     const recipe = RecipeCalculator.calculateInitial(coffee, k6Grinder, testMachine, testUserId);

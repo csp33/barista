@@ -1,15 +1,15 @@
-import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
-import { Recipe, AiRationale } from '@/core/domain/recipe/Recipe';
-import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
-import { Grinder } from '@/core/domain/equipment/Grinder';
-import { EspressoMachine } from '@/core/domain/equipment/EspressoMachine';
+import { Coffee, CoffeeProps } from '@/domain/coffee/Coffee';
+import { Recipe, AiRationale } from '@/domain/recipe/Recipe';
+import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
+import { Grinder } from '@/domain/equipment/Grinder';
+import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
 import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { RoasterScraperPort } from '../ports/out/RoasterScraperPort';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { CoffeeSommelierPort } from '../ports/out/CoffeeSommelierPort';
 import { UserProfileRepositoryPort } from '../ports/out/UserProfileRepositoryPort';
 import { EquipmentRepositoryPort } from '../ports/out/EquipmentRepositoryPort';
-import { DuplicateCoffeeError } from '@/core/domain/coffee/DuplicateCoffeeError';
+import { DuplicateCoffeeError } from '@/domain/coffee/DuplicateCoffeeError';
 
 export interface AddCoffeeRequest {
   url?: string;

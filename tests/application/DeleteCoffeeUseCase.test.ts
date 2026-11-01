@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Coffee } from '../../src/core/domain/coffee/Coffee';
-import { RecipeCalculator } from '../../src/core/domain/recipe/RecipeCalculator';
-import { InMemoryCoffeeRepository } from '../../src/infrastructure/out/persistence/memory/InMemoryCoffeeRepository';
-import { InMemoryRecipeRepository } from '../../src/infrastructure/out/persistence/memory/InMemoryRecipeRepository';
-import { DeleteCoffeeUseCase } from '../../src/core/application/usecases/DeleteCoffeeUseCase';
+import { Coffee } from '../../src/domain/coffee/Coffee';
+import { RecipeCalculator } from '../../src/domain/recipe/RecipeCalculator';
+import { InMemoryCoffeeRepository } from '../mocks/MockCoffeeRepository';
+import { InMemoryRecipeRepository } from '../mocks/MockRecipeRepository';
+import { DeleteCoffeeUseCase } from '../../src/application/usecases/DeleteCoffeeUseCase';
 
 describe('DeleteCoffeeUseCase', () => {
   let coffeeRepo: InMemoryCoffeeRepository;

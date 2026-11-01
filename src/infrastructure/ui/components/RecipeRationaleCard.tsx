@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Recipe } from '@/core/domain/recipe/Recipe';
-import { Grinder } from '@/core/domain/equipment/Grinder';
-import { EspressoMachine } from '@/core/domain/equipment/EspressoMachine';
-import { RecipeExplainer } from '@/core/domain/recipe/RecipeExplainer';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { Recipe } from '@/domain/recipe/Recipe';
+import { Grinder } from '@/domain/equipment/Grinder';
+import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
+import { RecipeExplainer } from '@/domain/recipe/RecipeExplainer';
 import {
   findPresetGrinderById,
   findPresetMachineById,

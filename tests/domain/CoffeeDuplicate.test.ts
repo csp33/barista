@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { DuplicateCoffeeError } from '@/core/domain/coffee/DuplicateCoffeeError';
-import { InMemoryCoffeeRepository } from '@/infrastructure/out/persistence/memory/InMemoryCoffeeRepository';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { DuplicateCoffeeError } from '@/domain/coffee/DuplicateCoffeeError';
+import { MockCoffeeRepository as InMemoryCoffeeRepository } from '../mocks/MockCoffeeRepository';
 
 describe('Coffee Duplicate Normalization & Repository Matching', () => {
   it('correctly matches coffees despite differences in "Café" prefix, accents and casing', () => {

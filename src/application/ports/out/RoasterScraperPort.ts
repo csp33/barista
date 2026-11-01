@@ -1,5 +1,5 @@
-import { CoffeeProps } from '@/core/domain/coffee/Coffee';
-import { AiRationale } from '@/core/domain/recipe/Recipe';
+import { CoffeeProps } from '@/domain/coffee/Coffee';
+import { AiRationale } from '@/domain/recipe/Recipe';
 
 export interface ScrapedCoffeeData {
   roaster: string;

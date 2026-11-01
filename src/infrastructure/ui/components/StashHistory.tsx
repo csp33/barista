@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
+import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import { History, CheckCircle2, ChevronRight } from 'lucide-react';
 
 interface StashHistoryProps {

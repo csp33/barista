@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
-import { INITIAL_PROFILES, INITIAL_COFFEES } from '../out/persistence/memory/InitialCoffeesSeed';
-import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
+import { INITIAL_PROFILES, INITIAL_COFFEES } from './seeds';
+import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 import { PRESET_GRINDERS, PRESET_MACHINES } from '../equipment/EquipmentCatalogRepository';
 
 const connectionString =

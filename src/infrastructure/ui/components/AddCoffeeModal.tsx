@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { CoffeeProps } from '@/core/domain/coffee/Coffee';
+import { CoffeeProps } from '@/domain/coffee/Coffee';
 import { X, Link2, Sparkles, Loader2, Camera } from 'lucide-react';
 
 interface AddCoffeeModalProps {

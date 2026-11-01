@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
+import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import { Sparkles, Plus, Edit2 } from 'lucide-react';
 
 interface ActiveShelfProps {

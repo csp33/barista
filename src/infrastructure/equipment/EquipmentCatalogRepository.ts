@@ -1,6 +1,6 @@
-import { Grinder } from '@/core/domain/equipment/Grinder';
-import { EspressoMachine } from '@/core/domain/equipment/EspressoMachine';
-import { EquipmentRepositoryPort } from '@/core/application/ports/out/EquipmentRepositoryPort';
+import { Grinder } from '@/domain/equipment/Grinder';
+import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
+import { EquipmentRepositoryPort } from '@/application/ports/out/EquipmentRepositoryPort';
 
 export const PRESET_GRINDERS: Grinder[] = [
   { id: 'df64-gen-2', brand: 'DF64', model: 'Gen 2', burrSizeMm: 64, burrType: 'flat', minDial: 0, maxDial: 90, defaultEspressoBaseline: 12.0 },

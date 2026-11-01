@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { container } from '@/infrastructure/ServiceContainer';
 import { Logger } from '@/infrastructure/out/logger/Logger';
-import { DuplicateCoffeeError } from '@/core/domain/coffee/DuplicateCoffeeError';
+import { DuplicateCoffeeError } from '@/domain/coffee/DuplicateCoffeeError';
 
 export async function GET(request: Request) {
   const url = new URL(request.url);

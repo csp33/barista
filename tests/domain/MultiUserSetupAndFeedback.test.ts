@@ -1,18 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { UserProfile } from '@/core/domain/user/UserProfile';
-import { InMemoryCoffeeRepository } from '@/infrastructure/out/persistence/memory/InMemoryCoffeeRepository';
-import { InMemoryRecipeRepository } from '@/infrastructure/out/persistence/memory/InMemoryRecipeRepository';
-import { InMemoryUserProfileRepository } from '@/infrastructure/out/persistence/memory/InMemoryUserProfileRepository';
-import { InMemoryEquipmentRepository } from '@/infrastructure/out/persistence/memory/InMemoryEquipmentRepository';
-import { GetCoffeeStashUseCase } from '@/core/application/usecases/GetCoffeeStashUseCase';
-import { LogFeedbackUseCase } from '@/core/application/usecases/LogFeedbackUseCase';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { UserProfile } from '@/domain/user/UserProfile';
+import { MockCoffeeRepository as InMemoryCoffeeRepository } from '../mocks/MockCoffeeRepository';
+import { MockRecipeRepository as InMemoryRecipeRepository } from '../mocks/MockRecipeRepository';
+import { MockUserProfileRepository as InMemoryUserProfileRepository } from '../mocks/MockUserProfileRepository';
+import { EquipmentCatalogRepository } from '@/infrastructure/equipment/EquipmentCatalogRepository';
+import { GetCoffeeStashUseCase } from '@/application/usecases/GetCoffeeStashUseCase';
+import { LogFeedbackUseCase } from '@/application/usecases/LogFeedbackUseCase';
 
 describe('Multiuser Equipment, Recipe & Feedback Isolation', () => {
   let coffeeRepo: InMemoryCoffeeRepository;
   let recipeRepo: InMemoryRecipeRepository;
   let userRepo: InMemoryUserProfileRepository;
-  let equipmentRepo: InMemoryEquipmentRepository;
+  let equipmentRepo: EquipmentCatalogRepository;
   let getStashUseCase: GetCoffeeStashUseCase;
   let logFeedbackUseCase: LogFeedbackUseCase;
 
@@ -32,7 +32,7 @@ describe('Multiuser Equipment, Recipe & Feedback Isolation', () => {
   beforeEach(async () => {
     coffeeRepo = new InMemoryCoffeeRepository([coffee]);
     recipeRepo = new InMemoryRecipeRepository();
-    equipmentRepo = new InMemoryEquipmentRepository();
+    equipmentRepo = new EquipmentCatalogRepository();
     userRepo = new InMemoryUserProfileRepository([
       new UserProfile({
         id: 'carlos',

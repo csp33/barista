@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { ExtractCoffeeUseCase } from '@/core/application/usecases/ExtractCoffeeUseCase';
-import { CoffeeRepositoryPort } from '@/core/application/ports/out/CoffeeRepositoryPort';
-import { RecipeRepositoryPort } from '@/core/application/ports/out/RecipeRepositoryPort';
-import { RoasterScraperPort } from '@/core/application/ports/out/RoasterScraperPort';
-import { CoffeeSommelierPort } from '@/core/application/ports/out/CoffeeSommelierPort';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Recipe } from '@/core/domain/recipe/Recipe';
+import { ExtractCoffeeUseCase } from '@/application/usecases/ExtractCoffeeUseCase';
+import { CoffeeRepositoryPort } from '@/application/ports/out/CoffeeRepositoryPort';
+import { RecipeRepositoryPort } from '@/application/ports/out/RecipeRepositoryPort';
+import { RoasterScraperPort } from '@/application/ports/out/RoasterScraperPort';
+import { CoffeeSommelierPort } from '@/application/ports/out/CoffeeSommelierPort';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { Recipe } from '@/domain/recipe/Recipe';
 
 describe('ExtractCoffeeUseCase', () => {
   it('returns existing coffee and recipe when URL is already in database', async () => {
@@ -157,7 +157,7 @@ describe('ExtractCoffeeUseCase', () => {
       generateRationale: vi.fn(),
     };
 
-    const { AddCoffeeUseCase } = await import('@/core/application/usecases/AddCoffeeUseCase');
+    const { AddCoffeeUseCase } = await import('@/application/usecases/AddCoffeeUseCase');
     const addUseCase = new AddCoffeeUseCase(
       mockCoffeeRepo,
       mockRecipeRepo,

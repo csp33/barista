@@ -1,7 +1,7 @@
-import { Recipe, AiRationale } from '@/core/domain/recipe/Recipe';
-import { ExtractionFeedback, TasteProfile } from '@/core/domain/recipe/ExtractionFeedback';
-import { SageTemperatureSetting } from '@/core/domain/equipment/EspressoMachine';
-import { RecipeRepositoryPort } from '@/core/application/ports/out/RecipeRepositoryPort';
+import { Recipe, AiRationale } from '@/domain/recipe/Recipe';
+import { ExtractionFeedback, TasteProfile } from '@/domain/recipe/ExtractionFeedback';
+import { SageTemperatureSetting } from '@/domain/equipment/EspressoMachine';
+import { RecipeRepositoryPort } from '@/application/ports/out/RecipeRepositoryPort';
 import { pool, initDatabase } from '../db/postgres';
 
 export class PostgresRecipeRepository implements RecipeRepositoryPort {

@@ -1,5 +1,5 @@
-import { ScrapedCoffeeData } from '@/core/application/ports/out/RoasterScraperPort';
-import { CoffeeProps } from '@/core/domain/coffee/Coffee';
+import { ScrapedCoffeeData } from '@/application/ports/out/RoasterScraperPort';
+import { CoffeeProps } from '@/domain/coffee/Coffee';
 
 export class HeuristicParser {
   static parse(html: string, url: string, domain: string): ScrapedCoffeeData {

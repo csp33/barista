@@ -1,8 +1,8 @@
-import { CoffeeSommelierPort } from '@/core/application/ports/out/CoffeeSommelierPort';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Recipe, AiRationale } from '@/core/domain/recipe/Recipe';
-import { RecipeExplainer } from '@/core/domain/recipe/RecipeExplainer';
-import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
+import { CoffeeSommelierPort } from '@/application/ports/out/CoffeeSommelierPort';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { Recipe, AiRationale } from '@/domain/recipe/Recipe';
+import { RecipeExplainer } from '@/domain/recipe/RecipeExplainer';
+import { ExtractionFeedback } from '@/domain/recipe/ExtractionFeedback';
 import { Logger } from '../logger/Logger';
 
 export class OpenAiSommelierAdapter implements CoffeeSommelierPort {

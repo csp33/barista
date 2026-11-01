@@ -1,5 +1,5 @@
-import { CoffeeVisionScannerPort } from '@/core/application/ports/out/CoffeeVisionScannerPort';
-import { ScrapedCoffeeData } from '@/core/application/ports/out/RoasterScraperPort';
+import { CoffeeVisionScannerPort } from '@/application/ports/out/CoffeeVisionScannerPort';
+import { ScrapedCoffeeData } from '@/application/ports/out/RoasterScraperPort';
 import { Logger } from '../logger/Logger';
 
 export class OpenAiVisionScannerAdapter implements CoffeeVisionScannerPort {

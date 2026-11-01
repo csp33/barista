@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { AddCoffeeUseCase } from '@/core/application/usecases/AddCoffeeUseCase';
-import { CoffeeRepositoryPort } from '@/core/application/ports/out/CoffeeRepositoryPort';
-import { RecipeRepositoryPort } from '@/core/application/ports/out/RecipeRepositoryPort';
-import { RoasterScraperPort } from '@/core/application/ports/out/RoasterScraperPort';
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Recipe } from '@/core/domain/recipe/Recipe';
-import { DuplicateCoffeeError } from '@/core/domain/coffee/DuplicateCoffeeError';
+import { AddCoffeeUseCase } from '@/application/usecases/AddCoffeeUseCase';
+import { CoffeeRepositoryPort } from '@/application/ports/out/CoffeeRepositoryPort';
+import { RecipeRepositoryPort } from '@/application/ports/out/RecipeRepositoryPort';
+import { RoasterScraperPort } from '@/application/ports/out/RoasterScraperPort';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { Recipe } from '@/domain/recipe/Recipe';
+import { DuplicateCoffeeError } from '@/domain/coffee/DuplicateCoffeeError';
 
 describe('AddCoffeeUseCase', () => {
   it('returns cached coffee and recipe when URL already exists in database', async () => {

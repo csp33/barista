@@ -58,7 +58,7 @@ describe('Clean & Hexagonal Architecture Enforcement', () => {
   });
 
   it('enforces Domain layer purity (no application, infrastructure, or framework imports)', () => {
-    const domainDir = path.join(SRC_DIR, 'core/domain');
+    const domainDir = path.join(SRC_DIR, 'domain');
     const domainFiles = getAllFiles(domainDir);
     const violations: { file: string; illegalImport: string }[] = [];
 
@@ -68,7 +68,7 @@ describe('Clean & Hexagonal Architecture Enforcement', () => {
       /@\/adapters/,
       /infrastructure/,
       /@\/infrastructure/,
-      /@\/core\/application/,
+      /@\/application/,
       /^react$/,
       /^next/,
       /@prisma\/client/,
@@ -95,7 +95,7 @@ describe('Clean & Hexagonal Architecture Enforcement', () => {
   });
 
   it('enforces Application layer purity (no infrastructure, React, or framework imports)', () => {
-    const appDir = path.join(SRC_DIR, 'core/application');
+    const appDir = path.join(SRC_DIR, 'application');
     const appFiles = getAllFiles(appDir);
     const violations: { file: string; illegalImport: string }[] = [];
 

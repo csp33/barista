@@ -17,14 +17,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## 2. Hexagonal Architecture (Ports and Adapters)
 Directory boundaries are strictly enforced by automated architecture tests (`npm run test:arch`):
 
-- `src/core/domain/`:
+- `src/domain/`:
   - Contains entities, value objects, domain errors, and pure business logic.
-  - **Zero external dependencies**: Must NEVER import from `core/application`, `infrastructure`, React, Next.js, or Prisma.
-- `src/core/application/`:
+  - **Zero external dependencies**: Must NEVER import from `application`, `infrastructure`, React, Next.js, or Prisma.
+- `src/application/`:
   - Contains use cases and ports (interfaces):
     - `ports/in/`: Primary/Driver ports (use cases).
     - `ports/out/`: Secondary/Driven ports (repository interfaces, scraper interfaces, LLM extractor interfaces).
-  - Can only import from `core/domain` and other application ports.
+  - Can only import from `domain` and other application ports.
   - Must NEVER import from `infrastructure`, React, Next.js, or Prisma.
 - `src/infrastructure/`:
   - `in/`: Controllers, API Route Handlers, UI components, hooks.

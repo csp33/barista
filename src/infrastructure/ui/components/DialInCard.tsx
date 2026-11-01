@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
+import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import { Df64DialGauge } from './Df64DialGauge';
 import { SageTempSelector } from './SageTempSelector';
 import { RecipeRationaleCard } from './RecipeRationaleCard';

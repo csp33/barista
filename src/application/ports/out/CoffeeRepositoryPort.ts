@@ -1,4 +1,4 @@
-import { Coffee } from '@/core/domain/coffee/Coffee';
+import { Coffee } from '@/domain/coffee/Coffee';
 
 export interface CoffeeRepositoryPort {
   findById(id: string): Promise<Coffee | null>;

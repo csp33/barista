@@ -1,5 +1,5 @@
-import { Recipe } from '@/core/domain/recipe/Recipe';
-import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
+import { Recipe } from '@/domain/recipe/Recipe';
+import { ExtractionFeedback } from '@/domain/recipe/ExtractionFeedback';
 
 export interface RecipeRepositoryPort {
   findByCoffeeId(coffeeId: string, userId?: string): Promise<Recipe | null>;

@@ -1,8 +1,8 @@
-import { Recipe } from '@/core/domain/recipe/Recipe';
-import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
-import { RecipeRepositoryPort } from '@/core/application/ports/out/RecipeRepositoryPort';
+import { Recipe } from '@/domain/recipe/Recipe';
+import { ExtractionFeedback } from '@/domain/recipe/ExtractionFeedback';
+import { RecipeRepositoryPort } from '@/application/ports/out/RecipeRepositoryPort';
 
-export class InMemoryRecipeRepository implements RecipeRepositoryPort {
+export class MockRecipeRepository implements RecipeRepositoryPort {
   private recipes: Map<string, Recipe> = new Map();
   private feedbacks: ExtractionFeedback[] = [];
 
@@ -65,3 +65,4 @@ export class InMemoryRecipeRepository implements RecipeRepositoryPort {
     return anyDeleted;
   }
 }
+export { MockRecipeRepository as InMemoryRecipeRepository };

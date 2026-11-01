@@ -1,7 +1,7 @@
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { CoffeeRepositoryPort } from '@/core/application/ports/out/CoffeeRepositoryPort';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { CoffeeRepositoryPort } from '@/application/ports/out/CoffeeRepositoryPort';
 
-export class InMemoryCoffeeRepository implements CoffeeRepositoryPort {
+export class MockCoffeeRepository implements CoffeeRepositoryPort {
   private coffees: Map<string, Coffee> = new Map();
 
   constructor(initialCoffees: Coffee[] = []) {
@@ -47,3 +47,4 @@ export class InMemoryCoffeeRepository implements CoffeeRepositoryPort {
     return this.coffees.delete(id);
   }
 }
+export { MockCoffeeRepository as InMemoryCoffeeRepository };

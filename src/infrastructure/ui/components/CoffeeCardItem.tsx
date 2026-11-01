@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
-import { Coffee } from '@/core/domain/coffee/Coffee';
+import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
+import { Coffee } from '@/domain/coffee/Coffee';
 import { Coffee as CoffeeIcon, Edit, Archive, Thermometer, Gauge, Scale } from 'lucide-react';
 
 interface CoffeeCardItemProps {

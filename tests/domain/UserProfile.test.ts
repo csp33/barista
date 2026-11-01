@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { UserProfile } from '@/core/domain/user/UserProfile';
+import { UserProfile } from '@/domain/user/UserProfile';
 
 describe('UserProfile Domain Entity', () => {
   it('creates a valid user profile with defaults', () => {

@@ -1,7 +1,7 @@
 import {
   RoasterScraperPort,
   ScrapedCoffeeData,
-} from '@/core/application/ports/out/RoasterScraperPort';
+} from '@/application/ports/out/RoasterScraperPort';
 import { HeuristicParser } from './HeuristicParser';
 import { LlmParserAdapter } from './LlmParserAdapter';
 import { Logger } from '../logger/Logger';

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { CoffeeProcess, RoastLevel, CoffeeStatus } from '@/core/domain/coffee/Coffee';
+import { CoffeeProcess, RoastLevel, CoffeeStatus } from '@/domain/coffee/Coffee';
 import { ChevronDown } from 'lucide-react';
 
 export interface CoffeeFormData {

@@ -1,6 +1,6 @@
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Recipe, AiRationale } from '@/core/domain/recipe/Recipe';
-import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { Recipe, AiRationale } from '@/domain/recipe/Recipe';
+import { ExtractionFeedback } from '@/domain/recipe/ExtractionFeedback';
 
 export interface CoffeeSommelierPort {
   generateStory(coffee: Coffee): Promise<string>;

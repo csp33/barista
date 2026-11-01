@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { UserProfile } from '@/core/domain/user/UserProfile';
+import { UserProfile } from '@/domain/user/UserProfile';
 import { PostgresUserProfileRepository } from '@/infrastructure/repositories/PostgresUserProfileRepository';
-import { InMemoryUserProfileRepository } from '@/infrastructure/out/persistence/memory/InMemoryUserProfileRepository';
+import { MockUserProfileRepository } from '../mocks/MockUserProfileRepository';
 
 describe('UserProfile Repositories', () => {
-  it('InMemoryUserProfileRepository saves, finds by id, lists and deletes profiles', async () => {
-    const repo = new InMemoryUserProfileRepository();
+  it('MockUserProfileRepository saves, finds by id, lists and deletes profiles', async () => {
+    const repo = new MockUserProfileRepository();
     const user = new UserProfile({ id: 'test-mem', name: 'Test Mem', role: 'user' });
 
     await repo.save(user);

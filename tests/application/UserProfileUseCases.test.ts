@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { UserProfile } from '@/core/domain/user/UserProfile';
-import { InMemoryUserProfileRepository } from '@/infrastructure/out/persistence/memory/InMemoryUserProfileRepository';
-import { GetUserProfilesUseCase } from '@/core/application/usecases/GetUserProfilesUseCase';
-import { GetUserProfileUseCase } from '@/core/application/usecases/GetUserProfileUseCase';
-import { CreateUserProfileUseCase } from '@/core/application/usecases/CreateUserProfileUseCase';
-import { UpdateUserProfileUseCase } from '@/core/application/usecases/UpdateUserProfileUseCase';
+import { UserProfile } from '@/domain/user/UserProfile';
+import { MockUserProfileRepository as InMemoryUserProfileRepository } from '../mocks/MockUserProfileRepository';
+import { GetUserProfilesUseCase } from '@/application/usecases/GetUserProfilesUseCase';
+import { GetUserProfileUseCase } from '@/application/usecases/GetUserProfileUseCase';
+import { CreateUserProfileUseCase } from '@/application/usecases/CreateUserProfileUseCase';
+import { UpdateUserProfileUseCase } from '@/application/usecases/UpdateUserProfileUseCase';
 
 describe('UserProfile Application Use Cases', () => {
   let repo: InMemoryUserProfileRepository;

@@ -12,12 +12,12 @@ import { ProfileSelectModal } from '@/infrastructure/ui/components/ProfileSelect
 import { BottomNav, NavTab } from '@/infrastructure/ui/components/BottomNav';
 import { CoffeeStashManager } from '@/infrastructure/ui/components/CoffeeStashManager';
 import { EquipmentView } from '@/infrastructure/ui/components/EquipmentView';
-import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
+import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import {
   findPresetGrinderById,
   findPresetMachineById,
 } from '@/infrastructure/equipment/EquipmentCatalogRepository';
-import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
+import { Coffee, CoffeeProps } from '@/domain/coffee/Coffee';
 import { Loader2, Sparkles, ArrowLeft } from 'lucide-react';
 
 function BaristaDashboard() {

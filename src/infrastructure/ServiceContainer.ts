@@ -5,17 +5,17 @@ import { EquipmentCatalogRepository } from './equipment/EquipmentCatalogReposito
 import { RoasterScraperAdapter } from './out/scraping/RoasterScraperAdapter';
 import { OpenAiVisionScannerAdapter } from './out/ai/OpenAiVisionScannerAdapter';
 import { OpenAiSommelierAdapter } from './out/ai/OpenAiSommelierAdapter';
-import { AddCoffeeUseCase } from '@/core/application/usecases/AddCoffeeUseCase';
-import { ExtractCoffeeUseCase } from '@/core/application/usecases/ExtractCoffeeUseCase';
-import { LogFeedbackUseCase } from '@/core/application/usecases/LogFeedbackUseCase';
-import { GetCoffeeStashUseCase } from '@/core/application/usecases/GetCoffeeStashUseCase';
-import { UpdateCoffeeUseCase } from '@/core/application/usecases/UpdateCoffeeUseCase';
-import { DeleteCoffeeUseCase } from '@/core/application/usecases/DeleteCoffeeUseCase';
-import { GetUserProfilesUseCase } from '@/core/application/usecases/GetUserProfilesUseCase';
-import { GetUserProfileUseCase } from '@/core/application/usecases/GetUserProfileUseCase';
-import { UpdateUserProfileUseCase } from '@/core/application/usecases/UpdateUserProfileUseCase';
-import { CreateUserProfileUseCase } from '@/core/application/usecases/CreateUserProfileUseCase';
-import { DeleteUserProfileUseCase } from '@/core/application/usecases/DeleteUserProfileUseCase';
+import { AddCoffeeUseCase } from '@/application/usecases/AddCoffeeUseCase';
+import { ExtractCoffeeUseCase } from '@/application/usecases/ExtractCoffeeUseCase';
+import { LogFeedbackUseCase } from '@/application/usecases/LogFeedbackUseCase';
+import { GetCoffeeStashUseCase } from '@/application/usecases/GetCoffeeStashUseCase';
+import { UpdateCoffeeUseCase } from '@/application/usecases/UpdateCoffeeUseCase';
+import { DeleteCoffeeUseCase } from '@/application/usecases/DeleteCoffeeUseCase';
+import { GetUserProfilesUseCase } from '@/application/usecases/GetUserProfilesUseCase';
+import { GetUserProfileUseCase } from '@/application/usecases/GetUserProfileUseCase';
+import { UpdateUserProfileUseCase } from '@/application/usecases/UpdateUserProfileUseCase';
+import { CreateUserProfileUseCase } from '@/application/usecases/CreateUserProfileUseCase';
+import { DeleteUserProfileUseCase } from '@/application/usecases/DeleteUserProfileUseCase';
 
 class ServiceContainer {
   private static instance: ServiceContainer;

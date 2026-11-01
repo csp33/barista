@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { OpenAiVisionScannerAdapter } from '../../src/infrastructure/out/ai/OpenAiVisionScannerAdapter';
 import { OpenAiSommelierAdapter } from '../../src/infrastructure/out/ai/OpenAiSommelierAdapter';
-import { Coffee } from '../../src/core/domain/coffee/Coffee';
-import { Recipe } from '../../src/core/domain/recipe/Recipe';
-import { ExtractionFeedback } from '../../src/core/domain/recipe/ExtractionFeedback';
+import { Coffee } from '../../src/domain/coffee/Coffee';
+import { Recipe } from '../../src/domain/recipe/Recipe';
+import { ExtractionFeedback } from '../../src/domain/recipe/ExtractionFeedback';
 
 describe('OpenAiAdapters', () => {
   it('OpenAiVisionScannerAdapter handles local fallback gracefully', async () => {

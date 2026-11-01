@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { Coffee } from '../../src/core/domain/coffee/Coffee';
-import { RecipeCalculator } from '../../src/core/domain/recipe/RecipeCalculator';
-import { RecipeExplainer } from '../../src/core/domain/recipe/RecipeExplainer';
-import { Grinder } from '../../src/core/domain/equipment/Grinder';
-import { EspressoMachine } from '../../src/core/domain/equipment/EspressoMachine';
+import { Coffee } from '../../src/domain/coffee/Coffee';
+import { RecipeCalculator } from '../../src/domain/recipe/RecipeCalculator';
+import { RecipeExplainer } from '../../src/domain/recipe/RecipeExplainer';
+import { Grinder } from '../../src/domain/equipment/Grinder';
+import { EspressoMachine } from '../../src/domain/equipment/EspressoMachine';
 
 const testGrinder: Grinder = {
   id: 'df64-gen-2',

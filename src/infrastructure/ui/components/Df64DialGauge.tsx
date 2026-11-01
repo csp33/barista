@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Grinder } from '@/core/domain/equipment/Grinder';
+import { Grinder } from '@/domain/equipment/Grinder';
 import { useTranslation } from '../i18n/LanguageContext';
 
 interface Df64DialGaugeProps {

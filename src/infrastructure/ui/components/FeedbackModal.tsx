@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useUserProfile } from '../context/UserProfileContext';
-import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
-import { TasteProfile } from '@/core/domain/recipe/ExtractionFeedback';
+import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
+import { TasteProfile } from '@/domain/recipe/ExtractionFeedback';
 import { X, Check, Loader2 } from 'lucide-react';
 
 interface FeedbackModalProps {

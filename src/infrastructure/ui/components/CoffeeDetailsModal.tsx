@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { useUserProfile } from '../context/UserProfileContext';
-import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
+import { Coffee, CoffeeProps } from '@/domain/coffee/Coffee';
 import { CoffeeFormFields, CoffeeFormData } from './CoffeeFormFields';
 import { X, Save, Edit3, Loader2, Sparkles } from 'lucide-react';
 

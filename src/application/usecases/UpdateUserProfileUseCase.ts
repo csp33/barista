@@ -1,4 +1,4 @@
-import { UserProfile, UserRole } from '@/core/domain/user/UserProfile';
+import { UserProfile, UserRole } from '@/domain/user/UserProfile';
 import { UserProfileRepositoryPort } from '../ports/out/UserProfileRepositoryPort';
 
 export interface UpdateUserProfileDTO {

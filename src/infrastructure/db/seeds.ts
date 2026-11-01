@@ -1,5 +1,5 @@
-import { Coffee } from '@/core/domain/coffee/Coffee';
-import { UserProfile } from '@/core/domain/user/UserProfile';
+import { Coffee } from '@/domain/coffee/Coffee';
+import { UserProfile } from '@/domain/user/UserProfile';
 
 export const INITIAL_PROFILES: UserProfile[] = [
   new UserProfile({

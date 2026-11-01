@@ -1,7 +1,7 @@
-import { UserProfile } from '@/core/domain/user/UserProfile';
-import { UserProfileRepositoryPort } from '@/core/application/ports/out/UserProfileRepositoryPort';
+import { UserProfile } from '@/domain/user/UserProfile';
+import { UserProfileRepositoryPort } from '@/application/ports/out/UserProfileRepositoryPort';
 
-export class InMemoryUserProfileRepository implements UserProfileRepositoryPort {
+export class MockUserProfileRepository implements UserProfileRepositoryPort {
   private profiles: Map<string, UserProfile> = new Map();
 
   constructor(initialProfiles: UserProfile[] = []) {
@@ -28,3 +28,4 @@ export class InMemoryUserProfileRepository implements UserProfileRepositoryPort 
     return this.profiles.delete(id.toLowerCase().trim());
   }
 }
+export { MockUserProfileRepository as InMemoryUserProfileRepository };

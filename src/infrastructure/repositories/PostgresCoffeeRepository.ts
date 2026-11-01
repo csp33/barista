@@ -1,5 +1,5 @@
-import { Coffee, CoffeeStatus, RoastLevel, CoffeeProcess } from '@/core/domain/coffee/Coffee';
-import { CoffeeRepositoryPort } from '@/core/application/ports/out/CoffeeRepositoryPort';
+import { Coffee, CoffeeStatus, RoastLevel, CoffeeProcess } from '@/domain/coffee/Coffee';
+import { CoffeeRepositoryPort } from '@/application/ports/out/CoffeeRepositoryPort';
 import { pool, initDatabase } from '../db/postgres';
 
 export class PostgresCoffeeRepository implements CoffeeRepositoryPort {

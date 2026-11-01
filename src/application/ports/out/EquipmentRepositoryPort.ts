@@ -1,5 +1,5 @@
-import { Grinder } from '@/core/domain/equipment/Grinder';
-import { EspressoMachine } from '@/core/domain/equipment/EspressoMachine';
+import { Grinder } from '@/domain/equipment/Grinder';
+import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
 
 export interface EquipmentRepositoryPort {
   findAllGrinders(): Promise<Grinder[]>;

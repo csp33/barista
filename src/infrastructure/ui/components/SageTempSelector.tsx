@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { EspressoMachine, SageTemperatureSetting } from '@/core/domain/equipment/EspressoMachine';
+import { EspressoMachine, SageTemperatureSetting } from '@/domain/equipment/EspressoMachine';
 import { useTranslation } from '../i18n/LanguageContext';
 import { Thermometer } from 'lucide-react';
 
