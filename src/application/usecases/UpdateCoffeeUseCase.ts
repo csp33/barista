@@ -55,6 +55,10 @@ export class UpdateCoffeeUseCase {
     });
 
     const eq = await this.resolveEquipmentAndUser(request);
+    if (request.data.status && eq.userId && this.coffeeRepo.setUserStatus) {
+      await this.coffeeRepo.setUserStatus(updated.id, eq.userId, request.data.status);
+    }
+
     const existingRecipe = await this.recipeRepo.findByCoffeeId(updated.id, eq.userId);
     const recipe = RecipeCalculator.calculateInitial(
       updated,
@@ -66,7 +70,8 @@ export class UpdateCoffeeUseCase {
     await this.coffeeRepo.save(updated);
     await this.recipeRepo.save(recipe);
 
-    return { coffee: updated, recipe };
+    const effectiveStatus = request.data.status ?? existing.status;
+    return { coffee: updated.withStatus(effectiveStatus), recipe };
   }
 
   private async resolveEquipmentAndUser(req: UpdateCoffeeRequest): Promise<{ grinder: Grinder; machine: EspressoMachine; userId: string }> {

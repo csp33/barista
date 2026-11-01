@@ -27,7 +27,9 @@ export class GetCoffeeStashUseCase {
     }
 
     const cleanUserId = userId.trim().toLowerCase();
-    const coffees = await this.coffeeRepo.findAll();
+    const coffees = this.coffeeRepo.findAllForUser
+      ? await this.coffeeRepo.findAllForUser(cleanUserId)
+      : await this.coffeeRepo.findAll();
     const userProfile = await this.userProfileRepo.findById(cleanUserId);
 
     const grinders = await this.equipmentRepo.findAllGrinders();

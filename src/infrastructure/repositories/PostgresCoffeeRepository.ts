@@ -34,6 +34,49 @@ export class PostgresCoffeeRepository implements CoffeeRepositoryPort {
     return res.rows.map(this.mapRow);
   }
 
+  async findAllForUser(userId: string): Promise<Coffee[]> {
+    await initDatabase();
+    const cleanUserId = userId.trim().toLowerCase();
+    const res = await pool.query(
+      `SELECT c.*, ucs.status AS user_status
+       FROM coffees c
+       LEFT JOIN user_coffee_statuses ucs ON c.id = ucs.coffee_id AND ucs.user_id = $1
+       ORDER BY c.created_at DESC`,
+      [cleanUserId]
+    );
+    return res.rows.map(row => {
+      const coffee = this.mapRow(row);
+      const userStatus = row.user_status
+        ? (String(row.user_status) as CoffeeStatus)
+        : cleanUserId === 'carlos'
+          ? coffee.status
+          : 'bodega';
+      return coffee.withStatus(userStatus);
+    });
+  }
+
+  async setUserStatus(coffeeId: string, userId: string, status: CoffeeStatus): Promise<void> {
+    await initDatabase();
+    const cleanUserId = userId.trim().toLowerCase();
+    await pool.query(
+      `INSERT INTO user_coffee_statuses (user_id, coffee_id, status, updated_at)
+       VALUES ($1, $2, $3, NOW())
+       ON CONFLICT (user_id, coffee_id)
+       DO UPDATE SET status = EXCLUDED.status, updated_at = NOW()`,
+      [cleanUserId, coffeeId, status]
+    );
+  }
+
+  async getUserStatus(coffeeId: string, userId: string): Promise<CoffeeStatus | null> {
+    await initDatabase();
+    const cleanUserId = userId.trim().toLowerCase();
+    const res = await pool.query(
+      'SELECT status FROM user_coffee_statuses WHERE user_id = $1 AND coffee_id = $2',
+      [cleanUserId, coffeeId]
+    );
+    return res.rows[0] ? (String(res.rows[0].status) as CoffeeStatus) : null;
+  }
+
   async save(coffee: Coffee): Promise<void> {
     await initDatabase();
     await pool.query(

@@ -88,6 +88,16 @@ export async function initDatabase(): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_feedbacks_recipe ON extraction_feedbacks(recipe_id);
     CREATE INDEX IF NOT EXISTS idx_feedbacks_user ON extraction_feedbacks(user_id);
 
+    CREATE TABLE IF NOT EXISTS user_coffee_statuses (
+      user_id VARCHAR(64) NOT NULL,
+      coffee_id VARCHAR(128) NOT NULL REFERENCES coffees(id) ON DELETE CASCADE,
+      status VARCHAR(32) NOT NULL DEFAULT 'bodega',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (user_id, coffee_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_user_coffee_statuses_user ON user_coffee_statuses(user_id);
+
     ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS basket_dose_grams NUMERIC(4, 1);
   `);
 
@@ -123,6 +133,13 @@ export async function initDatabase(): Promise<void> {
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
          ON CONFLICT (coffee_id, user_id) DO NOTHING`,
         [r.id, r.coffeeId, r.userId, r.grinderId, r.machineId, r.doseGrams, r.yieldGrams, r.ratio, r.grindSetting, r.machineTemperature, r.targetTimeSeconds, r.recommendedRestDays, JSON.stringify(r.notes), r.aiRationale ? JSON.stringify(r.aiRationale) : null, new Date(), new Date()]
+      );
+
+      await pool.query(
+        `INSERT INTO user_coffee_statuses (user_id, coffee_id, status)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (user_id, coffee_id) DO NOTHING`,
+        [seedProfile.id, c.id, c.status]
       );
     }
   }

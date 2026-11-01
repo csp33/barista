@@ -5,7 +5,7 @@ import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import { Coffee } from '@/domain/coffee/Coffee';
 import { CoffeeCardItem } from './CoffeeCardItem';
-import { Plus, Archive, Sparkles, Edit, Trash2 } from 'lucide-react';
+import { Plus, Boxes, Sparkles, Edit, Trash2 } from 'lucide-react';
 
 interface CoffeeStashManagerProps {
   items: StashItemDTO[];
@@ -25,13 +25,13 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
   onOpenAddModal,
 }) => {
   const { t, language, isAdmin } = useTranslation();
-  const activeItems = items.filter(i => i.coffee.status !== 'history');
-  const historyItems = items.filter(i => i.coffee.status === 'history');
+  const activeItems = items.filter(i => i.coffee.status === 'active');
+  const historyItems = items.filter(i => i.coffee.status !== 'active');
 
   const handleDelete = (id: string, name: string) => {
     const msg = language === 'es'
-      ? `¿Eliminar permanentemente "${name}" del historial?`
-      : `Permanently delete "${name}" from history?`;
+      ? `¿Eliminar permanentemente "${name}" del catálogo?`
+      : `Permanently delete "${name}" from catalog?`;
     if (window.confirm(msg)) {
       onDeleteCoffee?.(id);
     }
@@ -84,11 +84,11 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
         )}
       </div>
 
-      {/* Section 2: Historial / Bodega */}
+      {/* Section 2: Bodega */}
       {historyItems.length > 0 && (
         <div className="pt-2">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-[#A8988B] flex items-center gap-1.5 mb-3 font-metric">
-            <Archive className="w-3.5 h-3.5" />
+            <Boxes className="w-3.5 h-3.5 text-[#E29D52]" />
             {t.stashHistory} ({historyItems.length})
           </h3>
 

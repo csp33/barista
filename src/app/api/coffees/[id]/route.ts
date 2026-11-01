@@ -11,9 +11,12 @@ export async function PUT(
 
   try {
     const body = await request.json();
+    const url = new URL(request.url);
+    const userId = body.userId || url.searchParams.get('userId') || request.headers.get('x-user-id') || undefined;
     const result = await container.updateCoffeeUseCase.execute({
       id,
       data: body,
+      userId,
     });
 
     Logger.info('API', `Coffee ${id} updated successfully`, {

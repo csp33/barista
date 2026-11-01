@@ -86,8 +86,12 @@ export class AddCoffeeUseCase {
     if (rationale) recipe = new Recipe({ ...recipe, aiRationale: rationale });
 
     await this.coffeeRepo.save(coffee);
+    const initialStatus = raw.status || 'active';
+    if (this.coffeeRepo.setUserStatus) {
+      await this.coffeeRepo.setUserStatus(coffee.id, eq.userId, initialStatus);
+    }
     await this.recipeRepo.save(recipe);
-    return { coffee, recipe, fromCache: false };
+    return { coffee: coffee.withStatus(initialStatus), recipe, fromCache: false };
   }
 
   private async resolveEquipmentAndUser(req: AddCoffeeRequest): Promise<{ grinder: Grinder; machine: EspressoMachine; userId: string }> {
@@ -113,11 +117,14 @@ export class AddCoffeeUseCase {
   }
 
   private async buildResult(coffee: Coffee, fromCache: boolean, eq: { grinder: Grinder; machine: EspressoMachine; userId: string }): Promise<AddCoffeeResult> {
+    if (this.coffeeRepo.setUserStatus) {
+      await this.coffeeRepo.setUserStatus(coffee.id, eq.userId, 'active');
+    }
     let recipe = await this.recipeRepo.findByCoffeeId(coffee.id, eq.userId);
     if (!recipe) {
       recipe = RecipeCalculator.calculateInitial(coffee, eq.grinder, eq.machine, eq.userId);
       await this.recipeRepo.save(recipe);
     }
-    return { coffee, recipe, fromCache };
+    return { coffee: coffee.withStatus('active'), recipe, fromCache };
   }
 }

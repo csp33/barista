@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import { Coffee } from '@/domain/coffee/Coffee';
-import { Coffee as CoffeeIcon, Edit, Archive, Thermometer, Gauge, Scale } from 'lucide-react';
+import { Coffee as CoffeeIcon, Edit, Package, Thermometer, Gauge, Scale } from 'lucide-react';
 
 interface CoffeeCardItemProps {
   item: StashItemDTO;
@@ -59,10 +59,10 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
               </button>
               <button
                 onClick={() => onToggleStatus(c.id, c.status)}
-                className="p-1.5 text-[#8A796C] hover:text-amber-400 hover:bg-[#251D17] rounded-lg transition-colors"
+                className="p-1.5 text-[#8A796C] hover:text-[#E29D52] hover:bg-[#251D17] rounded-lg transition-colors"
                 title={t.moveToHistory}
               >
-                <Archive className="w-3.5 h-3.5" />
+                <Package className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>

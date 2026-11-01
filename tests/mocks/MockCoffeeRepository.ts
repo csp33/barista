@@ -1,8 +1,9 @@
-import { Coffee } from '@/domain/coffee/Coffee';
+import { Coffee, CoffeeStatus } from '@/domain/coffee/Coffee';
 import { CoffeeRepositoryPort } from '@/application/ports/out/CoffeeRepositoryPort';
 
 export class MockCoffeeRepository implements CoffeeRepositoryPort {
   private coffees: Map<string, Coffee> = new Map();
+  private userStatuses: Map<string, CoffeeStatus> = new Map();
 
   constructor(initialCoffees: Coffee[] = []) {
     for (const coffee of initialCoffees) {
@@ -43,7 +44,30 @@ export class MockCoffeeRepository implements CoffeeRepositoryPort {
     );
   }
 
+  async findAllForUser(userId: string): Promise<Coffee[]> {
+    const cleanUserId = userId.trim().toLowerCase();
+    const all = await this.findAll();
+    return all.map(c => {
+      const key = `${cleanUserId}:${c.id}`;
+      const status = this.userStatuses.get(key) || (cleanUserId === 'carlos' ? c.status : 'bodega');
+      return c.withStatus(status);
+    });
+  }
+
+  async setUserStatus(coffeeId: string, userId: string, status: CoffeeStatus): Promise<void> {
+    const cleanUserId = userId.trim().toLowerCase();
+    this.userStatuses.set(`${cleanUserId}:${coffeeId}`, status);
+  }
+
+  async getUserStatus(coffeeId: string, userId: string): Promise<CoffeeStatus | null> {
+    const cleanUserId = userId.trim().toLowerCase();
+    return this.userStatuses.get(`${cleanUserId}:${coffeeId}`) ?? null;
+  }
+
   async delete(id: string): Promise<boolean> {
+    for (const key of Array.from(this.userStatuses.keys())) {
+      if (key.endsWith(`:${id}`)) this.userStatuses.delete(key);
+    }
     return this.coffees.delete(id);
   }
 }

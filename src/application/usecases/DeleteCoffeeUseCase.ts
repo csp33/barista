@@ -22,8 +22,8 @@ export class DeleteCoffeeUseCase {
       throw new Error(`Coffee not found with ID ${request.coffeeId}`);
     }
 
-    if (coffee.status !== 'history') {
-      throw new Error('Only archived coffees in history can be permanently deleted');
+    if (coffee.status !== 'history' && coffee.status !== 'bodega') {
+      throw new Error('Only archived coffees in history or bodega can be permanently deleted');
     }
 
     await this.coffeeRepo.delete(request.coffeeId);

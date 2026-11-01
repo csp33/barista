@@ -108,8 +108,11 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
       } else {
         const res = await fetch(`/api/coffees/${(coffee as Coffee).id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-id': activeProfile?.id || '',
+          },
+          body: JSON.stringify({ ...payload, userId: activeProfile?.id }),
         });
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));

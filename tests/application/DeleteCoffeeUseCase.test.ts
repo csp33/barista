@@ -51,7 +51,26 @@ describe('DeleteCoffeeUseCase', () => {
 
     await expect(
       useCase.execute({ coffeeId: 'c2', userRole: 'admin' })
-    ).rejects.toThrow('Only archived coffees in history can be permanently deleted');
+    ).rejects.toThrow('Only archived coffees in history or bodega can be permanently deleted');
+  });
+
+  it('successfully deletes coffee in bodega when admin', async () => {
+    const coffee = new Coffee({
+      id: 'c-bodega',
+      roaster: 'San Jorge',
+      name: 'Bodega Coffee',
+      originCountry: 'Guatemala',
+      variety: 'Bourbon',
+      process: 'washed',
+      roastLevel: 'medium',
+      status: 'bodega',
+      tastingNotes: ['chocolate'],
+    });
+    await coffeeRepo.save(coffee);
+
+    const result = await useCase.execute({ coffeeId: 'c-bodega', userRole: 'admin' });
+    expect(result.success).toBe(true);
+    expect(result.deletedId).toBe('c-bodega');
   });
 
   it('successfully deletes archived coffee and associated recipe when admin', async () => {

@@ -13,7 +13,7 @@ export type RoastLevel =
   | 'medium_dark'
   | 'dark';
 
-export type CoffeeStatus = 'active' | 'history';
+export type CoffeeStatus = 'active' | 'bodega' | 'history';
 
 export interface CoffeeProps {
   id: string;
@@ -80,6 +80,13 @@ export class Coffee {
     this.status = props.status ?? 'active';
     this.sommelierStory = props.sommelierStory?.trim();
     this.createdAt = props.createdAt ?? new Date();
+  }
+
+  withStatus(status: CoffeeStatus): Coffee {
+    return new Coffee({
+      ...this,
+      status,
+    });
   }
 
   private calculateDefaultRestDays(roast: RoastLevel, process: CoffeeProcess): number {

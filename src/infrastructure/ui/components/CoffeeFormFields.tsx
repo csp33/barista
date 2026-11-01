@@ -156,12 +156,12 @@ export const CoffeeFormFields: React.FC<CoffeeFormFieldsProps> = ({
           </label>
           <div className="relative">
             <select
-              value={formData.status}
+              value={formData.status === 'active' ? 'active' : 'bodega'}
               onChange={e => onChange({ status: e.target.value as CoffeeStatus })}
               className="w-full appearance-none bg-[#141210] border border-[#3D332A] rounded-xl pl-3 pr-8 py-2 text-[#F7F2EB] outline-none focus:border-[#D96B27] cursor-pointer"
             >
-              <option value="active">En Uso (En Barra)</option>
-              <option value="history">Historial (Bodega)</option>
+              <option value="active">{t.stashActive}</option>
+              <option value="bodega">{t.stashHistory}</option>
             </select>
             <ChevronDown className="w-3.5 h-3.5 text-[#A8988B] pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2" />
           </div>

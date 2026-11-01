@@ -48,7 +48,7 @@ function BaristaDashboard() {
         if (!activeCoffeeId && data.data.length > 0) {
           const profileChoice = activeProfile?.activeCoffeeId;
           const matched = profileChoice ? data.data.find((i: StashItemDTO) => i.coffee.id === profileChoice) : null;
-          const firstActive = data.data.find((i: StashItemDTO) => i.coffee.status !== 'history');
+          const firstActive = data.data.find((i: StashItemDTO) => i.coffee.status === 'active');
           setActiveCoffeeId(matched ? matched.coffee.id : firstActive ? firstActive.coffee.id : data.data[0].coffee.id);
         }
       }
@@ -71,15 +71,18 @@ function BaristaDashboard() {
   }, [activeProfile?.activeCoffeeId]);
 
   const activeItem = items.find((i) => i.coffee.id === activeCoffeeId) || items[0] || null;
-  const activeCount = items.filter((i) => i.coffee.status !== 'history').length;
+  const activeCount = items.filter((i) => i.coffee.status === 'active').length;
 
   const handleToggleStatus = async (coffeeId: string, currentStatus: string) => {
-    const nextStatus = currentStatus === 'history' ? 'active' : 'history';
+    const nextStatus = currentStatus === 'active' ? 'bodega' : 'active';
     try {
       await fetch(`/api/coffees/${coffeeId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus }),
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': activeProfile?.id || '',
+        },
+        body: JSON.stringify({ status: nextStatus, userId: activeProfile?.id }),
       });
       fetchStash();
     } catch { alert('Error updating status'); }
