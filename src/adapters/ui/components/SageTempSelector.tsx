@@ -21,13 +21,10 @@ export const SageTempSelector: React.FC<SageTempSelectorProps> = ({ currentTemp 
 
   return (
     <div className="bg-[#120F0D] border border-[#2F241C] rounded-2xl p-3.5 space-y-2.5">
-      <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium tracking-wide uppercase text-[#A8988B] flex items-center gap-1.5 font-metric">
+      <div className="w-full mb-1 px-1">
+        <span className="text-[11px] font-metric font-semibold uppercase tracking-wider text-[#E29D52] flex items-center gap-1.5">
           <Thermometer className="w-3.5 h-3.5 text-[#E29D52]" />
-          {t.temperature}
-        </span>
-        <span className="text-[10px] text-[#D96B27] font-metric bg-[#241A14] px-2 py-0.5 rounded-full border border-[#3D2B20]">
-          ThermoJet PID
+          {t.temperature} • Sage Touch Impress
         </span>
       </div>
 

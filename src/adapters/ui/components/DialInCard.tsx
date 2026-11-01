@@ -6,7 +6,7 @@ import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase'
 import { Df64DialGauge } from './Df64DialGauge';
 import { SageTempSelector } from './SageTempSelector';
 import { RecipeRationaleCard } from './RecipeRationaleCard';
-import { ArrowUpRight, Edit } from 'lucide-react';
+import { ArrowUpRight, Edit, Gauge } from 'lucide-react';
 
 interface DialInCardProps {
   item: StashItemDTO;
@@ -79,12 +79,10 @@ export const DialInCard: React.FC<DialInCardProps> = ({
       <div className="p-5 sm:p-6 space-y-4">
         {/* DF64 II Rotary Instrument Gauge */}
         <div className="bg-[#120F0D] border border-[#30261E] rounded-2xl p-5 flex flex-col items-center shadow-inner">
-          <div className="flex items-center justify-between w-full mb-2 px-1">
-            <span className="text-[11px] font-metric font-semibold uppercase tracking-wider text-[#E29D52]">
-              {t.grindSetting}
-            </span>
-            <span className="text-[10px] font-metric text-[#8C7B6E] bg-[#191411] px-2.5 py-0.5 rounded-full border border-[#2B211A]">
-              DF64 Gen II
+          <div className="w-full mb-3 px-1">
+            <span className="text-[11px] font-metric font-semibold uppercase tracking-wider text-[#E29D52] flex items-center gap-1.5">
+              <Gauge className="w-3.5 h-3.5 text-[#D96B27]" />
+              {t.grindSetting} • DF64 Gen II
             </span>
           </div>
           <Df64DialGauge setting={recipe.grindSetting} />
