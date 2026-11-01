@@ -20,7 +20,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: barista-app
     restart: always
     depends_on:
@@ -28,10 +28,15 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
     environment:
       - DATABASE_URL=postgresql://barista:baristasecret@postgres:5432/barista_db
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - NODE_ENV=production
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
 
 volumes:
   postgres_data:

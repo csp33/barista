@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  allowedDevOrigins: ['localhost:3000', '*.orb.local', '*.local', '127.0.0.1:3000'],
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
