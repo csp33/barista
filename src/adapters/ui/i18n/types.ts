@@ -6,6 +6,8 @@ export interface Translations {
   gearSetup: string;
   activeBeans: string;
   addCoffee: string;
+  editCoffee: string;
+  editCoffeeSpecs: string;
   addCoffeeUrlPlaceholder: string;
   addCoffeeSubmit: string;
   analyzingRoaster: string;
@@ -13,7 +15,9 @@ export interface Translations {
   history: string;
   markFinished: string;
   grindSetting: string;
+  steplessCollar: string;
   temperature: string;
+  sageTouchScreen: string;
   dose: string;
   yield: string;
   ratio: string;
@@ -31,11 +35,30 @@ export interface Translations {
   channeled: string;
   saveFeedback: string;
   feedbackSaved: string;
+  saveChanges: string;
+  cancel: string;
+  roaster: string;
   origin: string;
+  region: string;
+  producer: string;
+  altitude: string;
   variety: string;
   process: string;
   roastLevel: string;
-  tastingNotes: string[];
+  tastingNotes: string;
+  tastingNotesHint: string;
+  processes: Record<string, string>;
+  roasts: Record<string, string>;
+  baristaTips: {
+    wdt: string;
+    naturals: string;
+    restWindow: string;
+    tunedFor: string;
+    sourAdjust: string;
+    bitterAdjust: string;
+    channeledAdjust: string;
+    sweetSpot: string;
+  };
   temperaturePresets: {
     low: string;
     normal: string;

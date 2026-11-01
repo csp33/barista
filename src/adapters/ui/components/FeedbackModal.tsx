@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { TasteProfile } from '@/core/domain/recipe/ExtractionFeedback';
-import { X, Check, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
+import { X, Check, Loader2 } from 'lucide-react';
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -63,34 +63,33 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   };
 
   const options: { id: TasteProfile; label: string; tone: string }[] = [
-    { id: 'balanced', label: t.balancedGodShot, tone: 'border-[#4E8765] text-[#4E8765]' },
+    { id: 'balanced', label: t.balancedGodShot, tone: 'border-[#4E8765] text-[#71BC8E]' },
     { id: 'sour', label: t.sourUnderExtracted, tone: 'border-amber-500 text-amber-400' },
     { id: 'bitter', label: t.bitterOverExtracted, tone: 'border-orange-500 text-orange-400' },
     { id: 'channeled', label: t.channeled, tone: 'border-red-500 text-red-400' },
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#181512] border border-[#2C2621] w-full max-w-md rounded-3xl p-5 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div className="bg-[#1C1713] border border-[#3E3025] w-full max-w-md rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 text-[#9E9288] hover:text-[#F5EFEB] rounded-full bg-[#12100E] border border-[#2C2621]"
+          className="absolute top-5 right-5 p-1.5 text-[#A8988B] hover:text-[#F7F2EB] rounded-full bg-[#120F0D] border border-[#30261E]"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <h3 className="font-bold text-base text-[#F5EFEB] mb-1">
+        <h3 className="font-serif text-lg font-bold text-[#F7F2EB] mb-1">
           {t.logExtractionFeedback}
         </h3>
-        <p className="text-xs text-[#9E9288] mb-4">
-          {item.coffee.roaster} - {item.coffee.name}
+        <p className="text-xs text-[#A8988B] mb-4">
+          {item.coffee.roaster} • {item.coffee.name}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Actual Extraction Numbers Grid */}
-          <div className="grid grid-cols-2 gap-3 bg-[#12100E] p-3 rounded-2xl border border-[#2C2621]">
+          <div className="grid grid-cols-2 gap-3 bg-[#120F0D] p-3.5 rounded-2xl border border-[#30261E]">
             <div>
-              <label className="text-[11px] text-[#9E9288] block mb-1">
+              <label className="text-[11px] text-[#A8988B] block mb-1">
                 {t.grindSetting}
               </label>
               <input
@@ -98,22 +97,22 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 step="0.5"
                 value={grind}
                 onChange={e => setGrind(parseFloat(e.target.value))}
-                className="w-full bg-[#181512] border border-[#2C2621] rounded-lg p-2 text-sm font-metric font-bold text-[#F5EFEB]"
+                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
               />
             </div>
             <div>
-              <label className="text-[11px] text-[#9E9288] block mb-1">
+              <label className="text-[11px] text-[#A8988B] block mb-1">
                 {t.time} (s)
               </label>
               <input
                 type="number"
                 value={time}
                 onChange={e => setTime(parseInt(e.target.value, 10))}
-                className="w-full bg-[#181512] border border-[#2C2621] rounded-lg p-2 text-sm font-metric font-bold text-[#F5EFEB]"
+                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
               />
             </div>
             <div>
-              <label className="text-[11px] text-[#9E9288] block mb-1">
+              <label className="text-[11px] text-[#A8988B] block mb-1">
                 {t.dose} (g)
               </label>
               <input
@@ -121,11 +120,11 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 step="0.1"
                 value={dose}
                 onChange={e => setDose(parseFloat(e.target.value))}
-                className="w-full bg-[#181512] border border-[#2C2621] rounded-lg p-2 text-sm font-metric font-bold text-[#F5EFEB]"
+                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
               />
             </div>
             <div>
-              <label className="text-[11px] text-[#9E9288] block mb-1">
+              <label className="text-[11px] text-[#A8988B] block mb-1">
                 {t.yield} (g)
               </label>
               <input
@@ -133,14 +132,13 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                 step="0.5"
                 value={actualYield}
                 onChange={e => setActualYield(parseFloat(e.target.value))}
-                className="w-full bg-[#181512] border border-[#2C2621] rounded-lg p-2 text-sm font-metric font-bold text-[#F5EFEB]"
+                className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]"
               />
             </div>
           </div>
 
-          {/* Taste Evaluation */}
           <div>
-            <label className="text-xs font-semibold text-[#F5EFEB] block mb-2">
+            <label className="text-xs font-semibold text-[#F7F2EB] block mb-2 font-serif">
               {t.tasteEvaluation}
             </label>
             <div className="space-y-2">
@@ -149,10 +147,10 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
                   key={opt.id}
                   type="button"
                   onClick={() => setTaste(opt.id)}
-                  className={`w-full text-left text-xs p-3 rounded-xl border flex items-center justify-between transition-colors ${
+                  className={`w-full text-left text-xs p-3.5 rounded-xl border flex items-center justify-between transition-colors ${
                     taste === opt.id
-                      ? `bg-[#221E19] ${opt.tone} ring-1 ring-current`
-                      : 'bg-[#12100E] border-[#2C2621] text-[#9E9288]'
+                      ? `bg-[#291F18] ${opt.tone} ring-1 ring-current font-medium`
+                      : 'bg-[#120F0D] border-[#30261E] text-[#A8988B]'
                   }`}
                 >
                   <span>{opt.label}</span>
@@ -165,7 +163,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#D96B27] hover:bg-[#E29D52] text-[#12100E] font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2"
+            className="w-full bg-[#D96B27] hover:bg-[#E29D52] text-[#141210] font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#D96B27]/20"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.saveFeedback}
           </button>

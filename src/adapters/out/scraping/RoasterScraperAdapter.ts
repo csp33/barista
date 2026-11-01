@@ -4,6 +4,7 @@ import {
 } from '@/core/application/ports/out/RoasterScraperPort';
 import { HeuristicParser } from './HeuristicParser';
 import { LlmParserAdapter } from './LlmParserAdapter';
+import { Logger } from '../logger/Logger';
 
 export class RoasterScraperAdapter implements RoasterScraperPort {
   private llmParser = new LlmParserAdapter();
@@ -11,6 +12,8 @@ export class RoasterScraperAdapter implements RoasterScraperPort {
   async scrapeCoffeeUrl(url: string): Promise<ScrapedCoffeeData> {
     const parsedUrl = new URL(url);
     const domain = parsedUrl.hostname.replace('www.', '');
+
+    Logger.info('SCRAPER', `Fetching roaster page: ${url}`);
 
     try {
       const response = await fetch(url, {
@@ -23,22 +26,35 @@ export class RoasterScraperAdapter implements RoasterScraperPort {
       });
 
       if (!response.ok) {
+        Logger.warn('SCRAPER', `HTTP ${response.status} from roaster, using fallback`);
         return this.fallbackFromUrl(url, domain);
       }
 
       const html = await response.text();
 
-      // Step 1: Deterministic extraction (Fast, Free, 0 token cost)
+      // Step 1: Deterministic extraction
       const deterministicData = HeuristicParser.parse(html, url, domain);
+      const isComplete = HeuristicParser.isComplete(deterministicData);
 
-      // If deterministic data is rich & complete, return immediately
-      if (HeuristicParser.isComplete(deterministicData)) {
+      Logger.info('SCRAPER', `Deterministic parse complete: ${isComplete}`, {
+        name: deterministicData.name,
+        country: deterministicData.originCountry,
+        process: deterministicData.process,
+        variety: deterministicData.variety,
+        altitude: deterministicData.altitudeMasl,
+      });
+
+      if (isComplete) {
         return deterministicData;
       }
 
-      // Step 2: Fallback to LLM agent if fields are missing or generic
-      return await this.llmParser.parse(html, url, deterministicData);
-    } catch {
+      // Step 2: Fallback to LLM agent
+      Logger.info('SCRAPER', 'Deterministic data incomplete, activating LLM fallback');
+      const llmResult = await this.llmParser.parse(html, url, deterministicData);
+      Logger.info('SCRAPER', 'LLM fallback finished', { name: llmResult.name });
+      return llmResult;
+    } catch (err) {
+      Logger.error('SCRAPER', `Error scraping ${url}`, err);
       return this.fallbackFromUrl(url, domain);
     }
   }

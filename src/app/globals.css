@@ -1,14 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #12100E;
-  --foreground: #F5EFEB;
-  --card-bg: #1B1815;
-  --card-border: #2C2621;
+  --background: #100D0B;
+  --foreground: #F7F2EB;
+  --card-bg: #181411;
+  --card-border: #3A3027;
   --accent-terracotta: #D96B27;
   --accent-amber: #E29D52;
   --accent-sage: #4E8765;
-  --text-muted: #9E9288;
+  --text-muted: #A8988B;
 }
 
 body {
@@ -20,13 +21,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Technical coffee variables monospace styling */
+.font-serif {
+  font-family: 'Newsreader', Georgia, Cambria, 'Times New Roman', Times, serif;
+}
+
 .font-metric {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-feature-settings: "tnum" 1;
 }
 
-/* Subtle scrollbar for active stash carousel */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

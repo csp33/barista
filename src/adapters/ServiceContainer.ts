@@ -6,8 +6,8 @@ import { RoasterScraperAdapter } from './out/scraping/RoasterScraperAdapter';
 import { AddCoffeeUseCase } from '@/core/application/usecases/AddCoffeeUseCase';
 import { LogFeedbackUseCase } from '@/core/application/usecases/LogFeedbackUseCase';
 import { GetCoffeeStashUseCase } from '@/core/application/usecases/GetCoffeeStashUseCase';
+import { UpdateCoffeeUseCase } from '@/core/application/usecases/UpdateCoffeeUseCase';
 
-// Seed initial coffees for realistic out-of-the-box experience
 const INITIAL_COFFEES: Coffee[] = [
   new Coffee({
     id: 'coffee-nomad-worka',
@@ -66,13 +66,13 @@ class ServiceContainer {
   readonly addCoffeeUseCase: AddCoffeeUseCase;
   readonly logFeedbackUseCase: LogFeedbackUseCase;
   readonly getCoffeeStashUseCase: GetCoffeeStashUseCase;
+  readonly updateCoffeeUseCase: UpdateCoffeeUseCase;
 
   private constructor() {
     this.coffeeRepo = new InMemoryCoffeeRepository(INITIAL_COFFEES);
     this.recipeRepo = new InMemoryRecipeRepository();
     this.scraper = new RoasterScraperAdapter();
 
-    // Populate initial recipes for seeded coffees
     for (const coffee of INITIAL_COFFEES) {
       const recipe = RecipeCalculator.calculateInitial(coffee);
       this.recipeRepo.save(recipe);
@@ -85,6 +85,10 @@ class ServiceContainer {
     );
     this.logFeedbackUseCase = new LogFeedbackUseCase(this.recipeRepo);
     this.getCoffeeStashUseCase = new GetCoffeeStashUseCase(
+      this.coffeeRepo,
+      this.recipeRepo
+    );
+    this.updateCoffeeUseCase = new UpdateCoffeeUseCase(
       this.coffeeRepo,
       this.recipeRepo
     );
