@@ -84,7 +84,7 @@ export const DialInCard: React.FC<DialInCardProps> = ({
               {t.grindSetting}
             </span>
             <span className="text-[10px] font-metric text-[#8C7B6E] bg-[#191411] px-2.5 py-0.5 rounded-full border border-[#2B211A]">
-              DF64 Gen II • Stepless 0–90
+              DF64 Gen II
             </span>
           </div>
           <Df64DialGauge setting={recipe.grindSetting} />

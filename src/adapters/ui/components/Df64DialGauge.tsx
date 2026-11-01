@@ -47,14 +47,14 @@ export const Df64DialGauge: React.FC<Df64DialGaugeProps> = ({ setting }) => {
 
         {/* Inner Hub with Setting Value */}
         <div className="relative z-10 w-28 h-28 rounded-full bg-gradient-to-b from-[#1C1713] to-[#120F0D] border border-[#483B31] shadow-2xl flex flex-col items-center justify-center text-center">
-          <span className="text-[10px] tracking-widest uppercase font-metric text-[#D96B27] font-semibold">
-            DF64 II
+          <span className="text-[10px] tracking-widest uppercase font-metric text-[#8C7B6E] font-semibold">
+            {language === 'es' ? 'PUNTO' : 'SETTING'}
           </span>
           <span className="text-3xl font-black font-metric tracking-tight text-[#F7F2EB] my-0.5">
             #{setting.toFixed(1)}
           </span>
-          <span className="text-[9px] text-[#A8988B] uppercase tracking-wider font-metric">
-            Stepless 0–90
+          <span className="text-[9px] text-[#E29D52] uppercase tracking-wider font-metric">
+            Espresso
           </span>
         </div>
 

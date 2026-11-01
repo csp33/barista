@@ -88,8 +88,8 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
               DF64 #{r ? r.grindSetting.toFixed(1) : '—'}
             </span>
             {r && (
-              <span className="text-[#A8988B] bg-[#120F0D] px-2 py-0.5 rounded-lg border border-[#2D231C] capitalize">
-                Sage {r.machineTemperature.replace('_', ' ')}
+              <span className="text-[#A8988B] bg-[#120F0D] px-2 py-0.5 rounded-lg border border-[#2D231C]">
+                Sage {t.temperaturePresets[r.machineTemperature as keyof typeof t.temperaturePresets]?.split('(')[0].trim() || r.machineTemperature}
               </span>
             )}
             <span className="text-[10px] text-[#8C7B6E] ml-auto">
