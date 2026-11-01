@@ -4,7 +4,7 @@ import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { Coffee } from '@/core/domain/coffee/Coffee';
-import { Coffee as CoffeeIcon, Edit, Archive } from 'lucide-react';
+import { Coffee as CoffeeIcon, Edit, Archive, Thermometer, Gauge } from 'lucide-react';
 
 interface CoffeeCardItemProps {
   item: StashItemDTO;
@@ -84,12 +84,14 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
 
           {/* Hardware dial badges */}
           <div className="flex items-center gap-2 mt-2.5 font-metric text-[11px]">
-            <span className="font-bold text-[#F7F2EB] bg-[#120F0D] px-2.5 py-0.5 rounded-lg border border-[#2D231C]">
-              DF64 #{r ? r.grindSetting.toFixed(1) : '—'}
+            <span className="inline-flex items-center gap-1.5 font-bold text-[#F7F2EB] bg-[#120F0D] px-2.5 py-1 rounded-lg border border-[#2D231C]">
+              <Gauge className="w-3.5 h-3.5 text-[#D96B27]" />
+              <span>#{r ? r.grindSetting.toFixed(1) : '—'}</span>
             </span>
             {r && (
-              <span className="text-[#A8988B] bg-[#120F0D] px-2 py-0.5 rounded-lg border border-[#2D231C]">
-                Sage {t.temperaturePresets[r.machineTemperature as keyof typeof t.temperaturePresets]?.split('(')[0].trim() || r.machineTemperature}
+              <span className="inline-flex items-center gap-1.5 text-[#C8B8AB] bg-[#120F0D] px-2.5 py-1 rounded-lg border border-[#2D231C]">
+                <Thermometer className="w-3.5 h-3.5 text-[#E29D52]" />
+                <span>{t.temperaturePresets[r.machineTemperature as keyof typeof t.temperaturePresets]?.split('(')[0].trim() || r.machineTemperature}</span>
               </span>
             )}
             <span className="text-[10px] text-[#8C7B6E] ml-auto">
