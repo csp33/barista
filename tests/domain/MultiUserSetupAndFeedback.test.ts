@@ -62,10 +62,10 @@ describe('Multiuser Equipment, Recipe & Feedback Isolation', () => {
     const carlosRecipe = carlosStash[0].recipe!;
     const mariaRecipe = mariaStash[0].recipe!;
 
-    // Carlos setup: DF64 Gen 2 (64mm flat) + Sage (54mm basket) -> 18.5g dose
+    // Carlos setup: DF64 Gen 2 (64mm flat) + Sage (54mm basket) -> 18.0g standard double dose
     expect(carlosRecipe.grinderId).toBe('df64-gen-2');
     expect(carlosRecipe.machineId).toBe('sage-barista-touch-impress');
-    expect(carlosRecipe.doseGrams).toBe(18.5);
+    expect(carlosRecipe.doseGrams).toBe(18.0);
 
     // Maria setup: Comandante C40 (39mm conical) + Gaggia Classic (58mm basket) -> 19.5g dose
     expect(mariaRecipe.grinderId).toBe('comandante-c40');

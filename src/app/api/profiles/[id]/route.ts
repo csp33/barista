@@ -38,6 +38,7 @@ export async function PUT(
       activeCoffeeId: body.activeCoffeeId,
       grinderId: body.grinderId,
       machineId: body.machineId,
+      basketDoseGrams: body.basketDoseGrams !== undefined ? Number(body.basketDoseGrams) : undefined,
     });
     Logger.info('API', `Profile updated: ${updated.name} (${updated.id})`);
     return NextResponse.json({ success: true, data: updated });

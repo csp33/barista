@@ -79,6 +79,19 @@ describe('UserProfile Application Use Cases', () => {
     expect(retrieved?.activeCoffeeId).toBe('coffee-sanjorge-dutra');
   });
 
+  it('updates profile equipment and custom basket dose', async () => {
+    const updated = await updateProfileUseCase.execute({
+      id: 'carlos',
+      grinderId: 'kingrinder-k6',
+      machineId: 'gaggia-classic-pro',
+      basketDoseGrams: 20.0,
+    });
+
+    expect(updated.grinderId).toBe('kingrinder-k6');
+    expect(updated.machineId).toBe('gaggia-classic-pro');
+    expect(updated.basketDoseGrams).toBe(20.0);
+  });
+
   it('throws when updating non-existent profile', async () => {
     await expect(
       updateProfileUseCase.execute({ id: 'non-existent', name: 'Ghost' })

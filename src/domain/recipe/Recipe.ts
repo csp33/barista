@@ -1,6 +1,7 @@
 import { SageTemperatureSetting } from '../equipment/EspressoMachine';
 
 export interface AiRationale {
+  doseWhy?: string;
   grindWhy: string;
   tempWhy: string;
   ratioWhy: string;

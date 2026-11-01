@@ -33,6 +33,7 @@ describe('Profiles API Route Handlers', () => {
       body: JSON.stringify({
         activeCoffeeId: 'coffee-sanjorge-dutra',
         language: 'en',
+        basketDoseGrams: 19.0,
       }),
     });
 
@@ -43,6 +44,7 @@ describe('Profiles API Route Handlers', () => {
     expect(json.success).toBe(true);
     expect(json.data.activeCoffeeId).toBe('coffee-sanjorge-dutra');
     expect(json.data.language).toBe('en');
+    expect(json.data.basketDoseGrams).toBe(19.0);
 
     // Verify it persists via GET
     const getRes = await getProfileById(new Request('http://localhost/api/profiles/carlos'), {
@@ -50,6 +52,7 @@ describe('Profiles API Route Handlers', () => {
     });
     const getJson = await getRes.json();
     expect(getJson.data.activeCoffeeId).toBe('coffee-sanjorge-dutra');
+    expect(getJson.data.basketDoseGrams).toBe(19.0);
   });
 
   it('POST /api/profiles creates a new profile', async () => {

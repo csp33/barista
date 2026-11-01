@@ -64,7 +64,7 @@ describe('OpenAiAdapters', () => {
     expect(diagnosis).toContain('moler más fino');
   });
 
-  it('OpenAiSommelierAdapter generates recipe rationale with 4 barista pillars', async () => {
+  it('OpenAiSommelierAdapter generates recipe rationale with 5 barista pillars', async () => {
     const sommelier = new OpenAiSommelierAdapter();
     const coffee = new Coffee({
       id: 'c3',
@@ -93,6 +93,7 @@ describe('OpenAiAdapters', () => {
     });
 
     const rationale = await sommelier.generateRationale(coffee, recipe);
+    expect(rationale.doseWhy).toBeDefined();
     expect(rationale.grindWhy).toBeDefined();
     expect(rationale.tempWhy).toBeDefined();
     expect(rationale.ratioWhy).toBeDefined();

@@ -5,11 +5,11 @@ import { useTranslation } from '../i18n/LanguageContext';
 import { useUserProfile } from '../context/UserProfileContext';
 import {
   PRESET_GRINDERS,
-  PRESET_MACHINES,
   findPresetGrinderById,
   findPresetMachineById,
 } from '@/infrastructure/equipment/EquipmentCatalogRepository';
-import { Compass, Thermometer, Check, RefreshCw } from 'lucide-react';
+import { Compass, Check, RefreshCw } from 'lucide-react';
+import { MachineGearCard } from './MachineGearCard';
 
 interface EquipmentViewProps {
   onEquipmentSaved?: () => void;
@@ -26,20 +26,31 @@ export const EquipmentView: React.FC<EquipmentViewProps> = ({ onEquipmentSaved }
   const [selectedMachineId, setSelectedMachineId] = useState(
     activeProfile?.machineId || 'sage-barista-touch-impress'
   );
+  const [selectedDoseGrams, setSelectedDoseGrams] = useState(
+    activeProfile?.basketDoseGrams ?? findPresetMachineById(activeProfile?.machineId).standardDoseGrams
+  );
   const [savedNotice, setSavedNotice] = useState(false);
 
   useEffect(() => {
     if (activeProfile) {
       setSelectedGrinderId(activeProfile.grinderId);
       setSelectedMachineId(activeProfile.machineId);
+      const m = findPresetMachineById(activeProfile.machineId);
+      setSelectedDoseGrams(activeProfile.basketDoseGrams ?? m.standardDoseGrams);
     }
   }, [activeProfile]);
 
   const currentGrinder = findPresetGrinderById(selectedGrinderId);
   const currentMachine = findPresetMachineById(selectedMachineId);
 
+  const handleMachineChange = (id: string) => {
+    setSelectedMachineId(id);
+    const m = findPresetMachineById(id);
+    setSelectedDoseGrams(m.standardDoseGrams);
+  };
+
   const handleSave = async () => {
-    await updateEquipment(selectedGrinderId, selectedMachineId);
+    await updateEquipment(selectedGrinderId, selectedMachineId, selectedDoseGrams);
     setSavedNotice(true);
     setTimeout(() => setSavedNotice(false), 3000);
     if (onEquipmentSaved) onEquipmentSaved();
@@ -47,11 +58,11 @@ export const EquipmentView: React.FC<EquipmentViewProps> = ({ onEquipmentSaved }
 
   const isChanged =
     selectedGrinderId !== activeProfile?.grinderId ||
-    selectedMachineId !== activeProfile?.machineId;
+    selectedMachineId !== activeProfile?.machineId ||
+    selectedDoseGrams !== (activeProfile?.basketDoseGrams ?? currentMachine.standardDoseGrams);
 
   return (
     <div className="space-y-4 px-4 py-3 pb-24 max-w-md mx-auto">
-      {/* Header */}
       <div className="flex items-start justify-between">
         <div>
           <h2 className="font-serif text-xl font-bold text-[#F7F2EB]">
@@ -64,7 +75,7 @@ export const EquipmentView: React.FC<EquipmentViewProps> = ({ onEquipmentSaved }
           </p>
         </div>
         {savedNotice && (
-          <span className="flex items-center gap-1 text-[11px] font-metric text-[#71BC8E] bg-[#16291E] border border-[#244733] px-2.5 py-1 rounded-full animate-in fade-in">
+          <span className="flex items-center gap-1 text-[11px] font-metric text-[#71BC8E] bg-[#16291E] border border-[#244733] px-2.5 py-1 rounded-full">
             <Check className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>{isEs ? 'Guardado' : 'Saved'}</span>
           </span>
@@ -122,52 +133,16 @@ export const EquipmentView: React.FC<EquipmentViewProps> = ({ onEquipmentSaved }
         </div>
       </div>
 
-      {/* Machine Card */}
-      <div className="bg-[#1A1512] border border-[#332820] rounded-2xl p-4 space-y-3 shadow-lg">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-[#E29D52]/20 text-[#E29D52] flex items-center justify-center shrink-0">
-            <Thermometer className="w-4 h-4" />
-          </div>
-          <div>
-            <span className="text-[10px] font-metric uppercase text-[#E29D52]">
-              {isEs ? 'Cafetera Espresso' : 'Espresso Machine'}
-            </span>
-            <h3 className="font-serif font-bold text-sm text-[#F7F2EB]">
-              {currentMachine.brand} {currentMachine.model}
-            </h3>
-          </div>
-        </div>
+      {/* Machine Card with Custom Basket Dose */}
+      <MachineGearCard
+        machine={currentMachine}
+        selectedMachineId={selectedMachineId}
+        selectedDoseGrams={selectedDoseGrams}
+        isEs={isEs}
+        onMachineChange={handleMachineChange}
+        onDoseChange={setSelectedDoseGrams}
+      />
 
-        <div>
-          <label className="text-[11px] text-[#8C7B6E] font-metric block mb-1">
-            {isEs ? 'Seleccionar cafetera:' : 'Select machine:'}
-          </label>
-          <select
-            value={selectedMachineId}
-            onChange={(e) => setSelectedMachineId(e.target.value)}
-            className="w-full bg-[#120F0D] border border-[#332820] rounded-xl px-3 py-2 text-xs text-[#F7F2EB] focus:outline-none focus:border-[#D96B27]"
-          >
-            {PRESET_MACHINES.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.brand} {m.model} ({m.portafilterSizeMm}mm)
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 text-xs font-metric">
-          <div className="bg-[#120F0D] border border-[#2B211A] rounded-xl p-2.5">
-            <span className="text-[10px] text-[#8C7B6E] block">{isEs ? 'Portafiltro' : 'Portafilter'}</span>
-            <span className="font-bold text-[#F7F2EB]">{currentMachine.portafilterSizeMm} mm</span>
-          </div>
-          <div className="bg-[#120F0D] border border-[#2B211A] rounded-xl p-2.5">
-            <span className="text-[10px] text-[#8C7B6E] block">{isEs ? 'Dosis Estándar' : 'Standard Dose'}</span>
-            <span className="font-bold text-[#F7F2EB]">{currentMachine.standardDoseGrams} g</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Save Button if changed */}
       {isChanged && (
         <button
           onClick={handleSave}

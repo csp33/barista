@@ -9,7 +9,8 @@ export class RecipeCalculator {
     coffee: Coffee,
     grinder: Grinder,
     machine: EspressoMachine,
-    userId: string
+    userId: string,
+    customDoseGrams?: number
   ): Recipe {
     if (!userId || userId.trim().length === 0) {
       throw new Error('UserId is required to calculate recipe');
@@ -21,17 +22,20 @@ export class RecipeCalculator {
       coffeeNameLower.includes('malabar') ||
       (coffee.originCountry.toLowerCase().includes('india') && coffeeNameLower.includes('monsoon'));
 
-    let doseGrams = machine.standardDoseGrams;
+    let doseGrams = customDoseGrams ?? machine.standardDoseGrams;
     if (isMonsooned) {
-      if (machine.portafilterSizeMm <= 51) doseGrams = 13.5;
+      if (customDoseGrams) doseGrams = Math.max(12, customDoseGrams - 1.5);
+      else if (machine.portafilterSizeMm <= 51) doseGrams = 13.5;
       else if (machine.portafilterSizeMm <= 54) doseGrams = 16.5;
       else doseGrams = 17.5;
     } else if (coffee.roastLevel === 'light' || (coffee.altitudeMasl && coffee.altitudeMasl >= 1800)) {
-      if (machine.portafilterSizeMm <= 51) doseGrams = 15.0;
-      else if (machine.portafilterSizeMm <= 54) doseGrams = 18.5;
+      if (customDoseGrams) doseGrams = customDoseGrams;
+      else if (machine.portafilterSizeMm <= 51) doseGrams = 15.0;
+      else if (machine.portafilterSizeMm <= 54) doseGrams = 18.0;
       else doseGrams = 19.5;
     } else if (coffee.roastLevel === 'medium_dark' || coffee.roastLevel === 'dark') {
-      if (machine.portafilterSizeMm <= 51) doseGrams = 14.0;
+      if (customDoseGrams) doseGrams = Math.max(12, customDoseGrams - 1.0);
+      else if (machine.portafilterSizeMm <= 51) doseGrams = 14.0;
       else if (machine.portafilterSizeMm <= 54) doseGrams = 17.0;
       else doseGrams = 18.0;
     }

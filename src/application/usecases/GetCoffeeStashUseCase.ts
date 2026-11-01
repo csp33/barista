@@ -44,11 +44,23 @@ export class GetCoffeeStashUseCase {
 
     for (const coffee of coffees) {
       let recipe = await this.recipeRepo.findByCoffeeId(coffee.id, cleanUserId);
+      const customDose = userProfile?.basketDoseGrams;
+      const expectedInitial = RecipeCalculator.calculateInitial(
+        coffee,
+        grinder,
+        machine,
+        cleanUserId,
+        customDose
+      );
       const equipmentChanged =
-        recipe && (recipe.grinderId !== grinder.id || recipe.machineId !== machine.id);
+        recipe && (
+          recipe.grinderId !== grinder.id ||
+          recipe.machineId !== machine.id ||
+          (customDose !== undefined && Math.abs(recipe.doseGrams - expectedInitial.doseGrams) > 0.01)
+        );
 
       if (!recipe || equipmentChanged) {
-        recipe = RecipeCalculator.calculateInitial(coffee, grinder, machine, cleanUserId);
+        recipe = expectedInitial;
         await this.recipeRepo.save(recipe);
       }
 

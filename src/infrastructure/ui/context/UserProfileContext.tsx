@@ -12,7 +12,7 @@ interface UserProfileContextType {
   selectProfile: (id: string) => Promise<void>;
   updateActiveCoffee: (coffeeId: string | null) => Promise<void>;
   updateSettings: (patch: { role?: UserRole; language?: 'es' | 'en' }) => Promise<void>;
-  updateEquipment: (grinderId: string, machineId: string) => Promise<void>;
+  updateEquipment: (grinderId: string, machineId: string, basketDoseGrams?: number) => Promise<void>;
   createProfile: (name: string, role?: UserRole) => Promise<UserProfile | null>;
   deleteProfile: (id: string) => Promise<boolean>;
   refreshProfiles: () => Promise<void>;
@@ -112,9 +112,9 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-  const updateEquipment = async (grinderId: string, machineId: string) => {
+  const updateEquipment = async (grinderId: string, machineId: string, basketDoseGrams?: number) => {
     if (!activeProfile) return;
-    const updated = activeProfile.withEquipment(grinderId, machineId);
+    const updated = activeProfile.withEquipment(grinderId, machineId, basketDoseGrams);
     setActiveProfile(updated);
     setProfiles((prev: UserProfile[]) =>
       prev.map((p: UserProfile) => (p.id === updated.id ? updated : p))
@@ -123,7 +123,7 @@ export const UserProfileProvider: React.FC<{ children: React.ReactNode }> = ({ c
       await fetch(`/api/profiles/${activeProfile.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ grinderId, machineId }),
+        body: JSON.stringify({ grinderId, machineId, basketDoseGrams }),
       });
     } catch (e) {
       console.error('Failed to sync equipment', e);

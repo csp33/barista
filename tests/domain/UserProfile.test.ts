@@ -53,4 +53,15 @@ describe('UserProfile Domain Entity', () => {
     expect(updated.role).toBe('admin');
     expect(updated.language).toBe('en');
   });
+
+  it('supports custom basket dose capacity configuration', () => {
+    const profile = new UserProfile({ id: 'carlos', name: 'Carlos' });
+    expect(profile.basketDoseGrams).toBeUndefined();
+
+    const withEquipment = profile.withEquipment('df64-gen-2', 'sage-barista-touch-impress', 20.0);
+    expect(withEquipment.basketDoseGrams).toBe(20.0);
+
+    const patched = profile.update({ basketDoseGrams: 17.5 });
+    expect(patched.basketDoseGrams).toBe(17.5);
+  });
 });

@@ -42,8 +42,11 @@ describe('RecipeExplainer', () => {
     });
 
     const recipe = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
-    const rationale = RecipeExplainer.explain(coffee, recipe);
+    const rationale = RecipeExplainer.explain(coffee, recipe, testMachine);
 
+    expect(rationale.doseWhy.es).toContain('16.5g');
+    expect(rationale.doseWhy.es).toContain('cesta de 54mm');
+    expect(rationale.doseWhy.en).toContain('16.5g');
     expect(rationale.grindWhy.es).toContain('Grano monsonado poroso');
     expect(rationale.grindWhy.es).toContain('5.5');
     expect(rationale.grindWhy.en).toContain('Monsooned beans');
@@ -64,8 +67,10 @@ describe('RecipeExplainer', () => {
     });
 
     const recipe = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
-    const rationale = RecipeExplainer.explain(coffee, recipe);
+    const rationale = RecipeExplainer.explain(coffee, recipe, testMachine);
 
+    expect(rationale.doseWhy.es).toContain('18g');
+    expect(rationale.doseWhy.es).toContain('cesta de 54mm');
     expect(rationale.grindWhy.es).toContain('Brasil');
     expect(rationale.grindWhy.es).toContain('rango 10-15');
     expect(rationale.grindWhy.en).toContain('Brazil');
@@ -86,8 +91,10 @@ describe('RecipeExplainer', () => {
     });
 
     const recipe = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
-    const rationale = RecipeExplainer.explain(coffee, recipe);
+    const rationale = RecipeExplainer.explain(coffee, recipe, testMachine);
 
+    expect(rationale.doseWhy.es).toContain('18g');
+    expect(rationale.doseWhy.es).toContain('Grano denso');
     expect(rationale.tempWhy.es).toContain('Muy Alta (96°C)');
     expect(rationale.tempWhy.en).toContain('Very High temperature (96°C)');
     expect(rationale.ratioWhy.es).toContain('Ratio alargado');

@@ -8,6 +8,7 @@ export interface UserProfileProps {
   activeCoffeeId?: string | null;
   grinderId?: string;
   machineId?: string;
+  basketDoseGrams?: number;
   avatar?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -21,6 +22,7 @@ export class UserProfile {
   readonly activeCoffeeId: string | null;
   readonly grinderId: string;
   readonly machineId: string;
+  readonly basketDoseGrams?: number;
   readonly avatar: string;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -40,6 +42,7 @@ export class UserProfile {
     this.activeCoffeeId = props.activeCoffeeId ?? null;
     this.grinderId = props.grinderId ?? 'df64-gen-2';
     this.machineId = props.machineId ?? 'sage-barista-touch-impress';
+    this.basketDoseGrams = props.basketDoseGrams;
     this.avatar = props.avatar ?? this.name.slice(0, 2).toUpperCase();
     this.createdAt = props.createdAt ?? new Date();
     this.updatedAt = props.updatedAt ?? new Date();
@@ -69,11 +72,12 @@ export class UserProfile {
     });
   }
 
-  withEquipment(grinderId: string, machineId: string): UserProfile {
+  withEquipment(grinderId: string, machineId: string, basketDoseGrams?: number): UserProfile {
     return new UserProfile({
       ...this,
       grinderId,
       machineId,
+      basketDoseGrams: basketDoseGrams !== undefined ? basketDoseGrams : this.basketDoseGrams,
       updatedAt: new Date(),
     });
   }
@@ -88,6 +92,8 @@ export class UserProfile {
         patch.activeCoffeeId !== undefined ? patch.activeCoffeeId : this.activeCoffeeId,
       grinderId: patch.grinderId !== undefined ? patch.grinderId : this.grinderId,
       machineId: patch.machineId !== undefined ? patch.machineId : this.machineId,
+      basketDoseGrams:
+        patch.basketDoseGrams !== undefined ? patch.basketDoseGrams : this.basketDoseGrams,
       avatar: patch.avatar !== undefined ? patch.avatar : this.avatar,
       createdAt: this.createdAt,
       updatedAt: new Date(),

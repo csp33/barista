@@ -9,6 +9,7 @@ export interface UpdateUserProfileDTO {
   activeCoffeeId?: string | null;
   grinderId?: string;
   machineId?: string;
+  basketDoseGrams?: number;
 }
 
 export class UpdateUserProfileUseCase {
@@ -29,6 +30,8 @@ export class UpdateUserProfileUseCase {
         dto.activeCoffeeId !== undefined ? dto.activeCoffeeId : existing.activeCoffeeId,
       grinderId: dto.grinderId !== undefined ? dto.grinderId : existing.grinderId,
       machineId: dto.machineId !== undefined ? dto.machineId : existing.machineId,
+      basketDoseGrams:
+        dto.basketDoseGrams !== undefined ? dto.basketDoseGrams : existing.basketDoseGrams,
     });
 
     await this.userProfileRepo.save(updated);

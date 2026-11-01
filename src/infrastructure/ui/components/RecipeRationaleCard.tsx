@@ -11,7 +11,7 @@ import {
   findPresetMachineById,
 } from '@/infrastructure/equipment/EquipmentCatalogRepository';
 import { useTranslation } from '../i18n/LanguageContext';
-import { Compass, Thermometer, Scale, Clock, Sparkles } from 'lucide-react';
+import { Layers, Compass, Thermometer, Scale, Clock, Sparkles } from 'lucide-react';
 
 interface RecipeRationaleCardProps {
   coffee: Coffee;
@@ -29,26 +29,31 @@ export const RecipeRationaleCard: React.FC<RecipeRationaleCardProps> = ({
   const { language } = useTranslation();
   const g = grinder || findPresetGrinderById(recipe.grinderId);
   const m = machine || findPresetMachineById(recipe.machineId);
-  const deterministic = RecipeExplainer.explain(coffee, recipe);
+  const deterministic = RecipeExplainer.explain(coffee, recipe, m);
 
   const items = [
     {
-      icon: <Compass className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />,
+      icon: <Layers className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />,
+      title: language === 'es' ? `Dosis (${recipe.doseGrams}g • ${m.portafilterSizeMm}mm)` : `Dose (${recipe.doseGrams}g • ${m.portafilterSizeMm}mm)`,
+      text: recipe.aiRationale?.doseWhy || deterministic.doseWhy[language],
+    },
+    {
+      icon: <Compass className="w-3.5 h-3.5 text-[#E29D52] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? `Molienda ${g.brand} #${recipe.grindSetting}` : `${g.brand} Grind #${recipe.grindSetting}`,
       text: recipe.aiRationale?.grindWhy || deterministic.grindWhy[language],
     },
     {
-      icon: <Thermometer className="w-3.5 h-3.5 text-[#E29D52] flex-shrink-0 mt-0.5" />,
+      icon: <Thermometer className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? `Temperatura ${m.brand}` : `${m.brand} Temp`,
       text: recipe.aiRationale?.tempWhy || deterministic.tempWhy[language],
     },
     {
-      icon: <Scale className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />,
+      icon: <Scale className="w-3.5 h-3.5 text-[#E29D52] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? `Ratio & Salida (${recipe.ratio})` : `Ratio & Yield (${recipe.ratio})`,
       text: recipe.aiRationale?.ratioWhy || deterministic.ratioWhy[language],
     },
     {
-      icon: <Clock className="w-3.5 h-3.5 text-[#E29D52] flex-shrink-0 mt-0.5" />,
+      icon: <Clock className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? `Ventana de Reposo (${coffee.recommendedRestDays}d)` : `Rest Window (${coffee.recommendedRestDays}d)`,
       text: recipe.aiRationale?.restWhy || deterministic.restWhy[language],
     },

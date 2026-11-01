@@ -93,8 +93,8 @@ Da una explicación física breve de lo ocurrido y la acción correctora exacta.
     try {
       const prompt = `Como maestro barista de especialidad, fundamenta en JSON este ajuste técnico:
 Café: ${coffee.name} (${coffee.roaster}, ${coffee.originCountry}, ${coffee.process}, ${coffee.roastLevel})
-Ajuste: Molienda #${recipe.grindSetting}, Temperatura ${recipe.machineTemperature}, Ratio ${recipe.ratio} (${recipe.doseGrams}g -> ${recipe.yieldGrams}g), Reposo ${coffee.recommendedRestDays}d.
-Devuelve un JSON con claves exactas: grindWhy, tempWhy, ratioWhy, restWhy. Cada una una frase técnica y convincente en español.`;
+Ajuste: Dosis ${recipe.doseGrams}g, Molienda #${recipe.grindSetting}, Temperatura ${recipe.machineTemperature}, Ratio ${recipe.ratio} (${recipe.doseGrams}g -> ${recipe.yieldGrams}g), Reposo ${coffee.recommendedRestDays}d.
+Devuelve un JSON con claves exactas: doseWhy, grindWhy, tempWhy, ratioWhy, restWhy. Cada una una frase técnica y convincente en español.`;
 
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -106,7 +106,7 @@ Devuelve un JSON con claves exactas: grindWhy, tempWhy, ratioWhy, restWhy. Cada 
           model: 'gpt-4o-mini',
           messages: [{ role: 'user', content: prompt }],
           response_format: { type: 'json_object' },
-          max_tokens: 280,
+          max_tokens: 340,
           temperature: 0.3,
         }),
         signal: AbortSignal.timeout(8000),
@@ -116,7 +116,10 @@ Devuelve un JSON con claves exactas: grindWhy, tempWhy, ratioWhy, restWhy. Cada 
       const json = await res.json();
       const parsed = JSON.parse(json.choices[0]?.message?.content || '{}');
       if (parsed.grindWhy && parsed.tempWhy && parsed.ratioWhy && parsed.restWhy) {
-        return parsed as AiRationale;
+        return {
+          ...parsed,
+          doseWhy: parsed.doseWhy || this.fallbackRationale(coffee, recipe).doseWhy,
+        } as AiRationale;
       }
       return this.fallbackRationale(coffee, recipe);
     } catch (err) {
@@ -128,6 +131,7 @@ Devuelve un JSON con claves exactas: grindWhy, tempWhy, ratioWhy, restWhy. Cada 
   private fallbackRationale(coffee: Coffee, recipe: Recipe): AiRationale {
     const r = RecipeExplainer.explain(coffee, recipe);
     return {
+      doseWhy: r.doseWhy.es,
       grindWhy: r.grindWhy.es,
       tempWhy: r.tempWhy.es,
       ratioWhy: r.ratioWhy.es,

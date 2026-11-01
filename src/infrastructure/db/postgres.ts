@@ -87,6 +87,8 @@ export async function initDatabase(): Promise<void> {
     );
     CREATE INDEX IF NOT EXISTS idx_feedbacks_recipe ON extraction_feedbacks(recipe_id);
     CREATE INDEX IF NOT EXISTS idx_feedbacks_user ON extraction_feedbacks(user_id);
+
+    ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS basket_dose_grams NUMERIC(4, 1);
   `);
 
   // Seed default Carlos profile if table is empty
