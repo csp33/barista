@@ -101,7 +101,7 @@ function BaristaDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#14100D] text-[#F7F2EB] flex flex-col">
+    <div className="min-h-screen bg-[#14100D] text-[#F7F2EB] flex flex-col w-full max-w-full overflow-x-hidden">
       <Header onGoHome={() => setActiveTab('stash')} />
       <main className="flex-1 max-w-2xl mx-auto w-full">
         {loading ? (
