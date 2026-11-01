@@ -5,6 +5,18 @@ test.describe('Barista Dashboard interaction and navigation', () => {
     await page.addInitScript(() => {
       localStorage.setItem('barista_active_profile_id', 'carlos');
     });
+    // Isolate profile mutations per worker to prevent shared DB race conditions in parallel runs
+    await page.route('**/api/profiles/**', async (route, request) => {
+      if (request.method() === 'PUT') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true }),
+        });
+      } else {
+        await route.continue();
+      }
+    });
   });
 
   test('navigates between stash and equipment gear views', async ({ page }) => {

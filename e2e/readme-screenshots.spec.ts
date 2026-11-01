@@ -17,6 +17,18 @@ test.describe('README Screenshots Automated Generator', () => {
       localStorage.setItem('barista_lang', 'en');
     });
 
+    await page.route('**/api/profiles/**', async (route, request) => {
+      if (request.method() === 'PUT') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true }),
+        });
+      } else {
+        await route.continue();
+      }
+    });
+
     await page.goto('/');
 
     // Hide Next.js Dev Tools floating indicator for clean documentation screenshots
