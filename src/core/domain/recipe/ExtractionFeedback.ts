@@ -15,6 +15,7 @@ export interface ExtractionFeedbackProps {
   actualTimeSeconds: number;
   tasteProfile: TasteProfile;
   userNotes?: string;
+  aiDiagnosis?: string;
   createdAt?: Date;
 }
 
@@ -27,6 +28,7 @@ export class ExtractionFeedback {
   readonly actualTimeSeconds: number;
   readonly tasteProfile: TasteProfile;
   readonly userNotes?: string;
+  readonly aiDiagnosis?: string;
   readonly createdAt: Date;
 
   constructor(props: ExtractionFeedbackProps) {
@@ -38,6 +40,7 @@ export class ExtractionFeedback {
     this.actualTimeSeconds = props.actualTimeSeconds;
     this.tasteProfile = props.tasteProfile;
     this.userNotes = props.userNotes?.trim();
+    this.aiDiagnosis = props.aiDiagnosis?.trim();
     this.createdAt = props.createdAt ?? new Date();
   }
 }

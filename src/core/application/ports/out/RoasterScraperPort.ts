@@ -12,8 +12,9 @@ export interface ScrapedCoffeeData {
   roastLevel: CoffeeProps['roastLevel'];
   tastingNotes: string[];
   recommendedRestDays?: number;
-  sourceUrl: string;
+  sourceUrl?: string;
   imageUrl?: string;
+  sommelierStory?: string;
 }
 
 export interface RoasterScraperPort {

@@ -44,6 +44,15 @@ export const RecipeRationaleCard: React.FC<RecipeRationaleCardProps> = ({
 
   return (
     <div className="bg-[#191411] border border-[#35281E] rounded-2xl p-4 space-y-3">
+      {coffee.sommelierStory && (
+        <div className="bg-[#130F0D] border border-[#2E241D] rounded-xl p-3 text-[11px] text-[#D8C7B9] leading-relaxed italic border-l-2 border-l-[#D96B27]">
+          <span className="font-serif not-italic font-bold text-[#E29D52] block text-[10px] uppercase tracking-wider mb-1">
+            {language === 'es' ? 'Notas de Sommelier & Terroir' : 'Sommelier Notes & Terroir'}
+          </span>
+          &ldquo;{coffee.sommelierStory}&rdquo;
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <h3 className="text-xs font-serif font-bold text-[#F7F2EB] flex items-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5 text-[#D96B27]" />

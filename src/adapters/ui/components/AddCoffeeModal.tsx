@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { CoffeeProps } from '@/core/domain/coffee/Coffee';
-import { X, Link2, Sparkles, Loader2 } from 'lucide-react';
+import { X, Link2, Sparkles, Loader2, Camera } from 'lucide-react';
 
 interface AddCoffeeModalProps {
   isOpen: boolean;
@@ -22,7 +22,8 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
   onClose,
   onScraped,
 }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<string | null>(null);
@@ -30,12 +31,33 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
 
   if (!isOpen) return null;
 
+  const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLoading(true); setError(null);
+    setStep(language === 'es' ? 'Analizando bolsa con IA Vision...' : 'Analyzing bag with AI Vision...');
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64 = (reader.result as string).split(',')[1];
+        const res = await fetch('/api/coffees/scan-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: base64, mimeType: file.type }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error || 'Vision scan failed');
+        setStep(null); onClose(); onScraped(data.data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Vision scan failed');
+      } finally { setLoading(false); }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (targetUrl: string) => {
     if (!targetUrl.trim()) return;
-    setLoading(true);
-    setError(null);
-    setStep(t.analyzingRoaster);
-
+    setLoading(true); setError(null); setStep(t.analyzingRoaster);
     try {
       const res = await fetch('/api/coffees/scrape', {
         method: 'POST',
@@ -43,15 +65,8 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
         body: JSON.stringify({ url: targetUrl.trim() }),
       });
       const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to extract coffee');
-      }
-
-      setStep(null);
-      setUrl('');
-      onClose();
-      onScraped(data.data);
+      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to extract coffee');
+      setStep(null); setUrl(''); onClose(); onScraped(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Scraping failed');
     } finally {
@@ -81,12 +96,37 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
           </div>
         </div>
 
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept="image/*"
+          capture="environment"
+          onChange={handleImageFile}
+          className="hidden"
+        />
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={loading}
+          className="w-full mt-2 p-3 rounded-xl bg-[#261E18] hover:bg-[#33271F] border border-[#443528] text-xs text-[#F7F2EB] flex items-center justify-center gap-2 font-semibold transition-all active:scale-95"
+        >
+          <Camera className="w-4 h-4 text-[#D96B27]" />
+          <span>{language === 'es' ? 'Escanear Bolsa (Foto IA Vision)' : 'Scan Bag Label (AI Vision)'}</span>
+        </button>
+
+        <div className="flex items-center gap-2 my-2.5">
+          <div className="flex-1 h-px bg-[#30261E]" />
+          <span className="text-[10px] text-[#8C7B6E] uppercase font-metric">{language === 'es' ? 'o pega una url' : 'or paste url'}</span>
+          <div className="flex-1 h-px bg-[#30261E]" />
+        </div>
+
         <form
           onSubmit={e => {
             e.preventDefault();
             handleSubmit(url);
           }}
-          className="space-y-3 mt-4"
+          className="space-y-3"
         >
           <div className="relative">
             <Link2 className="w-4 h-4 text-[#A8988B] absolute left-3.5 top-3.5" />

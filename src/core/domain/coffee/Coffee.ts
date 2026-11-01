@@ -31,6 +31,7 @@ export interface CoffeeProps {
   sourceUrl?: string;
   imageUrl?: string;
   status?: CoffeeStatus;
+  sommelierStory?: string;
   createdAt?: Date;
 }
 
@@ -50,6 +51,7 @@ export class Coffee {
   readonly sourceUrl?: string;
   readonly imageUrl?: string;
   readonly status: CoffeeStatus;
+  readonly sommelierStory?: string;
   readonly createdAt: Date;
 
   constructor(props: CoffeeProps) {
@@ -76,6 +78,7 @@ export class Coffee {
     this.sourceUrl = props.sourceUrl?.trim();
     this.imageUrl = props.imageUrl?.trim();
     this.status = props.status ?? 'active';
+    this.sommelierStory = props.sommelierStory?.trim();
     this.createdAt = props.createdAt ?? new Date();
   }
 

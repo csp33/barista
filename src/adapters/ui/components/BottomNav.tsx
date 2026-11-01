@@ -27,11 +27,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       badge: activeCount,
     },
     {
-      id: 'bar',
-      label: t.navBar,
-      icon: <Coffee className="w-5 h-5 stroke-[2.2]" />,
-    },
-    {
       id: 'gear',
       label: t.navGear,
       icon: <Sliders className="w-5 h-5 stroke-[2.2]" />,
@@ -42,7 +37,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#16120F]/95 backdrop-blur-lg border-t border-[#332820] py-2 px-6 safe-bottom shadow-2xl">
       <div className="max-w-md mx-auto flex items-center justify-around">
         {tabs.map(tab => {
-          const isActive = activeTab === tab.id;
+          const isActive = tab.id === 'stash' ? (activeTab === 'stash' || activeTab === 'bar') : activeTab === tab.id;
           return (
             <button
               key={tab.id}

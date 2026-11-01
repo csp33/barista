@@ -21,7 +21,7 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
   onEditCoffee,
   onToggleStatus,
 }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const c = item.coffee;
   const r = item.recipe;
   const processLabel = t.processes[c.process] || c.process;
@@ -81,12 +81,10 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
       <div className="flex items-center justify-between px-3.5 py-2.5 bg-[#14100D] border-t border-[#2A211A] text-xs">
         <button
           onClick={() => onSelectForBrew(c.id)}
-          className={`font-semibold flex items-center gap-1.5 transition-colors ${
-            isSelected ? 'text-[#D96B27]' : 'text-[#F7F2EB] hover:text-[#D96B27]'
-          }`}
+          className="font-semibold flex items-center gap-1.5 text-[#E29D52] hover:text-[#F7F2EB] transition-colors"
         >
-          <CheckCircle className="w-3.5 h-3.5" />
-          <span>{isSelected ? t.onBarActive : t.selectForBrew}</span>
+          <CoffeeIcon className="w-3.5 h-3.5 text-[#D96B27]" />
+          <span>{language === 'es' ? 'Calibrar Espresso →' : 'Dial In Espresso →'}</span>
         </button>
 
         <div className="flex items-center gap-3">

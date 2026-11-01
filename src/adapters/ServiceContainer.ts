@@ -3,6 +3,8 @@ import { RecipeCalculator } from '@/core/domain/recipe/RecipeCalculator';
 import { InMemoryCoffeeRepository } from './out/persistence/memory/InMemoryCoffeeRepository';
 import { InMemoryRecipeRepository } from './out/persistence/memory/InMemoryRecipeRepository';
 import { RoasterScraperAdapter } from './out/scraping/RoasterScraperAdapter';
+import { OpenAiVisionScannerAdapter } from './out/ai/OpenAiVisionScannerAdapter';
+import { OpenAiSommelierAdapter } from './out/ai/OpenAiSommelierAdapter';
 import { AddCoffeeUseCase } from '@/core/application/usecases/AddCoffeeUseCase';
 import { LogFeedbackUseCase } from '@/core/application/usecases/LogFeedbackUseCase';
 import { GetCoffeeStashUseCase } from '@/core/application/usecases/GetCoffeeStashUseCase';
@@ -68,6 +70,8 @@ class ServiceContainer {
   readonly coffeeRepo: InMemoryCoffeeRepository;
   readonly recipeRepo: InMemoryRecipeRepository;
   readonly scraper: RoasterScraperAdapter;
+  readonly visionScanner: OpenAiVisionScannerAdapter;
+  readonly sommelier: OpenAiSommelierAdapter;
 
   readonly addCoffeeUseCase: AddCoffeeUseCase;
   readonly logFeedbackUseCase: LogFeedbackUseCase;
@@ -78,6 +82,8 @@ class ServiceContainer {
     this.coffeeRepo = new InMemoryCoffeeRepository(INITIAL_COFFEES);
     this.recipeRepo = new InMemoryRecipeRepository();
     this.scraper = new RoasterScraperAdapter();
+    this.visionScanner = new OpenAiVisionScannerAdapter();
+    this.sommelier = new OpenAiSommelierAdapter();
 
     for (const coffee of INITIAL_COFFEES) {
       const recipe = RecipeCalculator.calculateInitial(coffee);
@@ -87,9 +93,14 @@ class ServiceContainer {
     this.addCoffeeUseCase = new AddCoffeeUseCase(
       this.coffeeRepo,
       this.recipeRepo,
-      this.scraper
+      this.scraper,
+      this.sommelier
     );
-    this.logFeedbackUseCase = new LogFeedbackUseCase(this.recipeRepo);
+    this.logFeedbackUseCase = new LogFeedbackUseCase(
+      this.recipeRepo,
+      this.coffeeRepo,
+      this.sommelier
+    );
     this.getCoffeeStashUseCase = new GetCoffeeStashUseCase(
       this.coffeeRepo,
       this.recipeRepo
