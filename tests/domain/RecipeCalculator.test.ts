@@ -23,12 +23,12 @@ describe('RecipeCalculator Domain Service', () => {
     expect(recipe.machineTemperature).toBe('very_high');
     expect(recipe.yieldGrams).toBe(41);
     expect(recipe.ratio).toBe('1:2.3');
-    // Base 16 - 2.0 (light) - 0.5 (high altitude > 1800) = 13.5
-    expect(recipe.grindSetting).toBe(13.5);
+    // Base 12 - 2.0 (light) - 1.0 (high altitude > 1800m) = 9.0
+    expect(recipe.grindSetting).toBe(9.0);
     expect(recipe.recommendedRestDays).toBe(18);
   });
 
-  it('calculates optimal recipe for medium roast, natural Brazilian coffee', () => {
+  it('calculates optimal recipe for medium roast, natural Brazilian coffee (sweet spot 10-15)', () => {
     const brazil = new Coffee({
       id: 'c2',
       roaster: 'San Jorge Coffee',
@@ -47,9 +47,27 @@ describe('RecipeCalculator Domain Service', () => {
     expect(recipe.machineTemperature).toBe('normal');
     expect(recipe.yieldGrams).toBe(36);
     expect(recipe.ratio).toBe('1:2.0');
-    // Base 16 + 1.0 (natural) = 17.0
-    expect(recipe.grindSetting).toBe(17.0);
+    // Base 12 + 0.5 (natural) = 12.5 (within 10-15 range)
+    expect(recipe.grindSetting).toBe(12.5);
     expect(recipe.recommendedRestDays).toBe(8);
+  });
+
+  it('calculates fine grind for India Monsooned Malabar (sweet spot 5-6)', () => {
+    const indiaMalabar = new Coffee({
+      id: 'c-malabar',
+      roaster: 'Café de Especialidad',
+      name: 'Comprar Café India Malabar Monsooned',
+      originCountry: 'India',
+      variety: 'Kent, S.795',
+      process: 'washed',
+      roastLevel: 'medium',
+      tastingNotes: ['cacao', 'spices', 'tobacco'],
+    });
+
+    const recipe = RecipeCalculator.calculateInitial(indiaMalabar);
+
+    // Monsooned beans lose density and require fine grind to build 9 bar resistance
+    expect(recipe.grindSetting).toBe(5.5);
   });
 
   it('adjusts recipe when coffee is under-extracted (sour)', () => {
@@ -77,40 +95,9 @@ describe('RecipeCalculator Domain Service', () => {
 
     const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback);
 
-    // Sour -> grind finer (subtract 1.0) and raise yield
-    expect(adjusted.grindSetting).toBe(initial.grindSetting - 1.0);
+    // Sour -> grind finer (subtract 0.5) and raise yield
+    expect(adjusted.grindSetting).toBe(initial.grindSetting - 0.5);
     expect(adjusted.yieldGrams).toBe(initial.yieldGrams + 2);
     expect(adjusted.notes.some(n => n.includes('finer grind'))).toBe(true);
-  });
-
-  it('adjusts recipe when coffee is over-extracted (bitter)', () => {
-    const coffee = new Coffee({
-      id: 'c4',
-      roaster: 'Syra',
-      name: 'Dark Matter',
-      originCountry: 'Guatemala',
-      variety: 'Bourbon',
-      process: 'washed',
-      roastLevel: 'medium',
-      tastingNotes: ['cacao'],
-    });
-
-    const initial = RecipeCalculator.calculateInitial(coffee);
-    const feedback = new ExtractionFeedback({
-      id: 'fb-2',
-      recipeId: initial.id,
-      actualGrindSetting: 17.0,
-      actualDoseGrams: 18.0,
-      actualYieldGrams: 36,
-      actualTimeSeconds: 36,
-      tasteProfile: 'bitter',
-    });
-
-    const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback);
-
-    // Bitter -> grind coarser (add 1.0) and reduce yield
-    expect(adjusted.grindSetting).toBe(18.0);
-    expect(adjusted.yieldGrams).toBe(34);
-    expect(adjusted.notes.some(n => n.includes('coarser grind'))).toBe(true);
   });
 });

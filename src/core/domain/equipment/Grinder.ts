@@ -17,5 +17,5 @@ export const DF64_GEN_2: Grinder = {
   burrType: 'flat',
   minDial: 0,
   maxDial: 90,
-  defaultEspressoBaseline: 16.0,
+  defaultEspressoBaseline: 12.0,
 };
