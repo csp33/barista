@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '../i18n/LanguageContext';
 import { Coffee, Layers, Sliders } from 'lucide-react';
 
 export type NavTab = 'bar' | 'stash' | 'gear';
@@ -16,21 +17,23 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onChangeTab,
   activeCount,
 }) => {
+  const { t } = useTranslation();
+
   const tabs: { id: NavTab; label: string; icon: React.ReactNode; badge?: number }[] = [
     {
       id: 'bar',
-      label: 'Barista',
+      label: t.navBar,
       icon: <Coffee className="w-5 h-5 stroke-[2.2]" />,
     },
     {
       id: 'stash',
-      label: 'Mi Café',
+      label: t.navStash,
       icon: <Layers className="w-5 h-5 stroke-[2.2]" />,
       badge: activeCount,
     },
     {
       id: 'gear',
-      label: 'Mi Equipo',
+      label: t.navGear,
       icon: <Sliders className="w-5 h-5 stroke-[2.2]" />,
     },
   ];

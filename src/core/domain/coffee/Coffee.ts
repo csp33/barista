@@ -67,7 +67,7 @@ export class Coffee {
     this.region = props.region?.trim();
     this.producer = props.producer?.trim();
     this.altitudeMasl = props.altitudeMasl;
-    this.variety = props.variety.trim();
+    this.variety = props.variety?.trim();
     this.process = props.process;
     this.roastLevel = props.roastLevel;
     this.tastingNotes = props.tastingNotes || [];

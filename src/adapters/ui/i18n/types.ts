@@ -66,4 +66,16 @@ export interface Translations {
     very_high: string;
   };
   sampleUrlsLabel: string;
+  navBar: string;
+  navStash: string;
+  navGear: string;
+  stashCollection: string;
+  stashActive: string;
+  stashHistory: string;
+  emptyStash: string;
+  onBarActive: string;
+  selectForBrew: string;
+  moveToHistory: string;
+  moveToActive: string;
+  extractionsCount: string;
 }

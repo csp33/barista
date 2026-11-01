@@ -1,17 +1,21 @@
 'use client';
 
 import React from 'react';
-import { Compass, Thermometer, ShieldCheck, Zap } from 'lucide-react';
+import { useTranslation } from '../i18n/LanguageContext';
+import { Compass, Thermometer, Zap } from 'lucide-react';
 
 export const EquipmentView: React.FC = () => {
+  const { language } = useTranslation();
+  const isEs = language === 'es';
+
   return (
     <div className="space-y-5 px-4 py-4 pb-24 max-w-md mx-auto">
       <div>
         <h2 className="font-serif text-xl font-bold text-[#F7F2EB]">
-          Mi Configuración
+          {isEs ? 'Mi Configuración' : 'My Equipment'}
         </h2>
         <p className="text-xs text-[#A8988B]">
-          DF64 Gen II y Sage Barista Touch Impress
+          DF64 Gen II & Sage Barista Touch Impress
         </p>
       </div>
 
@@ -22,18 +26,22 @@ export const EquipmentView: React.FC = () => {
             <Compass className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-metric uppercase text-[#E29D52]">Molino Monodosis</span>
+            <span className="text-[10px] font-metric uppercase text-[#E29D52]">
+              {isEs ? 'Molino Monodosis' : 'Single-Dose Grinder'}
+            </span>
             <h3 className="font-serif font-bold text-base text-[#F7F2EB]">DF64 Gen II</h3>
           </div>
         </div>
 
         <p className="text-xs text-[#C8B8AB] leading-relaxed">
-          Muelas planas de 64mm con collarín micrométrico stepless (0–90). Retención cercana a cero con fuelle.
+          {isEs
+            ? 'Muelas planas de 64mm con collarín micrométrico stepless (0–90). Retención cercana a cero con fuelle.'
+            : '64mm custom flat burrs with stepless micrometric collar (0–90). Zero retention silicone bellows.'}
         </p>
 
         <div className="bg-[#120F0D] border border-[#2B211A] rounded-xl p-3 text-xs space-y-1.5 font-metric">
           <div className="flex justify-between">
-            <span className="text-[#8C7B6E]">Rango Espresso Típico:</span>
+            <span className="text-[#8C7B6E]">{isEs ? 'Rango Espresso Típico:' : 'Typical Espresso Range:'}</span>
             <span className="font-bold text-[#F7F2EB]">#5.0 – #15.0</span>
           </div>
           <div className="flex justify-between">
@@ -45,7 +53,7 @@ export const EquipmentView: React.FC = () => {
             <span className="font-bold text-[#D96B27]">#11.0 – #14.0</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-[#8C7B6E]">Etiopía / Lavado Claro:</span>
+            <span className="text-[#8C7B6E]">{isEs ? 'Etiopía / Lavado Claro:' : 'Ethiopia / Light Washed:'}</span>
             <span className="font-bold text-[#D96B27]">#8.5 – #10.0</span>
           </div>
         </div>
@@ -58,23 +66,27 @@ export const EquipmentView: React.FC = () => {
             <Thermometer className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[10px] font-metric uppercase text-[#E29D52]">Cafetera Espresso</span>
+            <span className="text-[10px] font-metric uppercase text-[#E29D52]">
+              {isEs ? 'Cafetera Espresso' : 'Espresso Machine'}
+            </span>
             <h3 className="font-serif font-bold text-base text-[#F7F2EB]">Sage Barista Touch Impress</h3>
           </div>
         </div>
 
         <p className="text-xs text-[#C8B8AB] leading-relaxed">
-          Portafiltro de 54mm, sistema ThermoJet de calentamiento instantáneo (3s) y apisonado asistido Impress Puck System (10kg + giro 7°).
+          {isEs
+            ? 'Portafiltro de 54mm, sistema ThermoJet de calentamiento instantáneo (3s) y apisonado asistido Impress Puck System (10kg + giro 7°).'
+            : '54mm portafilter, instant ThermoJet heating (3s) and assisted Impress Puck System tamping (10kg + 7° twist).'}
         </p>
 
         <div className="grid grid-cols-2 gap-2 text-xs font-metric">
           <div className="bg-[#120F0D] border border-[#2B211A] rounded-xl p-2.5">
-            <span className="text-[10px] text-[#8C7B6E] block">Dosis Cesta Doble</span>
-            <span className="font-bold text-[#F7F2EB]">18.0 gramos</span>
+            <span className="text-[10px] text-[#8C7B6E] block">{isEs ? 'Dosis Cesta Doble' : 'Double Basket Dose'}</span>
+            <span className="font-bold text-[#F7F2EB]">18.0 g</span>
           </div>
           <div className="bg-[#120F0D] border border-[#2B211A] rounded-xl p-2.5">
-            <span className="text-[10px] text-[#8C7B6E] block">Tiempo Objetivo</span>
-            <span className="font-bold text-[#F7F2EB]">25 – 30 segundos</span>
+            <span className="text-[10px] text-[#8C7B6E] block">{isEs ? 'Tiempo Objetivo' : 'Target Extraction'}</span>
+            <span className="font-bold text-[#F7F2EB]">25 – 30 s</span>
           </div>
         </div>
       </div>
@@ -83,10 +95,12 @@ export const EquipmentView: React.FC = () => {
       <div className="bg-[#16120F] border border-[#291F18] rounded-2xl p-4 space-y-2">
         <h4 className="font-serif font-bold text-sm text-[#F7F2EB] flex items-center gap-1.5">
           <Zap className="w-4 h-4 text-[#D96B27]" />
-          Consejo de Barista para Sage 54mm
+          {isEs ? 'Consejo de Barista para Sage 54mm' : 'Barista Tip for Sage 54mm'}
         </h4>
         <p className="text-xs text-[#A8988B] leading-relaxed">
-          Al usar el DF64 II para moler directamente en el portafiltro de 54mm, utiliza siempre una aguja WDT para desapelmazar y nivelar antes de activar la palanca de prensado asistido Impress.
+          {isEs
+            ? 'Al moler con el DF64 II para la cesta de 54mm, usa siempre una aguja WDT para desapelmazar antes de accionar la palanca Impress.'
+            : 'When grinding with DF64 II into the 54mm basket, always use a WDT needle tool to declump before pulling the Impress lever.'}
         </p>
       </div>
     </div>

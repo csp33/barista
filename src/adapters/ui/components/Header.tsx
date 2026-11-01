@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
                 {t.appName}
               </h1>
               <span className="text-[10px] font-metric bg-[#281F18] border border-[#3D3025] text-[#D96B27] px-2 py-0.5 rounded-full">
-                Specialty Lab
+                {language === 'es' ? 'Laboratorio Especialidad' : 'Specialty Lab'}
               </span>
             </div>
             <p className="text-[11px] text-[#A8988B] flex items-center gap-1 font-metric">

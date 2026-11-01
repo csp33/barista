@@ -68,7 +68,7 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
               DF64 #{r ? r.grindSetting.toFixed(1) : '—'}
             </span>
             <span className="text-[10px] text-[#A8988B]">
-              {item.feedbackHistory.length} extracciones
+              {t.extractionsCount.replace('{count}', String(item.feedbackHistory.length))}
             </span>
           </div>
         </div>
@@ -82,7 +82,7 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
           }`}
         >
           <CheckCircle className="w-3.5 h-3.5" />
-          <span>{isSelected ? 'En Barra (Activo)' : 'Seleccionar'}</span>
+          <span>{isSelected ? t.onBarActive : t.selectForBrew}</span>
         </button>
 
         <div className="flex items-center gap-3">
@@ -91,15 +91,15 @@ export const CoffeeCardItem: React.FC<CoffeeCardItemProps> = ({
             className="text-[#A8988B] hover:text-[#F7F2EB] flex items-center gap-1 transition-colors"
           >
             <Edit className="w-3.5 h-3.5" />
-            <span>Ficha</span>
+            <span>{t.editCoffee}</span>
           </button>
           <button
             onClick={() => onToggleStatus(c.id, c.status)}
             className="text-[#8C7B6E] hover:text-red-400 flex items-center gap-1 transition-colors"
-            title="Archivar en historial"
+            title={t.moveToHistory}
           >
             <Archive className="w-3.5 h-3.5" />
-            <span>Archivar</span>
+            <span>{t.moveToHistory}</span>
           </button>
         </div>
       </div>

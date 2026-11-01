@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '../i18n/LanguageContext';
 
 interface Df64DialGaugeProps {
   setting: number;
 }
 
 export const Df64DialGauge: React.FC<Df64DialGaugeProps> = ({ setting }) => {
-  // DF64 scale is 0 to 90. Map setting to angle (-120deg to +120deg)
+  const { language } = useTranslation();
   const clampedSetting = Math.max(0, Math.min(90, setting));
   const angle = -120 + (clampedSetting / 90) * 240;
 
@@ -16,7 +17,6 @@ export const Df64DialGauge: React.FC<Df64DialGaugeProps> = ({ setting }) => {
       <div className="relative w-36 h-36 flex items-center justify-center">
         {/* Outer machined aluminum ring */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#3D352E] via-[#211C18] to-[#12100E] border-2 border-[#54483E] shadow-2xl flex items-center justify-center">
-          {/* Subtle knurled collar texture */}
           <div className="absolute inset-1 rounded-full border border-[#382F28] opacity-60" />
         </div>
 
@@ -53,8 +53,8 @@ export const Df64DialGauge: React.FC<Df64DialGaugeProps> = ({ setting }) => {
           <span className="text-2xl font-black font-metric tracking-tight text-[#F7F2EB]">
             #{setting.toFixed(1)}
           </span>
-          <span className="text-[9px] text-[#A8988B] uppercase tracking-wider">
-            Micrometric
+          <span className="text-[9px] text-[#A8988B] uppercase tracking-wider font-metric">
+            {language === 'es' ? 'Micrométrico' : 'Micrometric'}
           </span>
         </div>
 

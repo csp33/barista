@@ -5,38 +5,13 @@ import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { Df64DialGauge } from './Df64DialGauge';
 import { SageTempSelector } from './SageTempSelector';
-import { ArrowUpRight, Flame, Edit } from 'lucide-react';
-import { Translations } from '../i18n/types';
+import { RecipeRationaleCard } from './RecipeRationaleCard';
+import { ArrowUpRight, Edit } from 'lucide-react';
 
 interface DialInCardProps {
   item: StashItemDTO;
   onOpenFeedback: () => void;
   onOpenEditCoffee: () => void;
-}
-
-function formatNote(
-  raw: string,
-  t: Translations,
-  restDays: number,
-  grind: number,
-  roaster: string,
-  name: string
-): string {
-  if (raw.includes('WDT') || raw.includes('tamp')) return t.baristaTips.wdt;
-  if (raw.includes('fines') || raw.includes('finos')) return t.baristaTips.naturals;
-  if (raw.includes('rest window') || raw.includes('Reposo') || raw.includes('reposo')) {
-    return t.baristaTips.restWindow.replace('{days}', String(restDays));
-  }
-  if (raw.includes('finer grind') || raw.includes('fina')) return t.baristaTips.sourAdjust;
-  if (raw.includes('coarser grind') || raw.includes('gruesa')) return t.baristaTips.bitterAdjust;
-  if (raw.includes('Channelling') || raw.includes('Canalización')) return t.baristaTips.channeledAdjust;
-  if (raw.includes('sweet spot') || raw.includes('dulce')) {
-    return t.baristaTips.sweetSpot.replace('{grind}', String(grind));
-  }
-  if (raw.includes('tuned for') || raw.includes('calibrada')) {
-    return t.baristaTips.tunedFor.replace('{roaster}', roaster).replace('{name}', name);
-  }
-  return raw;
 }
 
 export const DialInCard: React.FC<DialInCardProps> = ({
@@ -153,28 +128,8 @@ export const DialInCard: React.FC<DialInCardProps> = ({
           </div>
         </div>
 
-        {/* Localized Barista Recommendations */}
-        {recipe.notes.length > 0 && (
-          <div className="bg-[#1D1713] rounded-2xl p-3.5 border border-[#3D3025]">
-            <ul className="space-y-1.5">
-              {recipe.notes.slice(-2).map((n, i) => (
-                <li key={i} className="text-xs text-[#C8B8AB] flex items-start gap-2">
-                  <Flame className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />
-                  <span>
-                    {formatNote(
-                      n,
-                      t,
-                      recipe.recommendedRestDays,
-                      recipe.grindSetting,
-                      coffee.roaster,
-                      coffee.name
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {/* Localized Barista Recommendations & Rationales */}
+        <RecipeRationaleCard coffee={coffee} recipe={recipe} />
 
         {/* CTA Pull Shot Button */}
         <button

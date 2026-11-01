@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { Coffee } from '@/core/domain/coffee/Coffee';
 import { CoffeeCardItem } from './CoffeeCardItem';
@@ -23,6 +24,7 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
   onToggleStatus,
   onOpenAddModal,
 }) => {
+  const { t } = useTranslation();
   const activeItems = items.filter(i => i.coffee.status !== 'history');
   const historyItems = items.filter(i => i.coffee.status === 'history');
 
@@ -32,10 +34,10 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-serif text-xl font-bold text-[#F7F2EB]">
-            Colección de Café
+            {t.stashCollection}
           </h2>
           <p className="text-xs text-[#A8988B]">
-            {activeItems.length} en barra • {historyItems.length} en bodega
+            {activeItems.length} {t.stashActive.toLowerCase()} • {historyItems.length} {t.history.toLowerCase()}
           </p>
         </div>
         <button
@@ -43,7 +45,7 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
           className="flex items-center gap-1.5 bg-[#D96B27] hover:bg-[#E29D52] text-[#141210] font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-md transition-all active:scale-95"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
-          <span>Añadir Café</span>
+          <span>{t.addCoffee}</span>
         </button>
       </div>
 
@@ -51,12 +53,12 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
       <div>
         <h3 className="text-xs font-semibold uppercase tracking-wider text-[#E29D52] flex items-center gap-1.5 mb-3 font-metric">
           <Sparkles className="w-3.5 h-3.5" />
-          Cafés en Uso ({activeItems.length})
+          {t.stashActive} ({activeItems.length})
         </h3>
 
         {activeItems.length === 0 ? (
           <div className="bg-[#181411] border border-[#30261E] rounded-2xl p-6 text-center text-xs text-[#A8988B]">
-            No tienes ningún café en uso. Añade uno o rescátalo del historial.
+            {t.emptyStash}
           </div>
         ) : (
           <div className="space-y-3">
@@ -79,7 +81,7 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
         <div className="pt-2">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-[#A8988B] flex items-center gap-1.5 mb-3 font-metric">
             <Archive className="w-3.5 h-3.5" />
-            Historial / Bodega ({historyItems.length})
+            {t.stashHistory} ({historyItems.length})
           </h3>
 
           <div className="space-y-2">
@@ -102,6 +104,7 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
                     <button
                       onClick={() => onEditCoffee(c)}
                       className="p-1.5 text-[#A8988B] hover:text-[#F7F2EB] transition-colors"
+                      title={t.editCoffee}
                     >
                       <Edit className="w-3.5 h-3.5" />
                     </button>
@@ -109,7 +112,7 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
                       onClick={() => onToggleStatus(c.id, c.status)}
                       className="bg-[#241C16] hover:bg-[#33271F] border border-[#3D2F24] text-[#D96B27] px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors"
                     >
-                      Poner en Uso
+                      {t.moveToActive}
                     </button>
                   </div>
                 </div>
