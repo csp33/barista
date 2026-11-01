@@ -75,8 +75,10 @@ export class AddCoffeeUseCase {
       story = await this.sommelier.generateStory(new Coffee({ ...raw, id: 'temp' }));
     }
 
+    const initialStatus = raw.status || 'active';
     const coffee = new Coffee({
       ...raw,
+      status: this.coffeeRepo.setUserStatus ? 'bodega' : initialStatus,
       sommelierStory: story,
       id: `coffee-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     });
@@ -86,7 +88,6 @@ export class AddCoffeeUseCase {
     if (rationale) recipe = new Recipe({ ...recipe, aiRationale: rationale });
 
     await this.coffeeRepo.save(coffee);
-    const initialStatus = raw.status || 'active';
     if (this.coffeeRepo.setUserStatus) {
       await this.coffeeRepo.setUserStatus(coffee.id, eq.userId, initialStatus);
     }

@@ -4,6 +4,7 @@ import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 export interface DeleteCoffeeRequest {
   coffeeId: string;
   userRole: 'admin' | 'user';
+  userId?: string;
 }
 
 export class DeleteCoffeeUseCase {
@@ -22,7 +23,13 @@ export class DeleteCoffeeUseCase {
       throw new Error(`Coffee not found with ID ${request.coffeeId}`);
     }
 
-    if (coffee.status !== 'history' && coffee.status !== 'bodega') {
+    const userStatus =
+      request.userId && this.coffeeRepo.getUserStatus
+        ? await this.coffeeRepo.getUserStatus(request.coffeeId, request.userId)
+        : null;
+    const effectiveStatus = userStatus ?? coffee.status;
+
+    if (effectiveStatus !== 'history' && effectiveStatus !== 'bodega') {
       throw new Error('Only archived coffees in history or bodega can be permanently deleted');
     }
 

@@ -50,7 +50,8 @@ export class UpdateCoffeeUseCase {
       recommendedRestDays: request.data.recommendedRestDays ?? existing.recommendedRestDays,
       sourceUrl: existing.sourceUrl,
       imageUrl: request.data.imageUrl ?? existing.imageUrl,
-      status: request.data.status ?? existing.status,
+      status: this.coffeeRepo.setUserStatus ? existing.status : (request.data.status ?? existing.status),
+      sommelierStory: existing.sommelierStory,
       createdAt: existing.createdAt,
     });
 
@@ -60,15 +61,25 @@ export class UpdateCoffeeUseCase {
     }
 
     const existingRecipe = await this.recipeRepo.findByCoffeeId(updated.id, eq.userId);
-    const recipe = RecipeCalculator.calculateInitial(
-      updated,
-      eq.grinder,
-      eq.machine,
-      existingRecipe?.userId || eq.userId
-    );
+    const specsChanged =
+      request.data.process !== undefined ||
+      request.data.roastLevel !== undefined ||
+      request.data.altitudeMasl !== undefined ||
+      request.data.recommendedRestDays !== undefined;
+    const recipe =
+      existingRecipe && !specsChanged
+        ? existingRecipe
+        : RecipeCalculator.calculateInitial(
+            updated,
+            eq.grinder,
+            eq.machine,
+            existingRecipe?.userId || eq.userId
+          );
 
     await this.coffeeRepo.save(updated);
-    await this.recipeRepo.save(recipe);
+    if (!existingRecipe || specsChanged) {
+      await this.recipeRepo.save(recipe);
+    }
 
     const effectiveStatus = request.data.status ?? existing.status;
     return { coffee: updated.withStatus(effectiveStatus), recipe };

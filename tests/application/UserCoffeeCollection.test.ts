@@ -115,4 +115,37 @@ describe('Per-Profile Coffee Collections & Shared Inventory', () => {
     expect(carlosStashAfter[0].coffee.status).toBe('bodega');
     expect(sofiaStashAfter[0].coffee.status).toBe('active');
   });
+
+  it('does not put a coffee in use for Carlos when Sofia adds or activates a coffee', async () => {
+    // 1. Sofia adds a coffee
+    const addResult = await addCoffeeUseCase.execute({
+      userId: 'sofia',
+      manualData: {
+        roaster: 'Right Side',
+        name: 'El Paraiso 92',
+        originCountry: 'Colombia',
+        variety: 'Castillo',
+        process: 'anaerobic',
+        roastLevel: 'medium_light',
+        tastingNotes: ['Passionfruit'],
+        status: 'active',
+      },
+    });
+    const coffeeId = addResult.coffee.id;
+
+    // 2. Sofia sees it active, Carlos sees it in bodega (Catalog)
+    const sofiaStash = await getStashUseCase.execute('sofia');
+    const carlosStash = await getStashUseCase.execute('carlos');
+    expect(sofiaStash[0].coffee.status).toBe('active');
+    expect(carlosStash[0].coffee.status).toBe('bodega');
+
+    // 3. Sofia moves it to bodega, then back to active -> Carlos must STILL have it in bodega
+    await updateCoffeeUseCase.execute({ id: coffeeId, userId: 'sofia', data: { status: 'bodega' } });
+    await updateCoffeeUseCase.execute({ id: coffeeId, userId: 'sofia', data: { status: 'active' } });
+
+    const carlosAfter = await getStashUseCase.execute('carlos');
+    const sofiaAfter = await getStashUseCase.execute('sofia');
+    expect(sofiaAfter[0].coffee.status).toBe('active');
+    expect(carlosAfter[0].coffee.status).toBe('bodega');
+  });
 });

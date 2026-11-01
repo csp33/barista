@@ -97,7 +97,13 @@ function BaristaDashboard() {
   };
   const handleDeleteCoffee = async (id: string) => {
     try {
-      const res = await fetch(`/api/coffees/${id}`, { method: 'DELETE', headers: { 'x-user-role': isAdmin ? 'admin' : 'user' } });
+      const res = await fetch(`/api/coffees/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'x-user-role': isAdmin ? 'admin' : 'user',
+          'x-user-id': activeProfile?.id || '',
+        },
+      });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete');
       fetchStash();
     } catch (e) { alert(e instanceof Error ? e.message : 'Error deleting'); }

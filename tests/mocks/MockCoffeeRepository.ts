@@ -8,6 +8,7 @@ export class MockCoffeeRepository implements CoffeeRepositoryPort {
   constructor(initialCoffees: Coffee[] = []) {
     for (const coffee of initialCoffees) {
       this.coffees.set(coffee.id, coffee);
+      this.userStatuses.set(`carlos:${coffee.id}`, coffee.status);
     }
   }
 
@@ -49,7 +50,7 @@ export class MockCoffeeRepository implements CoffeeRepositoryPort {
     const all = await this.findAll();
     return all.map(c => {
       const key = `${cleanUserId}:${c.id}`;
-      const status = this.userStatuses.get(key) || (cleanUserId === 'carlos' ? c.status : 'bodega');
+      const status = this.userStatuses.get(key) || 'bodega';
       return c.withStatus(status);
     });
   }

@@ -48,9 +48,7 @@ export class PostgresCoffeeRepository implements CoffeeRepositoryPort {
       const coffee = this.mapRow(row);
       const userStatus = row.user_status
         ? (String(row.user_status) as CoffeeStatus)
-        : cleanUserId === 'carlos'
-          ? coffee.status
-          : 'bodega';
+        : 'bodega';
       return coffee.withStatus(userStatus);
     });
   }

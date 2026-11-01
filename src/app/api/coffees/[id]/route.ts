@@ -39,12 +39,15 @@ export async function DELETE(
 ) {
   const { id } = await params;
   const role = request.headers.get('x-user-role') || 'user';
+  const url = new URL(request.url);
+  const userId = url.searchParams.get('userId') || request.headers.get('x-user-id') || undefined;
   Logger.info('API', `DELETE /api/coffees/${id} requested with role: ${role}`);
 
   try {
     const result = await container.deleteCoffeeUseCase.execute({
       coffeeId: id,
       userRole: role === 'admin' ? 'admin' : 'user',
+      userId,
     });
     Logger.info('API', `Coffee ${id} permanently deleted by admin`);
     return NextResponse.json({ success: true, data: result });

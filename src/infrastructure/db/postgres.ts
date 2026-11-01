@@ -146,14 +146,16 @@ async function runInitDatabase(): Promise<void> {
            ON CONFLICT (coffee_id, user_id) DO NOTHING`,
           [r.id, r.coffeeId, r.userId, r.grinderId, r.machineId, r.doseGrams, r.yieldGrams, r.ratio, r.grindSetting, r.machineTemperature, r.targetTimeSeconds, r.recommendedRestDays, JSON.stringify(r.notes), r.aiRationale ? JSON.stringify(r.aiRationale) : null, new Date(), new Date()]
         );
-
-        await client.query(
-          `INSERT INTO user_coffee_statuses (user_id, coffee_id, status)
-           VALUES ($1, $2, $3)
-           ON CONFLICT (user_id, coffee_id) DO NOTHING`,
-          [seedProfile.id, c.id, c.status]
-        );
       }
+    }
+
+    for (const c of INITIAL_COFFEES) {
+      await client.query(
+        `INSERT INTO user_coffee_statuses (user_id, coffee_id, status)
+         SELECT $1, id, $3 FROM coffees WHERE id = $2
+         ON CONFLICT (user_id, coffee_id) DO NOTHING`,
+        [INITIAL_PROFILES[0].id, c.id, c.status]
+      );
     }
 
     isInitialized = true;
