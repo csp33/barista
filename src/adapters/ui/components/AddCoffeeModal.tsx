@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { X, Link2, Sparkles, Loader2, CheckCircle2 } from 'lucide-react';
+import { X, Link2, Sparkles, Loader2 } from 'lucide-react';
 
 interface AddCoffeeModalProps {
   isOpen: boolean;

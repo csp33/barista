@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { Language, Translations } from './types';
 import { en } from './en';
 import { es } from './es';
@@ -22,22 +22,24 @@ const LanguageContext = createContext<LanguageContextType>({
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [language, setLanguageState] = useState<Language>('es');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('barista_lang') as Language;
-    if (saved === 'en' || saved === 'es') {
-      setLanguageState(saved);
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('barista_lang') as Language;
+      if (saved === 'en' || saved === 'es') return saved;
     }
-  }, []);
+    return 'es';
+  });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('barista_lang', lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('barista_lang', lang);
+    }
   };
 
   const toggleLanguage = () => {
-    setLanguage(language === 'es' ? 'en' : 'es');
+    const next = language === 'es' ? 'en' : 'es';
+    setLanguage(next);
   };
 
   const t = language === 'es' ? es : en;

@@ -5,7 +5,7 @@ import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { Df64DialGauge } from './Df64DialGauge';
 import { SageTempSelector } from './SageTempSelector';
-import { Sparkles, Sliders, ArrowUpRight, Flame, Edit } from 'lucide-react';
+import { ArrowUpRight, Flame, Edit } from 'lucide-react';
 import { Translations } from '../i18n/types';
 
 interface DialInCardProps {

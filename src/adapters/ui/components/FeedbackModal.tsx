@@ -160,6 +160,19 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
             </div>
           </div>
 
+          <div>
+            <label className="text-[11px] text-[#A8988B] block mb-1">
+              Notas adicionales
+            </label>
+            <input
+              type="text"
+              value={notes}
+              onChange={e => setNotes(e.target.value)}
+              placeholder="Ej. muy dulce, acidez sedosa..."
+              className="w-full bg-[#120F0D] border border-[#30261E] rounded-xl p-2.5 text-xs text-[#F7F2EB] outline-none"
+            />
+          </div>
+
           <button
             type="submit"
             disabled={loading}
