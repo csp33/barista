@@ -11,6 +11,7 @@ Engineered with a modular architecture to support any grinder and espresso machi
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![Vitest](https://img.shields.io/badge/Tested_with-Vitest-6E9F18?logo=vitest)](https://vitest.dev/)
+[![Playwright](https://img.shields.io/badge/E2E-Playwright-2EAD33?logo=playwright)](https://playwright.dev/)
 [![Docker Image](https://img.shields.io/badge/GHCR-Container_Image-2496ED?logo=docker)](https://github.com/csp33/barista/pkgs/container/barista)
 [![License](https://img.shields.io/badge/License-MIT-amber)](#license)
 
@@ -178,6 +179,9 @@ npm test
 
 # Run hexagonal architecture boundary enforcement tests
 npm run test:arch
+
+# Run Playwright E2E tests (and auto-refresh README screenshots)
+npm run test:e2e
 
 # Run linter
 npm run lint

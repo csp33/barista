@@ -16,13 +16,14 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'Mobile Safari (iPhone 13)',
+      name: 'Mobile (iPhone 13)',
       use: {
         ...devices['iPhone 13'],
+        defaultBrowserType: 'chromium',
       },
     },
     {
-      name: 'Mobile Chrome (Pixel 7)',
+      name: 'Mobile (Pixel 7)',
       use: {
         ...devices['Pixel 7'],
       },
