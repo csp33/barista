@@ -3,6 +3,8 @@ import { Translations } from './types';
 export const en: Translations = {
   appName: 'BARISTA',
   tagline: 'Specialty Coffee Stash & Precision Espresso Dial-in',
+  tabTitle: 'Barista • Specialty Coffee & Dial-in',
+  tabDescription: 'Specialty coffee stash and espresso recipe dial-in for home baristas',
   activeBeans: 'Current Rotation',
   addCoffee: 'Add Coffee',
   coffeeAlreadyExists: 'This coffee is already in your stash',

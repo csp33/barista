@@ -55,6 +55,17 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
   const isAdmin = activeProfile ? activeProfile.role === 'admin' : false;
   const t = language === 'es' ? es : en;
 
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.title = t.tabTitle;
+      document.documentElement.lang = language;
+      const metaDescription = document.querySelector('meta[name="description"]');
+      if (metaDescription) {
+        metaDescription.setAttribute('content', t.tabDescription);
+      }
+    }
+  }, [language, t.tabTitle, t.tabDescription]);
+
   return (
     <LanguageContext.Provider
       value={{ language, t, isAdmin, setLanguage, toggleLanguage }}

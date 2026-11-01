@@ -3,6 +3,8 @@ export type Language = 'en' | 'es';
 export interface Translations {
   appName: string;
   tagline: string;
+  tabTitle: string;
+  tabDescription: string;
   activeBeans: string;
   addCoffee: string;
   coffeeAlreadyExists: string;

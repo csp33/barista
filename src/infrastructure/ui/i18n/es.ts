@@ -3,6 +3,8 @@ import { Translations } from './types';
 export const es: Translations = {
   appName: 'BARISTA',
   tagline: 'Colección de Especialidad & Ajuste Fino de Espresso',
+  tabTitle: 'Barista • Café de Especialidad & Calibración',
+  tabDescription: 'Colección de café de especialidad y calibración precisa de espresso para baristas en casa',
   activeBeans: 'En Rotación',
   addCoffee: 'Añadir Café',
   coffeeAlreadyExists: 'Este café ya existe en tu colección',

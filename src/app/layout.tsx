@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { es } from "@/infrastructure/ui/i18n/es";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Barista • Specialty Coffee & Dial-in",
-  description: "Specialty coffee stash and espresso recipe dial-in for home baristas",
+  title: es.tabTitle,
+  description: es.tabDescription,
   icons: {
     icon: "/icon.svg",
   },
@@ -27,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
