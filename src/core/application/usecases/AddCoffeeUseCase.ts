@@ -53,7 +53,15 @@ export class AddCoffeeUseCase {
         id: `coffee-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       });
 
-      const recipe = RecipeCalculator.calculateInitial(coffee);
+      let recipe = RecipeCalculator.calculateInitial(coffee);
+      if (this.sommelier) {
+        try {
+          const aiRationale = await this.sommelier.generateRationale(coffee, recipe);
+          recipe = new Recipe({ ...recipe, aiRationale });
+        } catch {
+          // Graceful fallback
+        }
+      }
 
       await this.coffeeRepo.save(coffee);
       await this.recipeRepo.save(recipe);
@@ -73,7 +81,15 @@ export class AddCoffeeUseCase {
         sommelierStory: story,
         id: `coffee-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
       });
-      const recipe = RecipeCalculator.calculateInitial(coffee);
+      let recipe = RecipeCalculator.calculateInitial(coffee);
+      if (this.sommelier) {
+        try {
+          const aiRationale = await this.sommelier.generateRationale(coffee, recipe);
+          recipe = new Recipe({ ...recipe, aiRationale });
+        } catch {
+          // Graceful fallback
+        }
+      }
 
       await this.coffeeRepo.save(coffee);
       await this.recipeRepo.save(recipe);

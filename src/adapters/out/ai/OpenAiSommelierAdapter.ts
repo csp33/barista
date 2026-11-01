@@ -1,5 +1,7 @@
 import { CoffeeSommelierPort } from '@/core/application/ports/out/CoffeeSommelierPort';
 import { Coffee } from '@/core/domain/coffee/Coffee';
+import { Recipe, AiRationale } from '@/core/domain/recipe/Recipe';
+import { RecipeExplainer } from '@/core/domain/recipe/RecipeExplainer';
 import { ExtractionFeedback } from '@/core/domain/recipe/ExtractionFeedback';
 import { Logger } from '../logger/Logger';
 
@@ -84,6 +86,53 @@ Da una explicación física breve de lo ocurrido y la acción correctora exacta.
       Logger.error('AI_SOMMELIER', 'Error diagnosing extraction', err);
       return this.fallbackDiagnosis(feedback, coffee);
     }
+  }
+
+  async generateRationale(coffee: Coffee, recipe: Recipe): Promise<AiRationale> {
+    if (!this.apiKey) return this.fallbackRationale(coffee, recipe);
+    try {
+      const prompt = `Como maestro barista de especialidad para molino DF64 y cafetera Sage 54mm, fundamenta en JSON este ajuste:
+Café: ${coffee.name} (${coffee.roaster}, ${coffee.originCountry}, ${coffee.process}, ${coffee.roastLevel})
+Ajuste: Molienda #${recipe.grindSetting}, Temp Sage ${recipe.machineTemperature}, Ratio ${recipe.ratio} (${recipe.doseGrams}g -> ${recipe.yieldGrams}g), Reposo ${coffee.recommendedRestDays}d.
+Devuelve un JSON con claves exactas: grindWhy, tempWhy, ratioWhy, restWhy. Cada una una frase técnica y convincente en español.`;
+
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [{ role: 'user', content: prompt }],
+          response_format: { type: 'json_object' },
+          max_tokens: 280,
+          temperature: 0.3,
+        }),
+        signal: AbortSignal.timeout(8000),
+      });
+
+      if (!res.ok) return this.fallbackRationale(coffee, recipe);
+      const json = await res.json();
+      const parsed = JSON.parse(json.choices[0]?.message?.content || '{}');
+      if (parsed.grindWhy && parsed.tempWhy && parsed.ratioWhy && parsed.restWhy) {
+        return parsed as AiRationale;
+      }
+      return this.fallbackRationale(coffee, recipe);
+    } catch (err) {
+      Logger.error('AI_SOMMELIER', 'Error generating recipe rationale', err);
+      return this.fallbackRationale(coffee, recipe);
+    }
+  }
+
+  private fallbackRationale(coffee: Coffee, recipe: Recipe): AiRationale {
+    const r = RecipeExplainer.explain(coffee, recipe);
+    return {
+      grindWhy: r.grindWhy.es,
+      tempWhy: r.tempWhy.es,
+      ratioWhy: r.ratioWhy.es,
+      restWhy: r.restWhy.es,
+    };
   }
 
   private fallbackStory(coffee: Coffee): string {

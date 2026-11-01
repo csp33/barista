@@ -17,28 +17,28 @@ export const RecipeRationaleCard: React.FC<RecipeRationaleCardProps> = ({
   recipe,
 }) => {
   const { language } = useTranslation();
-  const rationale = RecipeExplainer.explain(coffee, recipe);
+  const deterministic = RecipeExplainer.explain(coffee, recipe);
 
   const items = [
     {
       icon: <Compass className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? `Molienda DF64 #${recipe.grindSetting}` : `DF64 Grind #${recipe.grindSetting}`,
-      text: rationale.grindWhy[language],
+      text: recipe.aiRationale?.grindWhy || deterministic.grindWhy[language],
     },
     {
       icon: <Thermometer className="w-3.5 h-3.5 text-[#E29D52] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? 'Temperatura ThermoJet Sage' : 'Sage ThermoJet Temp',
-      text: rationale.tempWhy[language],
+      text: recipe.aiRationale?.tempWhy || deterministic.tempWhy[language],
     },
     {
       icon: <Scale className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? `Ratio & Salida (${recipe.ratio})` : `Ratio & Yield (${recipe.ratio})`,
-      text: rationale.ratioWhy[language],
+      text: recipe.aiRationale?.ratioWhy || deterministic.ratioWhy[language],
     },
     {
       icon: <Clock className="w-3.5 h-3.5 text-[#E29D52] flex-shrink-0 mt-0.5" />,
       title: language === 'es' ? `Ventana de Reposo (${coffee.recommendedRestDays}d)` : `Rest Window (${coffee.recommendedRestDays}d)`,
-      text: rationale.restWhy[language],
+      text: recipe.aiRationale?.restWhy || deterministic.restWhy[language],
     },
   ];
 

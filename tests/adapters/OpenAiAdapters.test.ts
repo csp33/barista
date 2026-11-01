@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { OpenAiVisionScannerAdapter } from '../../src/adapters/out/ai/OpenAiVisionScannerAdapter';
 import { OpenAiSommelierAdapter } from '../../src/adapters/out/ai/OpenAiSommelierAdapter';
 import { Coffee } from '../../src/core/domain/coffee/Coffee';
+import { Recipe } from '../../src/core/domain/recipe/Recipe';
 import { ExtractionFeedback } from '../../src/core/domain/recipe/ExtractionFeedback';
 
 describe('OpenAiAdapters', () => {
@@ -60,5 +61,39 @@ describe('OpenAiAdapters', () => {
     const diagnosis = await sommelier.diagnoseExtraction(feedback, coffee);
     expect(diagnosis).toContain('Sub-extracción');
     expect(diagnosis).toContain('DF64');
+  });
+
+  it('OpenAiSommelierAdapter generates recipe rationale with 4 barista pillars', async () => {
+    const sommelier = new OpenAiSommelierAdapter();
+    const coffee = new Coffee({
+      id: 'c3',
+      roaster: 'Nomad Coffee',
+      name: 'Worka Sakaro',
+      originCountry: 'Ethiopia',
+      variety: 'Kurume',
+      process: 'washed',
+      roastLevel: 'light',
+      tastingNotes: ['peach', 'jasmine'],
+    });
+    const recipe = new Recipe({
+      id: 'r3',
+      coffeeId: 'c3',
+      grinderId: 'df64-gen-2',
+      machineId: 'sage-touch-impress',
+      doseGrams: 18,
+      yieldGrams: 41,
+      ratio: '1:2.3',
+      grindSetting: 9.0,
+      machineTemperature: 'very_high',
+      targetTimeSeconds: 28,
+      recommendedRestDays: 18,
+      notes: [],
+    });
+
+    const rationale = await sommelier.generateRationale(coffee, recipe);
+    expect(rationale.grindWhy).toBeDefined();
+    expect(rationale.tempWhy).toBeDefined();
+    expect(rationale.ratioWhy).toBeDefined();
+    expect(rationale.restWhy).toBeDefined();
   });
 });

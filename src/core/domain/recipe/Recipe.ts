@@ -1,5 +1,12 @@
 import { SageTemperatureSetting } from '../equipment/EspressoMachine';
 
+export interface AiRationale {
+  grindWhy: string;
+  tempWhy: string;
+  ratioWhy: string;
+  restWhy: string;
+}
+
 export interface RecipeProps {
   id: string;
   coffeeId: string;
@@ -13,6 +20,7 @@ export interface RecipeProps {
   targetTimeSeconds: number;
   recommendedRestDays: number;
   notes: string[];
+  aiRationale?: AiRationale;
 }
 
 export class Recipe {
@@ -28,6 +36,7 @@ export class Recipe {
   readonly targetTimeSeconds: number;
   readonly recommendedRestDays: number;
   readonly notes: string[];
+  readonly aiRationale?: AiRationale;
 
   constructor(props: RecipeProps) {
     if (props.doseGrams <= 0) throw new Error('Dose must be greater than 0');
@@ -45,5 +54,6 @@ export class Recipe {
     this.targetTimeSeconds = props.targetTimeSeconds;
     this.recommendedRestDays = props.recommendedRestDays;
     this.notes = props.notes;
+    this.aiRationale = props.aiRationale;
   }
 }

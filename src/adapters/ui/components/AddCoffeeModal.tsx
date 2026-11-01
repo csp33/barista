@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
 import { CoffeeProps } from '@/core/domain/coffee/Coffee';
 import { X, Link2, Sparkles, Loader2, Camera } from 'lucide-react';
@@ -17,25 +17,39 @@ const SAMPLE_URLS = [
   { label: 'San Jorge Peña Blanca', url: 'https://sanjorge.coffee/products/guatemala-pena-blanca' },
 ];
 
-export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
-  isOpen,
-  onClose,
-  onScraped,
-}) => {
+export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({ isOpen, onClose, onScraped }) => {
   const { t, language } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<string | null>(null);
+  const [isVision, setIsVision] = useState(false);
+  const [stepIdx, setStepIdx] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!loading) { setStepIdx(0); return; }
+    const timer = setInterval(() => setStepIdx(p => (p < 3 ? p + 1 : p)), 800);
+    return () => clearInterval(timer);
+  }, [loading]);
+
   if (!isOpen) return null;
+
+  const steps = language === 'es' ? [
+    isVision ? 'Escaneando bolsa con IA Vision...' : 'Extrayendo ficha técnica del tostador...',
+    'Identificando variedad, proceso y altitud...',
+    'Calculando punto DF64 y temperatura Sage...',
+    'Generando fundamentación barista con IA...',
+  ] : [
+    isVision ? 'Scanning bag with AI Vision...' : 'Extracting roaster technical sheet...',
+    'Identifying variety, process and altitude...',
+    'Calculating DF64 grind and Sage temp...',
+    'Generating AI barista rationale...',
+  ];
 
   const handleImageFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setLoading(true); setError(null);
-    setStep(language === 'es' ? 'Analizando bolsa con IA Vision...' : 'Analyzing bag with AI Vision...');
+    setLoading(true); setIsVision(true); setError(null);
     const reader = new FileReader();
     reader.onload = async () => {
       try {
@@ -47,7 +61,7 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
         });
         const data = await res.json();
         if (!res.ok || !data.success) throw new Error(data.error || 'Vision scan failed');
-        setStep(null); onClose(); onScraped(data.data);
+        onClose(); onScraped(data.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Vision scan failed');
       } finally { setLoading(false); }
@@ -57,7 +71,7 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
 
   const handleSubmit = async (targetUrl: string) => {
     if (!targetUrl.trim()) return;
-    setLoading(true); setError(null); setStep(t.analyzingRoaster);
+    setLoading(true); setIsVision(false); setError(null);
     try {
       const res = await fetch('/api/coffees/scrape', {
         method: 'POST',
@@ -66,118 +80,73 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to extract coffee');
-      setStep(null); setUrl(''); onClose(); onScraped(data.data);
+      setUrl(''); onClose(); onScraped(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Scraping failed');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/85 backdrop-blur-md">
       <div className="bg-[#1C1815] border border-[#3D332A] w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 p-1.5 text-[#A8988B] hover:text-[#F7F2EB] rounded-full bg-[#141210] border border-[#3D332A]"
-        >
+        <button onClick={onClose} className="absolute top-5 right-5 p-1.5 text-[#A8988B] hover:text-[#F7F2EB] rounded-full bg-[#141210] border border-[#3D332A]">
           <X className="w-4 h-4" />
         </button>
-
         <div className="flex items-center gap-2.5 mb-3">
-          <div className="p-2 rounded-xl bg-[#D96B27]/20 text-[#D96B27]">
-            <Sparkles className="w-5 h-5" />
-          </div>
+          <div className="p-2 rounded-xl bg-[#D96B27]/20 text-[#D96B27]"><Sparkles className="w-5 h-5" /></div>
           <div>
             <h3 className="font-serif text-lg font-bold text-[#F7F2EB]">{t.addCoffee}</h3>
-            <p className="text-xs text-[#A8988B]">
-              El agente extraerá los datos y te permitirá revisarlos
-            </p>
+            <p className="text-xs text-[#A8988B]">El agente extraerá los datos y te permitirá revisarlos</p>
           </div>
         </div>
 
-        <input
-          type="file"
-          ref={fileInputRef}
-          accept="image/*"
-          capture="environment"
-          onChange={handleImageFile}
-          className="hidden"
-        />
-
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={loading}
-          className="w-full mt-2 p-3 rounded-xl bg-[#261E18] hover:bg-[#33271F] border border-[#443528] text-xs text-[#F7F2EB] flex items-center justify-center gap-2 font-semibold transition-all active:scale-95"
-        >
+        <input type="file" ref={fileInputRef} accept="image/*" capture="environment" onChange={handleImageFile} className="hidden" />
+        <button type="button" onClick={() => fileInputRef.current?.click()} disabled={loading} className="w-full mt-2 p-3 rounded-xl bg-[#261E18] hover:bg-[#33271F] border border-[#443528] text-xs text-[#F7F2EB] flex items-center justify-center gap-2 font-semibold transition-all active:scale-95">
           <Camera className="w-4 h-4 text-[#D96B27]" />
           <span>{language === 'es' ? 'Escanear Bolsa (Foto IA Vision)' : 'Scan Bag Label (AI Vision)'}</span>
         </button>
 
         <div className="flex items-center gap-2 my-2.5">
-          <div className="flex-1 h-px bg-[#30261E]" />
-          <span className="text-[10px] text-[#8C7B6E] uppercase font-metric">{language === 'es' ? 'o pega una url' : 'or paste url'}</span>
-          <div className="flex-1 h-px bg-[#30261E]" />
+          <div className="flex-1 h-px bg-[#30261E]" /><span className="text-[10px] text-[#8C7B6E] uppercase font-metric">{language === 'es' ? 'o pega una url' : 'or paste url'}</span><div className="flex-1 h-px bg-[#30261E]" />
         </div>
 
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            handleSubmit(url);
-          }}
-          className="space-y-3"
-        >
+        <form onSubmit={e => { e.preventDefault(); handleSubmit(url); }} className="space-y-3">
           <div className="relative">
             <Link2 className="w-4 h-4 text-[#A8988B] absolute left-3.5 top-3.5" />
-            <input
-              type="url"
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              placeholder={t.addCoffeeUrlPlaceholder}
-              disabled={loading}
-              className="w-full bg-[#141210] border border-[#3D332A] focus:border-[#D96B27] rounded-xl pl-10 pr-3 py-3 text-xs text-[#F7F2EB] outline-none placeholder:text-[#A8988B]/60"
-            />
+            <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder={t.addCoffeeUrlPlaceholder} disabled={loading} className="w-full bg-[#141210] border border-[#3D332A] focus:border-[#D96B27] rounded-xl pl-10 pr-3 py-3 text-xs text-[#F7F2EB] outline-none" />
           </div>
 
-          {error && (
-            <p className="text-xs text-red-400 bg-red-950/30 border border-red-800/40 p-2.5 rounded-lg">
-              {error}
-            </p>
-          )}
+          {error && <p className="text-xs text-red-400 bg-red-950/30 border border-red-800/40 p-2.5 rounded-lg">{error}</p>}
 
-          {step && (
-            <div className="flex items-center gap-2 text-xs text-[#E29D52] bg-[#E29D52]/10 p-3 rounded-xl border border-[#E29D52]/20">
-              <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
-              <span>{step}</span>
+          {loading && (
+            <div className="bg-[#14100D] border border-[#D96B27]/40 rounded-2xl p-3.5 space-y-2 shadow-lg">
+              <div className="flex items-center justify-between text-xs">
+                <span className="flex items-center gap-2 text-[#E29D52] font-semibold text-[11px]">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D96B27] flex-shrink-0" />
+                  {steps[stepIdx]}
+                </span>
+                <span className="text-[10px] font-metric text-[#8C7B6E] bg-[#1F1813] px-2 py-0.5 rounded-full border border-[#3A2D23]">
+                  {stepIdx + 1}/4
+                </span>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 pt-0.5">
+                {[0, 1, 2, 3].map(i => (
+                  <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i <= stepIdx ? 'bg-[#D96B27]' : 'bg-[#2B211A]'}`} />
+                ))}
+              </div>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading || !url.trim()}
-            className="w-full bg-[#D96B27] hover:bg-[#E29D52] disabled:opacity-50 text-[#141210] font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#D96B27]/20 transition-all"
-          >
+          <button type="submit" disabled={loading || !url.trim()} className="w-full bg-[#D96B27] hover:bg-[#E29D52] disabled:opacity-50 text-[#141210] font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#D96B27]/20 transition-all">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.addCoffeeSubmit}
           </button>
         </form>
 
-        <div className="mt-5 border-t border-[#30261E] pt-4">
-          <p className="text-[11px] font-medium text-[#A8988B] mb-2 font-serif">
-            {t.sampleUrlsLabel}
-          </p>
+        <div className="mt-4 border-t border-[#30261E] pt-3">
+          <p className="text-[11px] font-medium text-[#A8988B] mb-2 font-serif">{t.sampleUrlsLabel}</p>
           <div className="space-y-1.5">
             {SAMPLE_URLS.map((sample, i) => (
-              <button
-                key={i}
-                type="button"
-                disabled={loading}
-                onClick={() => {
-                  setUrl(sample.url);
-                  handleSubmit(sample.url);
-                }}
-                className="w-full text-left text-xs bg-[#141210] hover:bg-[#251F1A] border border-[#30261E] p-2.5 rounded-xl flex items-center justify-between text-[#F7F2EB]/90 transition-colors"
-              >
+              <button key={i} type="button" disabled={loading} onClick={() => { setUrl(sample.url); handleSubmit(sample.url); }} className="w-full text-left text-xs bg-[#141210] hover:bg-[#251F1A] border border-[#30261E] p-2.5 rounded-xl flex items-center justify-between text-[#F7F2EB]/90 transition-colors">
                 <span>{sample.label}</span>
                 <span className="text-[10px] text-[#D96B27] font-medium">Extraer</span>
               </button>
