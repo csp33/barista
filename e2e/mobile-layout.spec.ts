@@ -41,7 +41,7 @@ test.describe('Mobile layout and centering tests', () => {
     expect(overflow.hasOverflow).toBe(false);
   });
 
-  test('header actions fit within viewport without clipping', async ({ page }, testInfo) => {
+  test('header actions fit within viewport without clipping', async ({ page }) => {
     await page.goto('/');
 
     const viewportSize = page.viewportSize();
@@ -63,12 +63,6 @@ test.describe('Mobile layout and centering tests', () => {
     expect(langBox).not.toBeNull();
     if (langBox) {
       expect(langBox.x + langBox.width).toBeLessThanOrEqual(viewportWidth + 2);
-    }
-
-    if (testInfo.project.name.includes('iPhone 13')) {
-      await page.screenshot({
-        path: '/Users/spcarlos33/.gemini/antigravity/brain/035c9c01-82db-4363-8ebd-d7da9eba79d3/mobile_fixed.png',
-      });
     }
   });
 });
