@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { Coffee } from '@/core/domain/coffee/Coffee';
+import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
 import { CoffeeFormFields, CoffeeFormData } from './CoffeeFormFields';
-import { X, Save, Edit3, Loader2 } from 'lucide-react';
+import { X, Save, Edit3, Loader2, Sparkles } from 'lucide-react';
 
 interface CoffeeDetailsModalProps {
   isOpen: boolean;
-  coffee: Coffee;
+  coffee: Coffee | Partial<CoffeeProps>;
+  isNew?: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -16,26 +17,48 @@ interface CoffeeDetailsModalProps {
 export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
   isOpen,
   coffee,
+  isNew = false,
   onClose,
   onSuccess,
 }) => {
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState<CoffeeFormData>({
-    roaster: coffee.roaster,
-    name: coffee.name,
-    country: coffee.originCountry,
+    roaster: coffee.roaster || '',
+    name: coffee.name || '',
+    country: coffee.originCountry || '',
     region: coffee.region || '',
     producer: coffee.producer || '',
     altitude: coffee.altitudeMasl?.toString() || '',
-    variety: coffee.variety,
-    process: coffee.process,
-    roastLevel: coffee.roastLevel,
-    notesStr: coffee.tastingNotes.join(', '),
-    restDays: coffee.recommendedRestDays.toString(),
+    variety: coffee.variety || '',
+    process: coffee.process || 'washed',
+    roastLevel: coffee.roastLevel || 'medium_light',
+    notesStr: coffee.tastingNotes ? coffee.tastingNotes.join(', ') : '',
+    restDays: coffee.recommendedRestDays ? coffee.recommendedRestDays.toString() : '14',
+    imageUrl: coffee.imageUrl || '',
+    status: coffee.status || 'active',
   });
 
   const [saving, setSaving] = useState(false);
+
+  // Sync state whenever coffee changes
+  useEffect(() => {
+    setFormData({
+      roaster: coffee.roaster || '',
+      name: coffee.name || '',
+      country: coffee.originCountry || '',
+      region: coffee.region || '',
+      producer: coffee.producer || '',
+      altitude: coffee.altitudeMasl?.toString() || '',
+      variety: coffee.variety || '',
+      process: coffee.process || 'washed',
+      roastLevel: coffee.roastLevel || 'medium_light',
+      notesStr: coffee.tastingNotes ? coffee.tastingNotes.join(', ') : '',
+      restDays: coffee.recommendedRestDays ? coffee.recommendedRestDays.toString() : '14',
+      imageUrl: coffee.imageUrl || '',
+      status: coffee.status || 'active',
+    });
+  }, [coffee]);
 
   if (!isOpen) return null;
 
@@ -47,37 +70,50 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
     e.preventDefault();
     setSaving(true);
 
-    try {
-      const res = await fetch(`/api/coffees/${coffee.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          roaster: formData.roaster,
-          name: formData.name,
-          originCountry: formData.country,
-          region: formData.region || undefined,
-          producer: formData.producer || undefined,
-          altitudeMasl: formData.altitude ? parseInt(formData.altitude, 10) : undefined,
-          variety: formData.variety,
-          process: formData.process,
-          roastLevel: formData.roastLevel,
-          tastingNotes: formData.notesStr.split(',').map(s => s.trim()).filter(Boolean),
-          recommendedRestDays: formData.restDays ? parseInt(formData.restDays, 10) : undefined,
-        }),
-      });
+    const payload = {
+      roaster: formData.roaster,
+      name: formData.name,
+      originCountry: formData.country,
+      region: formData.region || undefined,
+      producer: formData.producer || undefined,
+      altitudeMasl: formData.altitude ? parseInt(formData.altitude, 10) : undefined,
+      variety: formData.variety,
+      process: formData.process,
+      roastLevel: formData.roastLevel,
+      tastingNotes: formData.notesStr.split(',').map(s => s.trim()).filter(Boolean),
+      recommendedRestDays: formData.restDays ? parseInt(formData.restDays, 10) : undefined,
+      imageUrl: formData.imageUrl || undefined,
+      status: formData.status,
+    };
 
-      if (!res.ok) throw new Error('Update failed');
+    try {
+      if (isNew) {
+        const res = await fetch('/api/coffees', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ manualData: payload }),
+        });
+        if (!res.ok) throw new Error('Create failed');
+      } else {
+        const res = await fetch(`/api/coffees/${(coffee as Coffee).id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('Update failed');
+      }
+
       onSuccess();
       onClose();
     } catch {
-      alert('Error updating coffee');
+      alert('Error saving coffee data');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/85 backdrop-blur-md">
       <div className="bg-[#1C1815] border border-[#3D332A] w-full max-w-lg rounded-3xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto no-scrollbar">
         <button
           onClick={onClose}
@@ -88,13 +124,15 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
 
         <div className="flex items-center gap-2.5 mb-4">
           <div className="p-2 rounded-xl bg-[#D96B27]/20 text-[#D96B27]">
-            <Edit3 className="w-5 h-5" />
+            {isNew ? <Sparkles className="w-5 h-5" /> : <Edit3 className="w-5 h-5" />}
           </div>
           <div>
             <h3 className="font-serif text-lg font-bold text-[#F7F2EB]">
-              {t.editCoffeeSpecs}
+              {isNew ? 'Revisar Datos Extraídos' : t.editCoffeeSpecs}
             </h3>
-            <p className="text-xs text-[#A8988B]">{t.editCoffee}</p>
+            <p className="text-xs text-[#A8988B]">
+              {isNew ? 'Revisa y ajusta antes de guardar en tu barra' : t.editCoffee}
+            </p>
           </div>
         </div>
 
@@ -115,7 +153,7 @@ export const CoffeeDetailsModal: React.FC<CoffeeDetailsModalProps> = ({
               className="w-2/3 bg-[#D96B27] hover:bg-[#E29D52] text-[#141210] font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5 transition-colors shadow-md shadow-[#D96B27]/20"
             >
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>{t.saveChanges}</span>
+              <span>{isNew ? 'Confirmar y Guardar' : t.saveChanges}</span>
             </button>
           </div>
         </form>

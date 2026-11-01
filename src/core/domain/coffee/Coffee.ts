@@ -13,6 +13,8 @@ export type RoastLevel =
   | 'medium_dark'
   | 'dark';
 
+export type CoffeeStatus = 'active' | 'history';
+
 export interface CoffeeProps {
   id: string;
   roaster: string;
@@ -27,6 +29,8 @@ export interface CoffeeProps {
   tastingNotes: string[];
   recommendedRestDays?: number;
   sourceUrl?: string;
+  imageUrl?: string;
+  status?: CoffeeStatus;
   createdAt?: Date;
 }
 
@@ -44,6 +48,8 @@ export class Coffee {
   readonly tastingNotes: string[];
   readonly recommendedRestDays: number;
   readonly sourceUrl?: string;
+  readonly imageUrl?: string;
+  readonly status: CoffeeStatus;
   readonly createdAt: Date;
 
   constructor(props: CoffeeProps) {
@@ -68,6 +74,8 @@ export class Coffee {
     this.recommendedRestDays =
       props.recommendedRestDays ?? this.calculateDefaultRestDays(props.roastLevel, props.process);
     this.sourceUrl = props.sourceUrl?.trim();
+    this.imageUrl = props.imageUrl?.trim();
+    this.status = props.status ?? 'active';
     this.createdAt = props.createdAt ?? new Date();
   }
 

@@ -13,6 +13,7 @@ export interface ScrapedCoffeeData {
   tastingNotes: string[];
   recommendedRestDays?: number;
   sourceUrl: string;
+  imageUrl?: string;
 }
 
 export interface RoasterScraperPort {

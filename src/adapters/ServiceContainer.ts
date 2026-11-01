@@ -22,7 +22,9 @@ const INITIAL_COFFEES: Coffee[] = [
     roastLevel: 'light',
     tastingNotes: ['White Peach', 'Jasmine', 'Bergamot', 'Lime'],
     sourceUrl: 'https://nomadcoffee.es/products/worka-sakaro',
+    imageUrl: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&auto=format&fit=crop&q=80',
     recommendedRestDays: 18,
+    status: 'active',
   }),
   new Coffee({
     id: 'coffee-sanjorge-dutra',
@@ -37,7 +39,9 @@ const INITIAL_COFFEES: Coffee[] = [
     roastLevel: 'medium',
     tastingNotes: ['Milk Chocolate', 'Roasted Hazelnut', 'Caramel'],
     sourceUrl: 'https://sanjorge.coffee/products/fazenda-dutra',
+    imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80',
     recommendedRestDays: 8,
+    status: 'active',
   }),
   new Coffee({
     id: 'coffee-rightside-elparaiso',
@@ -52,7 +56,9 @@ const INITIAL_COFFEES: Coffee[] = [
     roastLevel: 'medium_light',
     tastingNotes: ['Tropical Fruit', 'Passionfruit', 'Vanilla cream'],
     sourceUrl: 'https://rightsidecoffee.com/products/el-paraiso-92',
+    imageUrl: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800&auto=format&fit=crop&q=80',
     recommendedRestDays: 12,
+    status: 'history',
   }),
 ];
 

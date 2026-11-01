@@ -6,14 +6,19 @@ export class HeuristicParser {
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     const rawTitle = titleMatch ? titleMatch[1].trim() : '';
 
-    const ogDescMatch = html.match(
-      /<meta\s+property=["']og:description["']\s+content=["']([^"']+)["']/i
+    const ogSiteMatch = html.match(
+      /<meta\s+(?:property|name)=["']og:site_name["']\s+content=["']([^"']+)["']/i
     );
-    const description = ogDescMatch ? ogDescMatch[1] : '';
+    const ogImageMatch = html.match(
+      /<meta\s+(?:property|name)=["']og:image["']\s+content=["']([^"']+)["']/i
+    );
+    const ogDescMatch = html.match(
+      /<meta\s+(?:property|name)=["']og:description["']\s+content=["']([^"']+)["']/i
+    );
 
-    const roaster = this.detectRoaster(domain, rawTitle);
+    const roaster = ogSiteMatch ? ogSiteMatch[1].trim() : this.detectRoaster(domain, rawTitle);
     const name = this.cleanCoffeeName(rawTitle, roaster);
-    const fullText = `${rawTitle} ${description} ${html.substring(0, 6000)}`.toLowerCase();
+    const fullText = `${rawTitle} ${ogDescMatch ? ogDescMatch[1] : ''} ${html.substring(0, 6000)}`.toLowerCase();
 
     return {
       roaster,
@@ -25,6 +30,7 @@ export class HeuristicParser {
       roastLevel: this.detectRoastLevel(fullText),
       tastingNotes: this.detectTastingNotes(fullText),
       sourceUrl: url,
+      imageUrl: ogImageMatch ? ogImageMatch[1].trim() : undefined,
     };
   }
 
@@ -33,12 +39,12 @@ export class HeuristicParser {
       data.name.length > 2 &&
       data.originCountry !== 'Specialty Origin' &&
       data.variety !== 'Arabica Microlot' &&
-      data.tastingNotes.length >= 2 &&
-      data.altitudeMasl !== undefined
+      data.tastingNotes.length >= 2
     );
   }
 
   private static detectRoaster(domain: string, title: string): string {
+    if (domain.includes('cafeselcriollo') || domain.includes('elcriollo')) return 'Cafés el Criollo';
     if (domain.includes('nomadcoffee')) return 'Nomad Coffee';
     if (domain.includes('sanjorge')) return 'San Jorge Coffee';
     if (domain.includes('holacoffee')) return 'Hola Coffee';
@@ -47,29 +53,29 @@ export class HeuristicParser {
 
     const parts = title.split(/[-–|]/);
     if (parts.length > 1) return parts[parts.length - 1].trim();
-
     return domain.split('.')[0].toUpperCase();
   }
 
   private static cleanCoffeeName(title: string, roaster: string): string {
     return (
       title
+        .replace(/comprar\s+/gi, '')
         .replace(new RegExp(roaster, 'gi'), '')
         .replace(/[-–|].*$/, '')
-        .replace(/café de especialidad|specialty coffee/gi, '')
+        .replace(/café\s+(?:de\s+)?/gi, '')
+        .replace(/arábica\s+100%/gi, '')
+        .replace(/specialty coffee/gi, '')
         .trim() || 'Single Origin Espresso'
     );
   }
 
   private static detectCountry(text: string): string {
     const countries = [
-      'ethiopia', 'colombia', 'kenya', 'guatemala', 'brazil',
+      'india', 'ethiopia', 'colombia', 'kenya', 'guatemala', 'brazil',
       'costa rica', 'panama', 'rwanda', 'el salvador', 'honduras', 'peru'
     ];
     for (const c of countries) {
-      if (text.includes(c)) {
-        return c.charAt(0).toUpperCase() + c.slice(1);
-      }
+      if (text.includes(c)) return c.charAt(0).toUpperCase() + c.slice(1);
     }
     return 'Specialty Origin';
   }
@@ -86,7 +92,7 @@ export class HeuristicParser {
   private static detectVariety(text: string): string {
     const varieties = [
       'geisha', 'gesha', 'bourbon', 'caturra', 'castillo',
-      'pacamara', 'sl28', 'sl34', 'typica', 'heirloom', 'catuai', 'sidra'
+      'pacamara', 'sl28', 'sl34', 'typica', 'heirloom', 'catuai', 'kent'
     ];
     for (const v of varieties) {
       if (text.includes(v)) return v.charAt(0).toUpperCase() + v.slice(1);
@@ -95,6 +101,7 @@ export class HeuristicParser {
   }
 
   private static detectProcess(text: string): CoffeeProps['process'] {
+    if (text.includes('monsonado') || text.includes('monsooned')) return 'washed';
     if (text.includes('anaerobic') || text.includes('anaerobico')) return 'anaerobic';
     if (text.includes('natural')) return 'natural';
     if (text.includes('honey')) return 'honey';
@@ -112,8 +119,8 @@ export class HeuristicParser {
 
   private static detectTastingNotes(text: string): string[] {
     const candidates = [
-      'peach', 'jasmine', 'bergamot', 'chocolate', 'caramel', 'floral',
-      'hazelnut', 'red berries', 'apricot', 'citrus', 'black tea', 'orange'
+      'cereal', 'pimienta', 'cedro', 'tabaco', 'peach', 'jasmine', 'bergamot',
+      'chocolate', 'caramel', 'floral', 'hazelnut', 'red berries', 'cacao', 'spices'
     ];
     const found = candidates.filter(c => text.includes(c));
     return found.length > 0 ? found.slice(0, 4) : [];

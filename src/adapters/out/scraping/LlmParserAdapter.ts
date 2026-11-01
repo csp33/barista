@@ -66,6 +66,7 @@ Respond ONLY with a JSON object conforming to this schema:
           ? parsed.tastingNotes
           : fallback.tastingNotes,
         sourceUrl: url,
+        imageUrl: fallback.imageUrl,
       };
     } catch {
       return fallback;

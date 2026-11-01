@@ -2,24 +2,25 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
+import { CoffeeProps } from '@/core/domain/coffee/Coffee';
 import { X, Link2, Sparkles, Loader2 } from 'lucide-react';
 
 interface AddCoffeeModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
+  onScraped: (scraped: Partial<CoffeeProps>) => void;
 }
 
 const SAMPLE_URLS = [
+  { label: 'Cafés El Criollo - India Malabar', url: 'https://cafeselcriollo.com/producto/cafe-india/' },
   { label: 'Nomad Worka Sakaro', url: 'https://nomadcoffee.es/products/worka-sakaro' },
   { label: 'San Jorge Peña Blanca', url: 'https://sanjorge.coffee/products/guatemala-pena-blanca' },
-  { label: 'Right Side El Paraiso', url: 'https://rightsidecoffee.com/products/el-paraiso-92' },
 ];
 
 export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
   isOpen,
   onClose,
-  onSuccess,
+  onScraped,
 }) => {
   const { t } = useTranslation();
   const [url, setUrl] = useState('');
@@ -36,7 +37,7 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
     setStep(t.analyzingRoaster);
 
     try {
-      const res = await fetch('/api/coffees', {
+      const res = await fetch('/api/coffees/scrape', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: targetUrl.trim() }),
@@ -49,8 +50,8 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
 
       setStep(null);
       setUrl('');
-      onSuccess();
       onClose();
+      onScraped(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Scraping failed');
     } finally {
@@ -59,23 +60,23 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#181512] border border-[#2C2621] w-full max-w-md rounded-3xl p-5 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div className="bg-[#1C1815] border border-[#3D332A] w-full max-w-md rounded-3xl p-6 shadow-2xl relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 text-[#9E9288] hover:text-[#F5EFEB] rounded-full bg-[#12100E] border border-[#2C2621]"
+          className="absolute top-5 right-5 p-1.5 text-[#A8988B] hover:text-[#F7F2EB] rounded-full bg-[#141210] border border-[#3D332A]"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2.5 mb-3">
           <div className="p-2 rounded-xl bg-[#D96B27]/20 text-[#D96B27]">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-[#F5EFEB]">{t.addCoffee}</h3>
-            <p className="text-xs text-[#9E9288]">
-              Autonomous extractor & recipe generator
+            <h3 className="font-serif text-lg font-bold text-[#F7F2EB]">{t.addCoffee}</h3>
+            <p className="text-xs text-[#A8988B]">
+              El agente extraerá los datos y te permitirá revisarlos
             </p>
           </div>
         </div>
@@ -88,14 +89,14 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
           className="space-y-3 mt-4"
         >
           <div className="relative">
-            <Link2 className="w-4 h-4 text-[#9E9288] absolute left-3 top-3.5" />
+            <Link2 className="w-4 h-4 text-[#A8988B] absolute left-3.5 top-3.5" />
             <input
               type="url"
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder={t.addCoffeeUrlPlaceholder}
               disabled={loading}
-              className="w-full bg-[#12100E] border border-[#2C2621] focus:border-[#D96B27] rounded-xl pl-9 pr-3 py-2.5 text-xs text-[#F5EFEB] outline-none placeholder:text-[#9E9288]/60 transition-colors"
+              className="w-full bg-[#141210] border border-[#3D332A] focus:border-[#D96B27] rounded-xl pl-10 pr-3 py-3 text-xs text-[#F7F2EB] outline-none placeholder:text-[#A8988B]/60"
             />
           </div>
 
@@ -106,8 +107,8 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
           )}
 
           {step && (
-            <div className="flex items-center gap-2 text-xs text-[#E29D52] bg-[#E29D52]/10 p-2.5 rounded-lg border border-[#E29D52]/20">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <div className="flex items-center gap-2 text-xs text-[#E29D52] bg-[#E29D52]/10 p-3 rounded-xl border border-[#E29D52]/20">
+              <Loader2 className="w-4 h-4 animate-spin flex-shrink-0" />
               <span>{step}</span>
             </div>
           )}
@@ -115,15 +116,14 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
           <button
             type="submit"
             disabled={loading || !url.trim()}
-            className="w-full bg-[#D96B27] hover:bg-[#E29D52] disabled:opacity-50 text-[#12100E] font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
+            className="w-full bg-[#D96B27] hover:bg-[#E29D52] disabled:opacity-50 text-[#141210] font-bold text-xs py-3.5 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-[#D96B27]/20 transition-all"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.addCoffeeSubmit}
           </button>
         </form>
 
-        {/* Quick Sample URLs */}
-        <div className="mt-5 border-t border-[#2C2621]/60 pt-4">
-          <p className="text-[11px] font-medium text-[#9E9288] mb-2">
+        <div className="mt-5 border-t border-[#30261E] pt-4">
+          <p className="text-[11px] font-medium text-[#A8988B] mb-2 font-serif">
             {t.sampleUrlsLabel}
           </p>
           <div className="space-y-1.5">
@@ -136,12 +136,10 @@ export const AddCoffeeModal: React.FC<AddCoffeeModalProps> = ({
                   setUrl(sample.url);
                   handleSubmit(sample.url);
                 }}
-                className="w-full text-left text-xs bg-[#12100E] hover:bg-[#201C18] border border-[#2C2621] p-2 rounded-lg flex items-center justify-between text-[#F5EFEB]/90 group transition-colors"
+                className="w-full text-left text-xs bg-[#141210] hover:bg-[#251F1A] border border-[#30261E] p-2.5 rounded-xl flex items-center justify-between text-[#F7F2EB]/90 transition-colors"
               >
                 <span>{sample.label}</span>
-                <span className="text-[10px] text-[#D96B27] group-hover:underline">
-                  Auto-scrape
-                </span>
+                <span className="text-[10px] text-[#D96B27] font-medium">Extraer</span>
               </button>
             ))}
           </div>

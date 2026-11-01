@@ -40,6 +40,8 @@ export class UpdateCoffeeUseCase {
       tastingNotes: request.data.tastingNotes ?? existing.tastingNotes,
       recommendedRestDays: request.data.recommendedRestDays ?? existing.recommendedRestDays,
       sourceUrl: existing.sourceUrl,
+      imageUrl: request.data.imageUrl ?? existing.imageUrl,
+      status: request.data.status ?? existing.status,
       createdAt: existing.createdAt,
     });
 

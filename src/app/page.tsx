@@ -3,22 +3,28 @@
 import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '@/adapters/ui/i18n/LanguageContext';
 import { Header } from '@/adapters/ui/components/Header';
-import { ActiveShelf } from '@/adapters/ui/components/ActiveShelf';
 import { DialInCard } from '@/adapters/ui/components/DialInCard';
-import { StashHistory } from '@/adapters/ui/components/StashHistory';
 import { AddCoffeeModal } from '@/adapters/ui/components/AddCoffeeModal';
 import { FeedbackModal } from '@/adapters/ui/components/FeedbackModal';
 import { CoffeeDetailsModal } from '@/adapters/ui/components/CoffeeDetailsModal';
+import { BottomNav, NavTab } from '@/adapters/ui/components/BottomNav';
+import { CoffeeStashManager } from '@/adapters/ui/components/CoffeeStashManager';
+import { EquipmentView } from '@/adapters/ui/components/EquipmentView';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
-import { Loader2 } from 'lucide-react';
+import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
+import { Loader2, Plus, Sparkles } from 'lucide-react';
 
 function BaristaDashboard() {
+  const [activeTab, setActiveTab] = useState<NavTab>('bar');
   const [items, setItems] = useState<StashItemDTO[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [activeCoffeeId, setActiveCoffeeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingCoffee, setEditingCoffee] = useState<Coffee | Partial<CoffeeProps> | null>(null);
+  const [isNewCoffeeReview, setIsNewCoffeeReview] = useState(false);
 
   const fetchStash = async () => {
     try {
@@ -26,6 +32,10 @@ function BaristaDashboard() {
       const data = await res.json();
       if (data.success && data.data) {
         setItems(data.data);
+        if (!activeCoffeeId && data.data.length > 0) {
+          const firstActive = data.data.find((i: StashItemDTO) => i.coffee.status !== 'history');
+          setActiveCoffeeId(firstActive ? firstActive.coffee.id : data.data[0].coffee.id);
+        }
       }
     } catch (e) {
       console.error('Failed to load stash', e);
@@ -38,72 +48,130 @@ function BaristaDashboard() {
     fetchStash();
   }, []);
 
-  const activeItem = items[selectedIndex] || null;
+  const activeItem = items.find(i => i.coffee.id === activeCoffeeId) || items[0] || null;
+  const activeCount = items.filter(i => i.coffee.status !== 'history').length;
+
+  const handleToggleStatus = async (coffeeId: string, currentStatus: string) => {
+    const nextStatus = currentStatus === 'history' ? 'active' : 'history';
+    try {
+      await fetch(`/api/coffees/${coffeeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      fetchStash();
+    } catch {
+      alert('Error updating status');
+    }
+  };
+
+  const handleScraped = (scraped: Partial<CoffeeProps>) => {
+    setEditingCoffee(scraped);
+    setIsNewCoffeeReview(true);
+  };
+
+  const handleOpenEdit = (coffee: Coffee) => {
+    setEditingCoffee(coffee);
+    setIsNewCoffeeReview(false);
+  };
 
   return (
-    <div className="min-h-screen bg-[#100D0B] text-[#F7F2EB] pb-12">
+    <div className="min-h-screen bg-[#14100D] text-[#F7F2EB] flex flex-col">
       <Header />
 
-      <main className="max-w-md mx-auto">
+      <main className="flex-1 max-w-md mx-auto w-full">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-28 gap-3">
-            <Loader2 className="w-7 h-7 animate-spin text-[#D96B27]" />
+          <div className="flex flex-col items-center justify-center py-32 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-[#D96B27]" />
             <span className="text-xs text-[#A8988B] font-metric">
-              Loading specialty stash...
+              Cargando estación barista...
             </span>
           </div>
         ) : (
           <>
-            <ActiveShelf
-              items={items}
-              selectedIndex={selectedIndex}
-              onSelectIndex={setSelectedIndex}
-              onOpenAddModal={() => setIsAddModalOpen(true)}
-              onOpenEditCoffee={(idx) => {
-                setSelectedIndex(idx);
-                setIsEditModalOpen(true);
-              }}
-            />
-
-            {activeItem && (
-              <div className="px-4 mt-5">
-                <DialInCard
-                  item={activeItem}
-                  onOpenFeedback={() => setIsFeedbackModalOpen(true)}
-                  onOpenEditCoffee={() => setIsEditModalOpen(true)}
-                />
+            {/* TAB 1: BARISTA / EXTRACTION */}
+            {activeTab === 'bar' && (
+              <div className="px-4 py-4 pb-24 space-y-4">
+                {activeItem ? (
+                  <DialInCard
+                    item={activeItem}
+                    onOpenFeedback={() => setIsFeedbackModalOpen(true)}
+                    onOpenEditCoffee={() => handleOpenEdit(activeItem.coffee)}
+                  />
+                ) : (
+                  <div className="bg-[#1A1512] border border-[#332820] rounded-3xl p-8 text-center space-y-4 my-8">
+                    <Sparkles className="w-10 h-10 text-[#D96B27] mx-auto opacity-70" />
+                    <div>
+                      <h3 className="font-serif font-bold text-lg text-[#F7F2EB]">
+                        No hay café seleccionado en la barra
+                      </h3>
+                      <p className="text-xs text-[#A8988B] mt-1">
+                        Elige un café de tu colección para calibrar el DF64 y la Sage.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('stash')}
+                      className="bg-[#D96B27] text-[#141210] font-bold text-xs px-5 py-3 rounded-xl inline-block"
+                    >
+                      Ir a Mi Colección
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
-            <StashHistory
-              items={items}
-              selectedIndex={selectedIndex}
-              onSelectIndex={setSelectedIndex}
-            />
+            {/* TAB 2: MI CAFÉ (STASH MANAGEMENT) */}
+            {activeTab === 'stash' && (
+              <CoffeeStashManager
+                items={items}
+                activeId={activeCoffeeId}
+                onSelectForBrew={(id) => {
+                  setActiveCoffeeId(id);
+                  setActiveTab('bar');
+                }}
+                onEditCoffee={handleOpenEdit}
+                onToggleStatus={handleToggleStatus}
+                onOpenAddModal={() => setIsAddModalOpen(true)}
+              />
+            )}
+
+            {/* TAB 3: MI EQUIPO */}
+            {activeTab === 'gear' && <EquipmentView />}
           </>
         )}
       </main>
 
+      <BottomNav
+        activeTab={activeTab}
+        onChangeTab={setActiveTab}
+        activeCount={activeCount}
+      />
+
       <AddCoffeeModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        onSuccess={fetchStash}
+        onScraped={handleScraped}
       />
+
+      {editingCoffee && (
+        <CoffeeDetailsModal
+          key={(editingCoffee as Coffee).id || 'new-scraped'}
+          isOpen={Boolean(editingCoffee)}
+          coffee={editingCoffee}
+          isNew={isNewCoffeeReview}
+          onClose={() => {
+            setEditingCoffee(null);
+            setIsNewCoffeeReview(false);
+          }}
+          onSuccess={fetchStash}
+        />
+      )}
 
       {activeItem && (
         <FeedbackModal
           isOpen={isFeedbackModalOpen}
           item={activeItem}
           onClose={() => setIsFeedbackModalOpen(false)}
-          onSuccess={fetchStash}
-        />
-      )}
-
-      {activeItem && (
-        <CoffeeDetailsModal
-          isOpen={isEditModalOpen}
-          coffee={activeItem.coffee}
-          onClose={() => setIsEditModalOpen(false)}
           onSuccess={fetchStash}
         />
       )}
