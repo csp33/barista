@@ -64,6 +64,9 @@ jobs:
         if: steps.node-cache.outputs.cache-hit != 'true'
         run: npm ci --prefer-offline --no-audit --no-fund
 
+      - name: Run database migrations
+        run: npm run db:migrate
+
       - name: Run test suite
         run: npm test
 
@@ -120,6 +123,9 @@ jobs:
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium
+
+      - name: Run database migrations
+        run: npm run db:migrate
 
       - name: Run E2E tests
         run: npm run test:e2e
