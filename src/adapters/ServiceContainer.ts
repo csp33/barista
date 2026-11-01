@@ -9,6 +9,7 @@ import { AddCoffeeUseCase } from '@/core/application/usecases/AddCoffeeUseCase';
 import { LogFeedbackUseCase } from '@/core/application/usecases/LogFeedbackUseCase';
 import { GetCoffeeStashUseCase } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { UpdateCoffeeUseCase } from '@/core/application/usecases/UpdateCoffeeUseCase';
+import { DeleteCoffeeUseCase } from '@/core/application/usecases/DeleteCoffeeUseCase';
 
 const INITIAL_COFFEES: Coffee[] = [
   new Coffee({
@@ -77,6 +78,7 @@ class ServiceContainer {
   readonly logFeedbackUseCase: LogFeedbackUseCase;
   readonly getCoffeeStashUseCase: GetCoffeeStashUseCase;
   readonly updateCoffeeUseCase: UpdateCoffeeUseCase;
+  readonly deleteCoffeeUseCase: DeleteCoffeeUseCase;
 
   private constructor() {
     this.coffeeRepo = new InMemoryCoffeeRepository(INITIAL_COFFEES);
@@ -106,6 +108,10 @@ class ServiceContainer {
       this.recipeRepo
     );
     this.updateCoffeeUseCase = new UpdateCoffeeUseCase(
+      this.coffeeRepo,
+      this.recipeRepo
+    );
+    this.deleteCoffeeUseCase = new DeleteCoffeeUseCase(
       this.coffeeRepo,
       this.recipeRepo
     );

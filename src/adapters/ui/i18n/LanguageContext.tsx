@@ -8,15 +8,19 @@ import { es } from './es';
 interface LanguageContextType {
   language: Language;
   t: Translations;
+  isAdmin: boolean;
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
+  toggleAdmin: () => void;
 }
 
 const LanguageContext = createContext<LanguageContextType>({
   language: 'es',
   t: es,
+  isAdmin: false,
   setLanguage: () => {},
   toggleLanguage: () => {},
+  toggleAdmin: () => {},
 });
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -28,6 +32,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
       if (saved === 'en' || saved === 'es') return saved;
     }
     return 'es';
+  });
+
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('barista_admin') === 'true';
+    }
+    return false;
   });
 
   const setLanguage = (lang: Language) => {
@@ -42,10 +53,20 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     setLanguage(next);
   };
 
+  const toggleAdmin = () => {
+    setIsAdmin(prev => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('barista_admin', String(next));
+      }
+      return next;
+    });
+  };
+
   const t = language === 'es' ? es : en;
 
   return (
-    <LanguageContext.Provider value={{ language, t, setLanguage, toggleLanguage }}>
+    <LanguageContext.Provider value={{ language, t, isAdmin, setLanguage, toggleLanguage, toggleAdmin }}>
       {children}
     </LanguageContext.Provider>
   );

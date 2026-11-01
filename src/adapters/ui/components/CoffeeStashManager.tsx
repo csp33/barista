@@ -5,7 +5,7 @@ import { useTranslation } from '../i18n/LanguageContext';
 import { StashItemDTO } from '@/core/application/usecases/GetCoffeeStashUseCase';
 import { Coffee } from '@/core/domain/coffee/Coffee';
 import { CoffeeCardItem } from './CoffeeCardItem';
-import { Plus, Archive, Sparkles, Edit } from 'lucide-react';
+import { Plus, Archive, Sparkles, Edit, Trash2 } from 'lucide-react';
 
 interface CoffeeStashManagerProps {
   items: StashItemDTO[];
@@ -13,6 +13,7 @@ interface CoffeeStashManagerProps {
   onSelectForBrew: (coffeeId: string) => void;
   onEditCoffee: (coffee: Coffee) => void;
   onToggleStatus: (coffeeId: string, currentStatus: string) => void;
+  onDeleteCoffee?: (coffeeId: string) => void;
   onOpenAddModal: () => void;
 }
 
@@ -22,11 +23,21 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
   onSelectForBrew,
   onEditCoffee,
   onToggleStatus,
+  onDeleteCoffee,
   onOpenAddModal,
 }) => {
-  const { t } = useTranslation();
+  const { t, language, isAdmin } = useTranslation();
   const activeItems = items.filter(i => i.coffee.status !== 'history');
   const historyItems = items.filter(i => i.coffee.status === 'history');
+
+  const handleDelete = (id: string, name: string) => {
+    const msg = language === 'es'
+      ? `¿Eliminar permanentemente "${name}" del historial?`
+      : `Permanently delete "${name}" from history?`;
+    if (window.confirm(msg)) {
+      onDeleteCoffee?.(id);
+    }
+  };
 
   return (
     <div className="space-y-6 px-4 py-4 pb-24">
@@ -114,6 +125,15 @@ export const CoffeeStashManager: React.FC<CoffeeStashManagerProps> = ({
                     >
                       {t.moveToActive}
                     </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleDelete(c.id, c.name)}
+                        className="p-1.5 text-red-500 hover:text-red-300 hover:bg-red-950/40 rounded-lg transition-colors"
+                        title={language === 'es' ? 'Eliminar café (Admin)' : 'Delete coffee (Admin)'}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
               );

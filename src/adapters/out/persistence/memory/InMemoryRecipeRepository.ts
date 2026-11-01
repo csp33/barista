@@ -27,4 +27,10 @@ export class InMemoryRecipeRepository implements RecipeRepositoryPort {
   async getFeedbackHistory(recipeId: string): Promise<ExtractionFeedback[]> {
     return this.feedbacks.filter(f => f.recipeId === recipeId);
   }
+
+  async deleteByCoffeeId(coffeeId: string): Promise<boolean> {
+    const deleted = this.recipes.delete(coffeeId);
+    this.feedbacks = this.feedbacks.filter(f => f.recipeId !== `recipe-${coffeeId}`);
+    return deleted;
+  }
 }

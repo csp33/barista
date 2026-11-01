@@ -15,7 +15,7 @@ import { Coffee, CoffeeProps } from '@/core/domain/coffee/Coffee';
 import { Loader2, Sparkles, ArrowLeft } from 'lucide-react';
 
 function BaristaDashboard() {
-  const { t } = useTranslation();
+  const { t, isAdmin } = useTranslation();
   const [activeTab, setActiveTab] = useState<NavTab>('stash');
   const [items, setItems] = useState<StashItemDTO[]>([]);
   const [activeCoffeeId, setActiveCoffeeId] = useState<string | null>(null);
@@ -69,6 +69,13 @@ function BaristaDashboard() {
   const handleScraped = (s: Partial<CoffeeProps>) => { setEditingCoffee(s); setIsNewCoffeeReview(true); };
   const handleOpenEdit = (c: Coffee) => { setEditingCoffee(c); setIsNewCoffeeReview(false); };
   const handleSelectBrew = (id: string) => { setActiveCoffeeId(id); setActiveTab('bar'); };
+  const handleDeleteCoffee = async (id: string) => {
+    try {
+      const res = await fetch(`/api/coffees/${id}`, { method: 'DELETE', headers: { 'x-user-role': isAdmin ? 'admin' : 'user' } });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete');
+      fetchStash();
+    } catch (e) { alert(e instanceof Error ? e.message : 'Error deleting'); }
+  };
 
   return (
     <div className="min-h-screen bg-[#14100D] text-[#F7F2EB] flex flex-col">
@@ -136,6 +143,7 @@ function BaristaDashboard() {
                 onSelectForBrew={handleSelectBrew}
                 onEditCoffee={handleOpenEdit}
                 onToggleStatus={handleToggleStatus}
+                onDeleteCoffee={handleDeleteCoffee}
                 onOpenAddModal={() => setIsAddModalOpen(true)}
               />
             )}

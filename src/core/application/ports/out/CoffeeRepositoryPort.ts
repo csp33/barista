@@ -6,4 +6,5 @@ export interface CoffeeRepositoryPort {
   findByRoasterAndName(roaster: string, name: string): Promise<Coffee | null>;
   save(coffee: Coffee): Promise<void>;
   findAll(): Promise<Coffee[]>;
+  delete(id: string): Promise<boolean>;
 }

@@ -44,4 +44,8 @@ export class InMemoryCoffeeRepository implements CoffeeRepositoryPort {
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
     );
   }
+
+  async delete(id: string): Promise<boolean> {
+    return this.coffees.delete(id);
+  }
 }

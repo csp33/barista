@@ -6,4 +6,5 @@ export interface RecipeRepositoryPort {
   save(recipe: Recipe): Promise<void>;
   saveFeedback(feedback: ExtractionFeedback): Promise<void>;
   getFeedbackHistory(recipeId: string): Promise<ExtractionFeedback[]>;
+  deleteByCoffeeId(coffeeId: string): Promise<boolean>;
 }

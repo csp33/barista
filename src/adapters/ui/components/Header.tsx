@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { Coffee, Globe, Sliders } from 'lucide-react';
+import { Coffee, Globe, Sliders, Shield, ShieldCheck } from 'lucide-react';
 
 export const Header: React.FC = () => {
-  const { t, language, toggleLanguage } = useTranslation();
+  const { t, language, toggleLanguage, isAdmin, toggleAdmin } = useTranslation();
 
   return (
     <header className="sticky top-0 z-30 bg-[#120F0D]/90 backdrop-blur-md border-b border-[#30261E] px-4 py-3.5">
@@ -30,14 +30,29 @@ export const Header: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={toggleLanguage}
-          aria-label="Toggle language"
-          className="flex items-center gap-1.5 bg-[#1B1511] hover:bg-[#281F19] border border-[#3A2E24] text-xs font-metric font-semibold text-[#F7F2EB] px-3 py-1.5 rounded-full transition-all active:scale-95 shadow-sm"
-        >
-          <Globe className="w-3.5 h-3.5 text-[#D96B27]" />
-          <span>{language.toUpperCase()}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleAdmin}
+            title={isAdmin ? 'Modo Administrador activado' : 'Activar Modo Administrador'}
+            className={`flex items-center gap-1 text-[11px] font-metric font-semibold px-2.5 py-1.5 rounded-full border transition-all active:scale-95 ${
+              isAdmin
+                ? 'bg-[#2E1D13] border-[#D96B27] text-[#E29D52] shadow-sm shadow-[#D96B27]/20'
+                : 'bg-[#181310] border-[#30261E] text-[#8C7B6E] hover:text-[#C5B5A7]'
+            }`}
+          >
+            {isAdmin ? <ShieldCheck className="w-3.5 h-3.5 text-[#D96B27]" /> : <Shield className="w-3.5 h-3.5" />}
+            <span>{isAdmin ? 'ADMIN' : 'USER'}</span>
+          </button>
+
+          <button
+            onClick={toggleLanguage}
+            aria-label="Toggle language"
+            className="flex items-center gap-1.5 bg-[#1B1511] hover:bg-[#281F19] border border-[#3A2E24] text-xs font-metric font-semibold text-[#F7F2EB] px-3 py-1.5 rounded-full transition-all active:scale-95 shadow-sm"
+          >
+            <Globe className="w-3.5 h-3.5 text-[#D96B27]" />
+            <span>{language.toUpperCase()}</span>
+          </button>
+        </div>
       </div>
     </header>
   );
