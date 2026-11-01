@@ -1,6 +1,14 @@
 node_modules
 .next
 .git
+.github
+tests
+docs
+specs
+*.md
+Dockerfile*
+docker-compose*.yml
+.vscode
 .agents
 .claude
 .cursor
