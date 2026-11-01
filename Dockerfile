@@ -1,23 +1,15 @@
-FROM node:22-alpine AS base
-
-# Dependencies layer
-FROM base AS deps
+FROM node:22-alpine AS builder
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
 
-# Build layer
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN --mount=type=cache,target=/app/.next/cache npm run build
 
 # Runner layer
-FROM base AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
