@@ -31,21 +31,21 @@ export const SageTempSelector: React.FC<SageTempSelectorProps> = ({ currentTemp 
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
         {presets.map(p => {
           const isActive = currentTemp === p.id;
           return (
             <div
               key={p.id}
-              className={`p-2.5 rounded-xl border flex items-center justify-between transition-all ${
+              className={`p-3 rounded-xl border flex flex-col items-center justify-center text-center gap-1 transition-all ${
                 isActive
-                  ? 'bg-gradient-to-r from-[#382318] to-[#22160F] border-[#D96B27] text-[#F7F2EB] shadow-md shadow-[#D96B27]/25 ring-1 ring-[#D96B27]'
-                  : 'bg-[#181411] border-[#30261E] text-[#B0A093]'
+                  ? 'bg-gradient-to-b from-[#382318] to-[#22160F] border-[#D96B27] text-[#F7F2EB] shadow-md shadow-[#D96B27]/25 ring-1 ring-[#D96B27]'
+                  : 'bg-[#181411] border-[#30261E] text-[#B0A093] hover:border-[#443528]'
               }`}
             >
               <div className="flex items-center gap-1.5">
                 {isActive && <div className="w-1.5 h-1.5 rounded-full bg-[#D96B27]" />}
-                <span className={`text-xs font-bold capitalize ${isActive ? 'text-[#F7F2EB]' : 'text-[#C5B5A7]'}`}>
+                <span className={`text-xs font-bold ${isActive ? 'text-[#F7F2EB]' : 'text-[#C5B5A7]'}`}>
                   {p.label}
                 </span>
               </div>

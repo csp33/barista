@@ -76,53 +76,54 @@ export const DialInCard: React.FC<DialInCardProps> = ({
       </div>
 
       {/* Main Barista Hardware Tuning Section */}
-      <div className="p-5 space-y-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#120F0D] border border-[#30261E] rounded-2xl p-4">
-          {/* DF64 II Rotary Gauge */}
-          <div className="w-full sm:w-auto flex flex-col items-center">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#A8988B] mb-2">
+      <div className="p-5 sm:p-6 space-y-4">
+        {/* DF64 II Rotary Instrument Gauge */}
+        <div className="bg-[#120F0D] border border-[#30261E] rounded-2xl p-5 flex flex-col items-center shadow-inner">
+          <div className="flex items-center justify-between w-full mb-2 px-1">
+            <span className="text-[11px] font-metric font-semibold uppercase tracking-wider text-[#E29D52]">
               {t.grindSetting}
             </span>
-            <Df64DialGauge setting={recipe.grindSetting} />
+            <span className="text-[10px] font-metric text-[#8C7B6E] bg-[#191411] px-2.5 py-0.5 rounded-full border border-[#2B211A]">
+              DF64 Gen II • Stepless 0–90
+            </span>
           </div>
-
-          {/* Sage Touch Impress Temperature Controller */}
-          <div className="w-full sm:flex-1">
-            <SageTempSelector currentTemp={recipe.machineTemperature} />
-          </div>
+          <Df64DialGauge setting={recipe.grindSetting} />
         </div>
 
+        {/* Sage Touch Impress Temperature Controller */}
+        <SageTempSelector currentTemp={recipe.machineTemperature} />
+
         {/* Technical Brew Parameters Bar */}
-        <div className="grid grid-cols-4 gap-2 bg-[#120F0D] border border-[#30261E] rounded-2xl p-3 text-center">
+        <div className="grid grid-cols-4 gap-2 bg-[#120F0D] border border-[#30261E] rounded-2xl p-4 text-center">
           <div>
-            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block">
+            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block mb-0.5">
               {t.dose}
             </span>
-            <span className="text-sm font-bold font-metric text-[#F7F2EB]">
+            <span className="text-base font-bold font-metric text-[#F7F2EB]">
               {recipe.doseGrams}g
             </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block">
+            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block mb-0.5">
               {t.yield}
             </span>
-            <span className="text-sm font-bold font-metric text-[#F7F2EB]">
+            <span className="text-base font-bold font-metric text-[#F7F2EB]">
               {recipe.yieldGrams}g
             </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block">
+            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block mb-0.5">
               {t.ratio}
             </span>
-            <span className="text-sm font-bold font-metric text-[#E29D52]">
+            <span className="text-base font-bold font-metric text-[#E29D52]">
               {recipe.ratio}
             </span>
           </div>
           <div>
-            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block">
+            <span className="text-[10px] uppercase font-metric text-[#8A7A6D] block mb-0.5">
               {t.time}
             </span>
-            <span className="text-sm font-bold font-metric text-[#F7F2EB]">
+            <span className="text-base font-bold font-metric text-[#F7F2EB]">
               ~{recipe.targetTimeSeconds}s
             </span>
           </div>

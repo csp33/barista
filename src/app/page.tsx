@@ -74,7 +74,7 @@ function BaristaDashboard() {
     <div className="min-h-screen bg-[#14100D] text-[#F7F2EB] flex flex-col">
       <Header />
 
-      <main className="flex-1 max-w-md mx-auto w-full">
+      <main className="flex-1 max-w-2xl mx-auto w-full">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-[#D96B27]" />
