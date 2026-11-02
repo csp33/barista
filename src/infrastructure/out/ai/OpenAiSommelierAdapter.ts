@@ -58,7 +58,7 @@ Enfócate en el terroir, qué esperar en la taza de espresso y su momento ideal 
       const prompt = `Como maestro barista de especialidad, diagnostica en 1-2 frases concretas este tiro:
 Café: ${coffee.name} (${coffee.process}, tueste ${coffee.roastLevel})
 Dosis: ${feedback.actualDoseGrams}g -> Salida: ${feedback.actualYieldGrams}g en ${feedback.actualTimeSeconds}s
-Molienda: #${feedback.actualGrindSetting}
+Molienda: #${feedback.actualGrindSetting}${feedback.actualTemperature ? ` | Temperatura: ${feedback.actualTemperature}` : ''}
 Sensación en taza: ${feedback.tasteProfile}
 Notas del usuario: "${feedback.userNotes || 'Ninguna'}"
 

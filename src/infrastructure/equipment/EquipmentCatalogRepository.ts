@@ -1,5 +1,5 @@
 import { Grinder } from '@/domain/equipment/Grinder';
-import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
+import { EspressoMachine, SAGE_TEMPERATURE_SCALE } from '@/domain/equipment/EspressoMachine';
 import { EquipmentRepositoryPort } from '@/application/ports/out/EquipmentRepositoryPort';
 
 export const PRESET_GRINDERS: Grinder[] = [
@@ -12,12 +12,12 @@ export const PRESET_GRINDERS: Grinder[] = [
 ];
 
 export const PRESET_MACHINES: EspressoMachine[] = [
-  { id: 'sage-barista-touch-impress', brand: 'Sage', model: 'Barista Touch Impress', portafilterSizeMm: 54, standardDoseGrams: 18.0, availableTemperatures: ['low', 'normal', 'high', 'very_high'] },
+  { id: 'sage-barista-touch-impress', brand: 'Sage', model: 'Barista Touch Impress', portafilterSizeMm: 54, standardDoseGrams: 18.0, availableTemperatures: SAGE_TEMPERATURE_SCALE },
   { id: 'casabrews-cm5418', brand: 'Casabrews', model: 'CM5418', portafilterSizeMm: 51, standardDoseGrams: 14.5, availableTemperatures: ['normal'] },
   { id: 'gaggia-classic-pro', brand: 'Gaggia', model: 'Classic Pro', portafilterSizeMm: 58, standardDoseGrams: 18.0, availableTemperatures: ['normal'] },
   { id: 'sage-bambino-plus', brand: 'Sage', model: 'Bambino Plus', portafilterSizeMm: 54, standardDoseGrams: 18.0, availableTemperatures: ['normal'] },
-  { id: 'la-marzocco-micra', brand: 'La Marzocco', model: 'Linea Micra', portafilterSizeMm: 58, standardDoseGrams: 18.0, availableTemperatures: ['low', 'normal', 'high', 'very_high'] },
-  { id: 'delonghi-dedica', brand: 'DeLonghi', model: 'Dedica EC685', portafilterSizeMm: 51, standardDoseGrams: 14.5, availableTemperatures: ['low', 'normal', 'high'] },
+  { id: 'la-marzocco-micra', brand: 'La Marzocco', model: 'Linea Micra', portafilterSizeMm: 58, standardDoseGrams: 18.0, availableTemperatures: SAGE_TEMPERATURE_SCALE },
+  { id: 'delonghi-dedica', brand: 'DeLonghi', model: 'Dedica EC685', portafilterSizeMm: 51, standardDoseGrams: 14.5, availableTemperatures: ['cold_2', 'normal', 'hot_2'] },
 ];
 
 export class EquipmentCatalogRepository implements EquipmentRepositoryPort {

@@ -1,6 +1,10 @@
 import { Coffee } from '../coffee/Coffee';
 import { Grinder } from '../equipment/Grinder';
-import { EspressoMachine, SageTemperatureSetting } from '../equipment/EspressoMachine';
+import {
+  EspressoMachine,
+  SageTemperatureSetting,
+  stepTemperature,
+} from '../equipment/EspressoMachine';
 import { Recipe } from './Recipe';
 import { ExtractionFeedback } from './ExtractionFeedback';
 
@@ -95,29 +99,31 @@ export class RecipeCalculator {
   static adjustFromFeedback(
     currentRecipe: Recipe,
     feedback: ExtractionFeedback,
-    grinder?: Grinder
+    grinder?: Grinder,
+    machine?: EspressoMachine
   ): Recipe {
     let nextGrind = feedback.actualGrindSetting;
-    let nextTemp = currentRecipe.machineTemperature;
+    let nextTemp = feedback.actualTemperature ?? currentRecipe.machineTemperature;
     let nextYield = feedback.actualYieldGrams;
     const notes = [...currentRecipe.notes];
     const dialStep = grinder && grinder.maxDial <= 10 ? 0.2 : 0.5;
     const minDial = grinder ? grinder.minDial : 0;
     const maxDial = grinder ? grinder.maxDial : 90;
+    const availableTemps = machine?.availableTemperatures;
 
     switch (feedback.tasteProfile) {
       case 'sour':
         nextGrind = Math.max(minDial, nextGrind - dialStep);
-        nextTemp = this.raiseTemperature(nextTemp);
+        nextTemp = stepTemperature(nextTemp, 1, availableTemps);
         nextYield += 2;
-        notes.push('Adjusted: finer grind & slightly higher ratio to eliminate sourness');
+        notes.push(`Adjusted: finer grind, temp ${nextTemp} & slightly higher ratio to eliminate sourness`);
         break;
       case 'bitter':
       case 'astringent':
         nextGrind = Math.min(maxDial, nextGrind + dialStep);
-        nextTemp = this.lowerTemperature(nextTemp);
+        nextTemp = stepTemperature(nextTemp, -1, availableTemps);
         nextYield = Math.max(20, nextYield - 2);
-        notes.push('Adjusted: coarser grind & lower yield to tame bitterness');
+        notes.push(`Adjusted: coarser grind, temp ${nextTemp} & lower yield to tame bitterness`);
         break;
       case 'channeled':
         if (feedback.actualTimeSeconds > 32) {
@@ -129,7 +135,7 @@ export class RecipeCalculator {
         }
         break;
       case 'balanced':
-        notes.push(`Dialed-in sweet spot confirmed at #${feedback.actualGrindSetting}`);
+        notes.push(`Dialed-in sweet spot confirmed at #${feedback.actualGrindSetting} (${nextTemp})`);
         break;
     }
 
@@ -143,6 +149,7 @@ export class RecipeCalculator {
       machineTemperature: nextTemp,
       ratio,
       notes,
+      aiRationale: undefined,
     });
   }
 
@@ -157,26 +164,15 @@ export class RecipeCalculator {
   } {
     switch (coffee.roastLevel) {
       case 'light':
-        return { ratioMultiplier: 2.3, ratio: '1:2.3', temperature: 'very_high' };
+        return { ratioMultiplier: 2.3, ratio: '1:2.3', temperature: 'hot_3' };
       case 'medium_light':
-        return { ratioMultiplier: 2.2, ratio: '1:2.2', temperature: 'high' };
+        return { ratioMultiplier: 2.2, ratio: '1:2.2', temperature: 'hot_2' };
       case 'medium':
         return { ratioMultiplier: 2.0, ratio: '1:2.0', temperature: 'normal' };
       case 'medium_dark':
+        return { ratioMultiplier: 1.8, ratio: '1:1.8', temperature: 'cold_1' };
       case 'dark':
-        return { ratioMultiplier: 1.8, ratio: '1:1.8', temperature: 'low' };
+        return { ratioMultiplier: 1.8, ratio: '1:1.8', temperature: 'cold_2' };
     }
-  }
-
-  private static raiseTemperature(t: SageTemperatureSetting): SageTemperatureSetting {
-    if (t === 'low') return 'normal';
-    if (t === 'normal') return 'high';
-    return 'very_high';
-  }
-
-  private static lowerTemperature(t: SageTemperatureSetting): SageTemperatureSetting {
-    if (t === 'very_high') return 'high';
-    if (t === 'high') return 'normal';
-    return 'low';
   }
 }

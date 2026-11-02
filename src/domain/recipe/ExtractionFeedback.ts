@@ -1,3 +1,5 @@
+import { SageTemperatureSetting, normalizeTemperatureSetting } from '../equipment/EspressoMachine';
+
 export type TasteProfile =
   | 'balanced'
   | 'sour'
@@ -14,6 +16,7 @@ export interface ExtractionFeedbackProps {
   actualDoseGrams: number;
   actualYieldGrams: number;
   actualTimeSeconds: number;
+  actualTemperature?: SageTemperatureSetting;
   tasteProfile: TasteProfile;
   userNotes?: string;
   aiDiagnosis?: string;
@@ -28,6 +31,7 @@ export class ExtractionFeedback {
   readonly actualDoseGrams: number;
   readonly actualYieldGrams: number;
   readonly actualTimeSeconds: number;
+  readonly actualTemperature?: SageTemperatureSetting;
   readonly tasteProfile: TasteProfile;
   readonly userNotes?: string;
   readonly aiDiagnosis?: string;
@@ -45,6 +49,9 @@ export class ExtractionFeedback {
     this.actualDoseGrams = props.actualDoseGrams;
     this.actualYieldGrams = props.actualYieldGrams;
     this.actualTimeSeconds = props.actualTimeSeconds;
+    this.actualTemperature = props.actualTemperature
+      ? normalizeTemperatureSetting(props.actualTemperature)
+      : undefined;
     this.tasteProfile = props.tasteProfile;
     this.userNotes = props.userNotes?.trim();
     this.aiDiagnosis = props.aiDiagnosis?.trim();

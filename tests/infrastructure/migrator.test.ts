@@ -18,6 +18,7 @@ describe('Database Migrator', () => {
       '0001_initial_schema.sql',
       '0002_user_basket_dose.sql',
       '0003_user_coffee_statuses.sql',
+      '0004_extraction_feedback_temperature.sql',
     ]);
   });
 
@@ -35,18 +36,19 @@ describe('Database Migrator', () => {
 
     const result = await runMigrationsOnClient(mockClient, defaultDir);
 
-    expect(result.total).toBe(3);
-    expect(result.applied).toBe(3);
+    expect(result.total).toBe(4);
+    expect(result.applied).toBe(4);
     expect(result.appliedMigrations).toEqual([
       '0001_initial_schema.sql',
       '0002_user_basket_dose.sql',
       '0003_user_coffee_statuses.sql',
+      '0004_extraction_feedback_temperature.sql',
     ]);
 
     const insertCalls = executedQueries.filter((q) =>
       q.text.includes('INSERT INTO schema_migrations')
     );
-    expect(insertCalls).toHaveLength(3);
+    expect(insertCalls).toHaveLength(4);
   });
 
   it('skips migrations that are already applied with matching checksums', async () => {
@@ -67,7 +69,7 @@ describe('Database Migrator', () => {
 
     const result = await runMigrationsOnClient(mockClient, defaultDir);
 
-    expect(result.total).toBe(3);
+    expect(result.total).toBe(4);
     expect(result.applied).toBe(0);
     expect(result.appliedMigrations).toEqual([]);
   });

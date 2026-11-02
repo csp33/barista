@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { container } from '@/infrastructure/ServiceContainer';
 import { Logger } from '@/infrastructure/out/logger/Logger';
+import { normalizeTemperatureSetting } from '@/domain/equipment/EspressoMachine';
 
 export async function POST(request: Request) {
   try {
@@ -13,6 +14,7 @@ export async function POST(request: Request) {
       actualDoseGrams,
       actualYieldGrams,
       actualTimeSeconds,
+      actualTemperature,
       tasteProfile,
       userNotes,
     } = body;
@@ -28,6 +30,7 @@ export async function POST(request: Request) {
       tasteProfile,
       actualGrind: actualGrindSetting,
       actualTime: actualTimeSeconds,
+      actualTemperature,
     });
 
     if (!recipeId || !tasteProfile || !userId) {
@@ -45,6 +48,9 @@ export async function POST(request: Request) {
       actualDoseGrams: Number(actualDoseGrams),
       actualYieldGrams: Number(actualYieldGrams),
       actualTimeSeconds: Number(actualTimeSeconds),
+      actualTemperature: actualTemperature
+        ? normalizeTemperatureSetting(String(actualTemperature))
+        : undefined,
       tasteProfile,
       userNotes,
     });

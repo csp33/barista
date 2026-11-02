@@ -5,6 +5,9 @@ import { useTranslation } from '../i18n/LanguageContext';
 import { useUserProfile } from '../context/UserProfileContext';
 import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import { TasteProfile } from '@/domain/recipe/ExtractionFeedback';
+import { SageTemperatureSetting } from '@/domain/equipment/EspressoMachine';
+import { findPresetMachineById } from '@/infrastructure/equipment/EquipmentCatalogRepository';
+import { SageTempSelector } from './SageTempSelector';
 import { X, Check, Loader2 } from 'lucide-react';
 
 interface FeedbackModalProps {
@@ -28,6 +31,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   const [dose, setDose] = useState(recipe?.doseGrams ?? 18);
   const [actualYield, setActualYield] = useState(recipe?.yieldGrams ?? 36);
   const [time, setTime] = useState(28);
+  const [temperature, setTemperature] = useState<SageTemperatureSetting>(
+    recipe?.machineTemperature ?? 'normal'
+  );
   const [taste, setTaste] = useState<TasteProfile>('balanced');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,10 +45,13 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
       setDose(recipe.doseGrams);
       setActualYield(recipe.yieldGrams);
       setTime(recipe.targetTimeSeconds || 28);
+      setTemperature(recipe.machineTemperature);
     }
   }, [recipe, isOpen]);
 
   if (!isOpen || !recipe) return null;
+
+  const machine = findPresetMachineById(recipe.machineId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,6 +70,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
           actualDoseGrams: dose,
           actualYieldGrams: actualYield,
           actualTimeSeconds: time,
+          actualTemperature: temperature,
           tasteProfile: taste,
           userNotes: notes,
         }),
@@ -123,6 +133,13 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
               <input type="number" step="0.5" value={actualYield} onChange={e => setActualYield(parseFloat(e.target.value))} className="w-full bg-[#1C1713] border border-[#3E3025] rounded-xl p-2 text-sm font-metric font-bold text-[#F7F2EB]" />
             </div>
           </div>
+
+          <SageTempSelector
+            currentTemp={temperature}
+            machine={machine}
+            onChange={setTemperature}
+            compact
+          />
 
           <div>
             <label className="text-xs font-semibold text-[#F7F2EB] block mb-2 font-serif">

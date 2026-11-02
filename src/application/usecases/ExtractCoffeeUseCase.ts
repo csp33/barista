@@ -2,7 +2,7 @@ import { Coffee } from '@/domain/coffee/Coffee';
 import { Recipe, AiRationale } from '@/domain/recipe/Recipe';
 import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 import { Grinder } from '@/domain/equipment/Grinder';
-import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
+import { EspressoMachine, SAGE_TEMPERATURE_SCALE } from '@/domain/equipment/EspressoMachine';
 import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { RoasterScraperPort, ScrapedCoffeeData } from '../ports/out/RoasterScraperPort';
@@ -113,7 +113,7 @@ export class ExtractCoffeeUseCase {
 
     return {
       grinder: grinder || { id: 'df64-gen-2', brand: 'DF64', model: 'Gen 2', burrSizeMm: 64, burrType: 'flat', minDial: 0, maxDial: 90, defaultEspressoBaseline: 12.0 },
-      machine: machine || { id: 'sage-barista-touch-impress', brand: 'Sage', model: 'Barista Touch Impress', portafilterSizeMm: 54, standardDoseGrams: 18.0, availableTemperatures: ['low', 'normal', 'high', 'very_high'] },
+      machine: machine || { id: 'sage-barista-touch-impress', brand: 'Sage', model: 'Barista Touch Impress', portafilterSizeMm: 54, standardDoseGrams: 18.0, availableTemperatures: SAGE_TEMPERATURE_SCALE },
       userId,
     };
   }

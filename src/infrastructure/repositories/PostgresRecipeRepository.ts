@@ -1,6 +1,6 @@
 import { Recipe, AiRationale } from '@/domain/recipe/Recipe';
 import { ExtractionFeedback, TasteProfile } from '@/domain/recipe/ExtractionFeedback';
-import { SageTemperatureSetting } from '@/domain/equipment/EspressoMachine';
+import { normalizeTemperatureSetting } from '@/domain/equipment/EspressoMachine';
 import { RecipeRepositoryPort } from '@/application/ports/out/RecipeRepositoryPort';
 import { pool, initDatabase } from '../db/postgres';
 
@@ -63,8 +63,8 @@ export class PostgresRecipeRepository implements RecipeRepositoryPort {
   async saveFeedback(fb: ExtractionFeedback): Promise<void> {
     await initDatabase();
     await pool.query(
-      `INSERT INTO extraction_feedbacks (id, recipe_id, user_id, actual_grind_setting, actual_dose_grams, actual_yield_grams, actual_time_seconds, taste_profile, user_notes, ai_diagnosis, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+      `INSERT INTO extraction_feedbacks (id, recipe_id, user_id, actual_grind_setting, actual_dose_grams, actual_yield_grams, actual_time_seconds, actual_temperature, taste_profile, user_notes, ai_diagnosis, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
       [
         fb.id,
         fb.recipeId,
@@ -73,6 +73,7 @@ export class PostgresRecipeRepository implements RecipeRepositoryPort {
         fb.actualDoseGrams,
         fb.actualYieldGrams,
         fb.actualTimeSeconds,
+        fb.actualTemperature ?? 'normal',
         fb.tasteProfile,
         fb.userNotes,
         fb.aiDiagnosis,
@@ -120,7 +121,7 @@ export class PostgresRecipeRepository implements RecipeRepositoryPort {
       yieldGrams: parseInt(String(row.yield_grams), 10),
       ratio: String(row.ratio),
       grindSetting: parseFloat(String(row.grind_setting)),
-      machineTemperature: String(row.machine_temperature) as SageTemperatureSetting,
+      machineTemperature: normalizeTemperatureSetting(String(row.machine_temperature)),
       targetTimeSeconds: parseInt(String(row.target_time_seconds), 10),
       recommendedRestDays: parseInt(String(row.recommended_rest_days), 10),
       notes: Array.isArray(row.notes) ? (row.notes as string[]) : JSON.parse(String(row.notes || '[]')),
@@ -137,6 +138,7 @@ export class PostgresRecipeRepository implements RecipeRepositoryPort {
       actualDoseGrams: parseFloat(String(row.actual_dose_grams)),
       actualYieldGrams: parseInt(String(row.actual_yield_grams), 10),
       actualTimeSeconds: parseFloat(String(row.actual_time_seconds)),
+      actualTemperature: row.actual_temperature ? normalizeTemperatureSetting(String(row.actual_temperature)) : undefined,
       tasteProfile: row.taste_profile as TasteProfile,
       userNotes: row.user_notes ? String(row.user_notes) : undefined,
       aiDiagnosis: row.ai_diagnosis ? String(row.ai_diagnosis) : undefined,

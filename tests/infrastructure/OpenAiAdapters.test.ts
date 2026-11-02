@@ -86,7 +86,7 @@ describe('OpenAiAdapters', () => {
       yieldGrams: 41,
       ratio: '1:2.3',
       grindSetting: 9.0,
-      machineTemperature: 'very_high',
+      machineTemperature: 'hot_3',
       targetTimeSeconds: 28,
       recommendedRestDays: 18,
       notes: [],

@@ -41,7 +41,7 @@ describe('ExtractCoffeeUseCase', () => {
       yieldGrams: 40,
       ratio: '1:2.2',
       grindSetting: 14,
-      machineTemperature: 'high',
+      machineTemperature: 'hot_2',
       targetTimeSeconds: 28,
       recommendedRestDays: 14,
       notes: [],

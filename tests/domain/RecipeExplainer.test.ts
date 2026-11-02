@@ -3,7 +3,7 @@ import { Coffee } from '../../src/domain/coffee/Coffee';
 import { RecipeCalculator } from '../../src/domain/recipe/RecipeCalculator';
 import { RecipeExplainer } from '../../src/domain/recipe/RecipeExplainer';
 import { Grinder } from '../../src/domain/equipment/Grinder';
-import { EspressoMachine } from '../../src/domain/equipment/EspressoMachine';
+import { EspressoMachine, SAGE_TEMPERATURE_SCALE } from '../../src/domain/equipment/EspressoMachine';
 
 const testGrinder: Grinder = {
   id: 'df64-gen-2',
@@ -22,7 +22,7 @@ const testMachine: EspressoMachine = {
   model: 'Barista Touch Impress',
   portafilterSizeMm: 54,
   standardDoseGrams: 18.0,
-  availableTemperatures: ['low', 'normal', 'high', 'very_high'],
+  availableTemperatures: SAGE_TEMPERATURE_SCALE,
 };
 
 const testUserId = 'test-user';
@@ -95,8 +95,8 @@ describe('RecipeExplainer', () => {
 
     expect(rationale.doseWhy.es).toContain('18g');
     expect(rationale.doseWhy.es).toContain('Grano denso');
-    expect(rationale.tempWhy.es).toContain('Muy Alta (96°C)');
-    expect(rationale.tempWhy.en).toContain('Very High temperature (96°C)');
+    expect(rationale.tempWhy.es).toContain('Caliente 3 (96°C)');
+    expect(rationale.tempWhy.en).toContain('Hot 3 temperature (96°C)');
     expect(rationale.ratioWhy.es).toContain('Ratio alargado');
   });
 });

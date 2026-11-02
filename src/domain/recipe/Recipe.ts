@@ -1,4 +1,4 @@
-import { SageTemperatureSetting } from '../equipment/EspressoMachine';
+import { SageTemperatureSetting, normalizeTemperatureSetting } from '../equipment/EspressoMachine';
 
 export interface AiRationale {
   doseWhy?: string;
@@ -57,7 +57,7 @@ export class Recipe {
     this.yieldGrams = props.yieldGrams;
     this.ratio = props.ratio;
     this.grindSetting = props.grindSetting;
-    this.machineTemperature = props.machineTemperature;
+    this.machineTemperature = normalizeTemperatureSetting(props.machineTemperature);
     this.targetTimeSeconds = props.targetTimeSeconds;
     this.recommendedRestDays = props.recommendedRestDays;
     this.notes = props.notes;

@@ -61,10 +61,15 @@ export interface Translations {
     sweetSpot: string;
   };
   temperaturePresets: {
-    low: string;
+    cold_4: string;
+    cold_3: string;
+    cold_2: string;
+    cold_1: string;
     normal: string;
-    high: string;
-    very_high: string;
+    hot_1: string;
+    hot_2: string;
+    hot_3: string;
+    hot_4: string;
   };
   sampleUrlsLabel: string;
   navBar: string;

@@ -3,7 +3,7 @@ import { Coffee } from '@/domain/coffee/Coffee';
 import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 import { ExtractionFeedback } from '@/domain/recipe/ExtractionFeedback';
 import { Grinder } from '@/domain/equipment/Grinder';
-import { EspressoMachine } from '@/domain/equipment/EspressoMachine';
+import { EspressoMachine, SAGE_TEMPERATURE_SCALE } from '@/domain/equipment/EspressoMachine';
 
 const testGrinder: Grinder = {
   id: 'df64-gen-2',
@@ -22,7 +22,7 @@ const testMachine: EspressoMachine = {
   model: 'Barista Touch Impress',
   portafilterSizeMm: 54,
   standardDoseGrams: 18.0,
-  availableTemperatures: ['low', 'normal', 'high', 'very_high'],
+  availableTemperatures: SAGE_TEMPERATURE_SCALE,
 };
 
 const testUserId = 'test-user';
@@ -44,7 +44,7 @@ describe('RecipeCalculator Domain Service', () => {
     const recipe = RecipeCalculator.calculateInitial(ethiopia, testGrinder, testMachine, testUserId);
 
     expect(recipe.doseGrams).toBe(18.0);
-    expect(recipe.machineTemperature).toBe('very_high');
+    expect(recipe.machineTemperature).toBe('hot_3');
     expect(recipe.yieldGrams).toBe(41);
     expect(recipe.ratio).toBe('1:2.3');
     // Base 12 - 2.0 (light) - 1.0 (high altitude > 1800m) = 9.0
@@ -121,10 +121,57 @@ describe('RecipeCalculator Domain Service', () => {
 
     const adjusted = RecipeCalculator.adjustFromFeedback(initial, feedback, testGrinder);
 
-    // Sour -> grind finer (subtract 0.5) and raise yield
+    // Sour -> grind finer (subtract 0.5), step temperature warmer (hot_2 -> hot_3) and raise yield
     expect(adjusted.grindSetting).toBe(initial.grindSetting - 0.5);
+    expect(adjusted.machineTemperature).toBe('hot_3');
     expect(adjusted.yieldGrams).toBe(initial.yieldGrams + 2);
     expect(adjusted.notes.some(n => n.includes('finer grind'))).toBe(true);
+  });
+
+  it('adjusts temperature based on actualTemperature reported in feedback across Sage 9-step scale', () => {
+    const coffee = new Coffee({
+      id: 'c-temp-test',
+      roaster: 'Nomad',
+      name: 'Colombia',
+      originCountry: 'Colombia',
+      variety: 'Caturra',
+      process: 'washed',
+      roastLevel: 'medium',
+      tastingNotes: ['caramel'],
+    });
+
+    const initial = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId);
+    expect(initial.machineTemperature).toBe('normal');
+
+    // User pulled at 'cold_1' and it tasted sour -> should raise 1 step to 'normal'
+    const sourAtCold1 = new ExtractionFeedback({
+      id: 'fb-temp-1',
+      recipeId: initial.id,
+      userId: testUserId,
+      actualGrindSetting: 12.0,
+      actualDoseGrams: 18.0,
+      actualYieldGrams: 36,
+      actualTimeSeconds: 24,
+      actualTemperature: 'cold_1',
+      tasteProfile: 'sour',
+    });
+    const afterSour = RecipeCalculator.adjustFromFeedback(initial, sourAtCold1, testGrinder, testMachine);
+    expect(afterSour.machineTemperature).toBe('normal');
+
+    // User pulled at 'cold_2' and it tasted bitter -> should lower 1 step to 'cold_3'
+    const bitterAtCold2 = new ExtractionFeedback({
+      id: 'fb-temp-2',
+      recipeId: initial.id,
+      userId: testUserId,
+      actualGrindSetting: 11.5,
+      actualDoseGrams: 18.0,
+      actualYieldGrams: 36,
+      actualTimeSeconds: 34,
+      actualTemperature: 'cold_2',
+      tasteProfile: 'bitter',
+    });
+    const afterBitter = RecipeCalculator.adjustFromFeedback(afterSour, bitterAtCold2, testGrinder, testMachine);
+    expect(afterBitter.machineTemperature).toBe('cold_3');
   });
 
   it('adjusts recipe finer when shot suffers from fast flow channeling (under-extracted)', () => {

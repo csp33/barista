@@ -1,5 +1,6 @@
 import { Recipe } from '@/domain/recipe/Recipe';
 import { ExtractionFeedback, TasteProfile } from '@/domain/recipe/ExtractionFeedback';
+import { SageTemperatureSetting } from '@/domain/equipment/EspressoMachine';
 import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
@@ -14,6 +15,7 @@ export interface LogFeedbackRequest {
   actualDoseGrams: number;
   actualYieldGrams: number;
   actualTimeSeconds: number;
+  actualTemperature?: SageTemperatureSetting;
   tasteProfile: TasteProfile;
   userNotes?: string;
 }
@@ -46,6 +48,7 @@ export class LogFeedbackUseCase {
       throw new Error(`Recipe not found for coffee '${coffeeId}' and user '${userId}'`);
     }
 
+    const actualTemp = request.actualTemperature ?? currentRecipe.machineTemperature;
     const coffee = this.coffeeRepo ? await this.coffeeRepo.findById(coffeeId) : null;
     let aiDiagnosis: string | undefined;
 
@@ -58,6 +61,7 @@ export class LogFeedbackUseCase {
         actualDoseGrams: request.actualDoseGrams,
         actualYieldGrams: request.actualYieldGrams,
         actualTimeSeconds: request.actualTimeSeconds,
+        actualTemperature: actualTemp,
         tasteProfile: request.tasteProfile,
         userNotes: request.userNotes,
       });
@@ -72,6 +76,7 @@ export class LogFeedbackUseCase {
       actualDoseGrams: request.actualDoseGrams,
       actualYieldGrams: request.actualYieldGrams,
       actualTimeSeconds: request.actualTimeSeconds,
+      actualTemperature: actualTemp,
       tasteProfile: request.tasteProfile,
       userNotes: request.userNotes,
       aiDiagnosis,
@@ -80,8 +85,11 @@ export class LogFeedbackUseCase {
     const grinder = this.equipmentRepo
       ? (await this.equipmentRepo.findGrinderById(currentRecipe.grinderId)) || undefined
       : undefined;
+    const machine = this.equipmentRepo
+      ? (await this.equipmentRepo.findMachineById(currentRecipe.machineId)) || undefined
+      : undefined;
 
-    const adjustedRecipe = RecipeCalculator.adjustFromFeedback(currentRecipe, feedback, grinder);
+    const adjustedRecipe = RecipeCalculator.adjustFromFeedback(currentRecipe, feedback, grinder, machine);
     if (aiDiagnosis) {
       adjustedRecipe.notes.push(`Diagnóstico IA: ${aiDiagnosis}`);
     }

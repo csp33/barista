@@ -1,6 +1,6 @@
 import { Coffee } from '../coffee/Coffee';
 import { Recipe } from './Recipe';
-import { EspressoMachine } from '../equipment/EspressoMachine';
+import { EspressoMachine, SAGE_TEMPERATURE_CELSIUS } from '../equipment/EspressoMachine';
 
 export interface RecipeRationale {
   doseWhy: { es: string; en: string };
@@ -73,25 +73,29 @@ export class RecipeExplainer {
     }
 
     // 3. Temperature rationale
+    const celsius = SAGE_TEMPERATURE_CELSIUS[recipe.machineTemperature] ?? 93;
     let tempWhy = {
-      es: `Temperatura estándar (93°C): punto de equilibrio térmico ideal para tuestes medios para extraer cuerpo sin quemar compuestos delicados.`,
-      en: `Normal temperature (93°C): optimal thermal balance for medium roasts to extract rich body without burning delicate compounds.`,
+      es: `Temperatura Normal (${celsius}°C): punto de equilibrio térmico ideal para tuestes medios para extraer cuerpo sin quemar compuestos delicados.`,
+      en: `Normal temperature (${celsius}°C): optimal thermal balance for medium roasts to extract rich body without burning delicate compounds.`,
     };
 
-    if (recipe.machineTemperature === 'very_high') {
+    if (recipe.machineTemperature === 'hot_3' || recipe.machineTemperature === 'hot_4') {
+      const level = recipe.machineTemperature.split('_')[1];
       tempWhy = {
-        es: `Temperatura Muy Alta (96°C): necesaria para disolver los azúcares densos de tuestes claros de especialidad y redondear la acidez sin que resulte punzante.`,
-        en: `Very High temperature (96°C): dissolves dense sugars in light specialty roasts to balance acidity and bring out sweet complexity.`,
+        es: `Temperatura Caliente ${level} (${celsius}°C): necesaria para disolver los azúcares densos de tuestes claros de especialidad y redondear la acidez sin que resulte punzante.`,
+        en: `Hot ${level} temperature (${celsius}°C): dissolves dense sugars in light specialty roasts to balance acidity and bring out sweet complexity.`,
       };
-    } else if (recipe.machineTemperature === 'high') {
+    } else if (recipe.machineTemperature === 'hot_1' || recipe.machineTemperature === 'hot_2') {
+      const level = recipe.machineTemperature.split('_')[1];
       tempWhy = {
-        es: `Temperatura Alta (95°C): temperatura enérgica para cafés de tueste medio-claro que realza la frutosidad y cuerpo sedoso.`,
-        en: `High temperature (95°C): elevated temp for medium-light roasts to enhance fruit notes and silky texture.`,
+        es: `Temperatura Caliente ${level} (${celsius}°C): temperatura enérgica para cafés de tueste medio-claro que realza la frutosidad y cuerpo sedoso.`,
+        en: `Hot ${level} temperature (${celsius}°C): elevated temp for medium-light roasts to enhance fruit notes and silky texture.`,
       };
-    } else if (recipe.machineTemperature === 'low') {
+    } else if (recipe.machineTemperature.startsWith('cold_')) {
+      const level = recipe.machineTemperature.split('_')[1];
       tempWhy = {
-        es: `Temperatura Baja (90°C): modera la velocidad de extracción en tuestes oscuros evitando sabores a ceniza o quemado.`,
-        en: `Low temperature (90°C): gentle extraction for darker roasts to prevent harsh ashy bitterness.`,
+        es: `Temperatura Frío ${level} (${celsius}°C): modera la velocidad de extracción en tuestes oscuros evitando sabores a ceniza o quemado.`,
+        en: `Cold ${level} temperature (${celsius}°C): gentle extraction for darker roasts to prevent harsh ashy bitterness.`,
       };
     }
 
