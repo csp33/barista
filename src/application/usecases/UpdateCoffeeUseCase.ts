@@ -7,6 +7,7 @@ import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { UserProfileRepositoryPort } from '../ports/out/UserProfileRepositoryPort';
 import { EquipmentRepositoryPort } from '../ports/out/EquipmentRepositoryPort';
+import { loadCalibratedPeers } from './loadCalibratedPeers';
 
 export interface UpdateCoffeeRequest {
   id: string;
@@ -66,6 +67,7 @@ export class UpdateCoffeeUseCase {
       request.data.roastLevel !== undefined ||
       request.data.altitudeMasl !== undefined ||
       request.data.recommendedRestDays !== undefined;
+    const peers = await loadCalibratedPeers(this.coffeeRepo, this.recipeRepo, existingRecipe?.userId || eq.userId);
     const recipe =
       existingRecipe && !specsChanged
         ? existingRecipe
@@ -73,7 +75,9 @@ export class UpdateCoffeeUseCase {
             updated,
             eq.grinder,
             eq.machine,
-            existingRecipe?.userId || eq.userId
+            existingRecipe?.userId || eq.userId,
+            undefined,
+            peers
           );
 
     await this.coffeeRepo.save(updated);

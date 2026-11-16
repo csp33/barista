@@ -6,6 +6,7 @@ import { CoffeeRepositoryPort } from '../ports/out/CoffeeRepositoryPort';
 import { RecipeRepositoryPort } from '../ports/out/RecipeRepositoryPort';
 import { UserProfileRepositoryPort } from '../ports/out/UserProfileRepositoryPort';
 import { EquipmentRepositoryPort } from '../ports/out/EquipmentRepositoryPort';
+import { loadCalibratedPeers } from './loadCalibratedPeers';
 
 export interface StashItemDTO {
   coffee: Coffee;
@@ -43,6 +44,7 @@ export class GetCoffeeStashUseCase {
       machines[0];
 
     const items: StashItemDTO[] = [];
+    const peers = await loadCalibratedPeers(this.coffeeRepo, this.recipeRepo, cleanUserId);
 
     for (const coffee of coffees) {
       let recipe = await this.recipeRepo.findByCoffeeId(coffee.id, cleanUserId);
@@ -52,7 +54,8 @@ export class GetCoffeeStashUseCase {
         grinder,
         machine,
         cleanUserId,
-        customDose
+        customDose,
+        peers
       );
       const equipmentChanged =
         recipe && (

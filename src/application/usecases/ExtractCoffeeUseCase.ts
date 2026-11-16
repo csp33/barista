@@ -10,6 +10,7 @@ import { CoffeeVisionScannerPort } from '../ports/out/CoffeeVisionScannerPort';
 import { CoffeeSommelierPort } from '../ports/out/CoffeeSommelierPort';
 import { UserProfileRepositoryPort } from '../ports/out/UserProfileRepositoryPort';
 import { EquipmentRepositoryPort } from '../ports/out/EquipmentRepositoryPort';
+import { loadCalibratedPeers } from './loadCalibratedPeers';
 
 export interface ExtractCoffeeRequest {
   url?: string;
@@ -60,7 +61,8 @@ export class ExtractCoffeeUseCase {
     if (match) return this.buildExistingResult(match, eq.userId);
 
     const tempCoffee = new Coffee({ ...scraped, id: 'temp-extract' });
-    const initialRecipe = RecipeCalculator.calculateInitial(tempCoffee, eq.grinder, eq.machine, eq.userId);
+    const peers = await loadCalibratedPeers(this.coffeeRepo, this.recipeRepo, eq.userId);
+    const initialRecipe = RecipeCalculator.calculateInitial(tempCoffee, eq.grinder, eq.machine, eq.userId, undefined, peers);
     let sommelierStory = scraped.sommelierStory;
     let aiRationale: AiRationale | undefined;
 

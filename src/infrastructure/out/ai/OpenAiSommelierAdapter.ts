@@ -55,6 +55,8 @@ Enfócate en el terroir, qué esperar en la taza de espresso y su momento ideal 
     }
 
     try {
+      const flowRatio = (feedback.actualYieldGrams / (feedback.actualDoseGrams * 2)) * (28 / Math.max(1, feedback.actualTimeSeconds));
+      const suggestedDrop = 0.5 * (flowRatio < 1.5 ? 1 : Math.min(10, Math.round(flowRatio)));
       const prompt = `Como maestro barista de especialidad, diagnostica en 1-2 frases concretas este tiro:
 Café: ${coffee.name} (${coffee.process}, tueste ${coffee.roastLevel})
 Dosis: ${feedback.actualDoseGrams}g -> Salida: ${feedback.actualYieldGrams}g en ${feedback.actualTimeSeconds}s
@@ -62,7 +64,7 @@ Molienda: #${feedback.actualGrindSetting}${feedback.actualTemperature ? ` | Temp
 Sensación en taza: ${feedback.tasteProfile}
 Notas del usuario: "${feedback.userNotes || 'Ninguna'}"
 
-Da una explicación física breve de lo ocurrido y la acción correctora exacta.`;
+Da una explicación física breve de lo ocurrido y la acción correctora exacta (si hay flujo excesivo o sub-extracción, sugiere bajar ~${suggestedDrop} puntos el molino acorde a la magnitud del caudal).`;
 
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -145,14 +147,16 @@ Devuelve un JSON con claves exactas: doseWhy, grindWhy, tempWhy, ratioWhy, restW
   }
 
   private fallbackDiagnosis(feedback: ExtractionFeedback): string {
+    const flowRatio = (feedback.actualYieldGrams / (feedback.actualDoseGrams * 2)) * (28 / Math.max(1, feedback.actualTimeSeconds));
+    const stepDrop = 0.5 * (flowRatio < 1.5 ? 1 : Math.min(10, Math.round(flowRatio)));
     if (feedback.tasteProfile === 'sour') {
-      return `Sub-extracción por flujo excesivo (${feedback.actualTimeSeconds}s): los ácidos orgánicos no se han compensado con los azúcares. Recomendado moler más fino y subir la temperatura.`;
+      return `Sub-extracción por flujo excesivo (${feedback.actualYieldGrams}g en ${feedback.actualTimeSeconds}s): los ácidos orgánicos no se han compensado con los azúcares. Recomendado moler más fino (-${stepDrop} puntos) y subir la temperatura.`;
     }
     if (feedback.tasteProfile === 'bitter') {
-      return `Sobre-extracción: el contacto prolongado ha extraído taninos amargos. Ajusta el dial a un punto más grueso y reduce el rendimiento a 1:2.0.`;
+      return `Sobre-extracción: el contacto prolongado ha extraído taninos amargos. Ajusta el dial más grueso y reduce el rendimiento a 1:2.0.`;
     }
     if (feedback.tasteProfile === 'channeled') {
-      return `Canalización periférica en la cesta del portafiltro: deshaz grumos con agujas WDT y prensa a nivel para un sellado homogéneo.`;
+      return `Canalización periférica en la cesta del portafiltro (${feedback.actualYieldGrams}g en ${feedback.actualTimeSeconds}s): ajusta -${stepDrop} puntos si el flujo fue rápido, deshaz grumos con WDT y prensa a nivel.`;
     }
     return `Tiro en el punto dulce: balance perfecto entre acidez viva, cuerpo cremoso y final prolongado. ¡Receta confirmada!`;
   }

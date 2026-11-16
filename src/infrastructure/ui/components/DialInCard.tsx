@@ -144,7 +144,13 @@ export const DialInCard: React.FC<DialInCardProps> = ({
         </button>
 
         {/* Localized Barista Recommendations & Rationales */}
-        <RecipeRationaleCard coffee={coffee} recipe={recipe} grinder={grinder} machine={machine} />
+        <RecipeRationaleCard
+          coffee={coffee}
+          recipe={recipe}
+          grinder={grinder}
+          machine={machine}
+          feedbackHistory={item.feedbackHistory}
+        />
       </div>
     </article>
   );

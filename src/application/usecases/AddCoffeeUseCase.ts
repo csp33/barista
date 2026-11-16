@@ -10,6 +10,7 @@ import { CoffeeSommelierPort } from '../ports/out/CoffeeSommelierPort';
 import { UserProfileRepositoryPort } from '../ports/out/UserProfileRepositoryPort';
 import { EquipmentRepositoryPort } from '../ports/out/EquipmentRepositoryPort';
 import { DuplicateCoffeeError } from '@/domain/coffee/DuplicateCoffeeError';
+import { loadCalibratedPeers } from './loadCalibratedPeers';
 
 export interface AddCoffeeRequest {
   url?: string;
@@ -83,7 +84,8 @@ export class AddCoffeeUseCase {
       id: `coffee-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     });
 
-    let recipe = RecipeCalculator.calculateInitial(coffee, eq.grinder, eq.machine, eq.userId);
+    const peers = await loadCalibratedPeers(this.coffeeRepo, this.recipeRepo, eq.userId);
+    let recipe = RecipeCalculator.calculateInitial(coffee, eq.grinder, eq.machine, eq.userId, undefined, peers);
     const rationale = precomputedRationale || (this.sommelier ? await this.sommelier.generateRationale(coffee, recipe).catch(() => undefined) : undefined);
     if (rationale) recipe = new Recipe({ ...recipe, aiRationale: rationale });
 
@@ -123,7 +125,8 @@ export class AddCoffeeUseCase {
     }
     let recipe = await this.recipeRepo.findByCoffeeId(coffee.id, eq.userId);
     if (!recipe) {
-      recipe = RecipeCalculator.calculateInitial(coffee, eq.grinder, eq.machine, eq.userId);
+      const peers = await loadCalibratedPeers(this.coffeeRepo, this.recipeRepo, eq.userId);
+      recipe = RecipeCalculator.calculateInitial(coffee, eq.grinder, eq.machine, eq.userId, undefined, peers);
       await this.recipeRepo.save(recipe);
     }
     return { coffee: coffee.withStatus('active'), recipe, fromCache };

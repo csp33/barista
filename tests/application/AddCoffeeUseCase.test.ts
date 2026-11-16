@@ -212,4 +212,73 @@ describe('AddCoffeeUseCase', () => {
     expect(result.coffee.id).toBe('existing-elcriollo');
     expect(mockCoffeeRepo.save).not.toHaveBeenCalled();
   });
+
+  it('calibrates initial grind of a new coffee based on dialed-in similar coffees in user stash', async () => {
+    const dialedPeerCoffee = new Coffee({
+      id: 'peer-brazil-1',
+      roaster: 'San Jorge',
+      name: 'Fazenda Dutra',
+      originCountry: 'Brazil',
+      variety: 'Catuai',
+      process: 'natural',
+      roastLevel: 'medium',
+      tastingNotes: ['chocolate'],
+    });
+
+    const dialedPeerRecipe = new Recipe({
+      id: 'recipe-carlos-peer-brazil-1',
+      coffeeId: dialedPeerCoffee.id,
+      userId: 'carlos',
+      grinderId: 'df64-gen-2',
+      machineId: 'sage-barista-touch-impress',
+      doseGrams: 18,
+      yieldGrams: 36,
+      ratio: '1:2.0',
+      grindSetting: 5.0, // Dialed down from 12.5 to 5.0
+      machineTemperature: 'normal',
+      targetTimeSeconds: 28,
+      recommendedRestDays: 8,
+      notes: [],
+    });
+
+    const mockCoffeeRepo: CoffeeRepositoryPort = {
+      findById: vi.fn(),
+      findByUrl: vi.fn().mockResolvedValue(null),
+      findByRoasterAndName: vi.fn().mockResolvedValue(null),
+      save: vi.fn().mockResolvedValue(undefined),
+      findAll: vi.fn().mockResolvedValue([dialedPeerCoffee]),
+      delete: vi.fn(),
+    };
+
+    const mockRecipeRepo: RecipeRepositoryPort = {
+      findByCoffeeId: vi.fn().mockImplementation(async (coffeeId: string) =>
+        coffeeId === dialedPeerCoffee.id ? dialedPeerRecipe : null
+      ),
+      save: vi.fn().mockResolvedValue(undefined),
+      saveFeedback: vi.fn(),
+      getFeedbackHistory: vi.fn().mockResolvedValue([{ id: 'fb-1' }]),
+      deleteByCoffeeId: vi.fn(),
+    };
+
+    const mockScraper: RoasterScraperPort = {
+      scrapeCoffeeUrl: vi.fn(),
+    };
+
+    const useCase = new AddCoffeeUseCase(mockCoffeeRepo, mockRecipeRepo, mockScraper);
+
+    const result = await useCase.execute({
+      userId: 'carlos',
+      manualData: {
+        roaster: 'Nomad',
+        name: 'Brasil Mogiana',
+        originCountry: 'Brazil',
+        variety: 'Bourbon',
+        process: 'natural',
+        roastLevel: 'medium',
+        tastingNotes: ['caramel', 'nuts'],
+      },
+    });
+
+    expect(result.recipe.grindSetting).toBe(5.0);
+  });
 });

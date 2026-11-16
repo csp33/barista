@@ -53,7 +53,7 @@ class ServiceContainer {
       this.coffeeRepo,
       this.recipeRepo,
       this.scraper,
-      this.sommelier,
+      undefined,
       this.userProfileRepo,
       this.equipmentRepo
     );
@@ -62,14 +62,14 @@ class ServiceContainer {
       this.recipeRepo,
       this.scraper,
       this.visionScanner,
-      this.sommelier,
+      undefined,
       this.userProfileRepo,
       this.equipmentRepo
     );
     this.logFeedbackUseCase = new LogFeedbackUseCase(
       this.recipeRepo,
       this.coffeeRepo,
-      this.sommelier,
+      undefined,
       this.equipmentRepo
     );
     this.getCoffeeStashUseCase = new GetCoffeeStashUseCase(

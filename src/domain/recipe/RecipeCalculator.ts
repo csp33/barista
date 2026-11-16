@@ -7,6 +7,7 @@ import {
 } from '../equipment/EspressoMachine';
 import { Recipe } from './Recipe';
 import { ExtractionFeedback } from './ExtractionFeedback';
+import { CalibratedPeer, GrindCalibrationLearner } from './GrindCalibrationLearner';
 
 export class RecipeCalculator {
   static calculateInitial(
@@ -14,17 +15,14 @@ export class RecipeCalculator {
     grinder: Grinder,
     machine: EspressoMachine,
     userId: string,
-    customDoseGrams?: number
+    customDoseGrams?: number,
+    peers?: CalibratedPeer[]
   ): Recipe {
     if (!userId || userId.trim().length === 0) {
       throw new Error('UserId is required to calculate recipe');
     }
 
-    const coffeeNameLower = coffee.name.toLowerCase();
-    const isMonsooned =
-      coffeeNameLower.includes('monsooned') ||
-      coffeeNameLower.includes('malabar') ||
-      (coffee.originCountry.toLowerCase().includes('india') && coffeeNameLower.includes('monsoon'));
+    const isMonsooned = GrindCalibrationLearner.isMonsooned(coffee);
 
     let doseGrams = customDoseGrams ?? machine.standardDoseGrams;
     if (isMonsooned) {
@@ -46,28 +44,10 @@ export class RecipeCalculator {
 
     const { ratioMultiplier, ratio, temperature } = this.getRoastParams(coffee);
     const yieldGrams = Math.round(doseGrams * ratioMultiplier);
-
-    let grindSetting = grinder.defaultEspressoBaseline;
-    const dialStep = grinder.maxDial <= 10 ? 0.2 : 1.0;
-
-    if (isMonsooned) {
-      grindSetting = this.roundToHalfStep(grinder.defaultEspressoBaseline * 0.46);
-    } else {
-      if (coffee.roastLevel === 'light') grindSetting -= dialStep * 2;
-      else if (coffee.roastLevel === 'medium_light') grindSetting -= dialStep;
-      else if (coffee.roastLevel === 'medium_dark') grindSetting += dialStep;
-      else if (coffee.roastLevel === 'dark') grindSetting += dialStep * 2;
-
-      if (['natural', 'anaerobic', 'honey', 'experimental'].includes(coffee.process)) {
-        grindSetting += dialStep * 0.5;
-      }
-      if (coffee.altitudeMasl && coffee.altitudeMasl >= 1800) {
-        grindSetting -= dialStep;
-      }
-    }
-
-    grindSetting = this.roundToHalfStep(
-      Math.max(grinder.minDial, Math.min(grinder.maxDial, grindSetting))
+    const { grindSetting, learnedFromPeers } = GrindCalibrationLearner.calibrateGrind(
+      coffee,
+      grinder,
+      peers
     );
 
     const notes = [
@@ -75,6 +55,9 @@ export class RecipeCalculator {
       `Ideal rest window: ${coffee.recommendedRestDays} days after roast`,
     ];
 
+    if (learnedFromPeers) {
+      notes.push(`Grind #${grindSetting} calibrated from your dialed-in peer coffees`);
+    }
     if (isMonsooned) {
       notes.push('Monsooned Malabar: baja densidad y grano expandido: dosis adaptada');
     }
@@ -110,28 +93,36 @@ export class RecipeCalculator {
     const minDial = grinder ? grinder.minDial : 0;
     const maxDial = grinder ? grinder.maxDial : 90;
     const availableTemps = machine?.availableTemperatures;
+    const targetYield = currentRecipe.yieldGrams || 36;
+    const targetTime = currentRecipe.targetTimeSeconds || 28;
+    const actualYield = Math.max(1, feedback.actualYieldGrams);
+    const actualTime = Math.max(1, feedback.actualTimeSeconds);
+    const flowRatio = (actualYield / targetYield) * (targetTime / actualTime);
+    const fastStep = dialStep * (flowRatio < 1.5 ? 1 : Math.min(10, Math.round(flowRatio)));
+    const slowRatio = 1 / flowRatio;
+    const slowStep = dialStep * (slowRatio < 1.5 ? 1 : Math.min(8, Math.round(slowRatio)));
 
     switch (feedback.tasteProfile) {
       case 'sour':
-        nextGrind = Math.max(minDial, nextGrind - dialStep);
+        nextGrind = Math.max(minDial, nextGrind - fastStep);
         nextTemp = stepTemperature(nextTemp, 1, availableTemps);
-        nextYield += 2;
-        notes.push(`Adjusted: finer grind, temp ${nextTemp} & slightly higher ratio to eliminate sourness`);
+        nextYield = flowRatio >= 1.5 && actualYield > targetYield ? targetYield : nextYield + 2;
+        notes.push(`Adjusted: finer grind (-${fastStep}), temp ${nextTemp} & ratio tuned to eliminate sourness`);
         break;
       case 'bitter':
       case 'astringent':
-        nextGrind = Math.min(maxDial, nextGrind + dialStep);
+        nextGrind = Math.min(maxDial, nextGrind + slowStep);
         nextTemp = stepTemperature(nextTemp, -1, availableTemps);
-        nextYield = Math.max(20, nextYield - 2);
-        notes.push(`Adjusted: coarser grind, temp ${nextTemp} & lower yield to tame bitterness`);
+        nextYield = Math.max(20, (slowRatio >= 1.5 && actualYield < targetYield ? targetYield : nextYield) - 2);
+        notes.push(`Adjusted: coarser grind (+${slowStep}), temp ${nextTemp} & lower yield to tame bitterness`);
         break;
       case 'channeled':
         if (feedback.actualTimeSeconds > 32) {
-          nextGrind = Math.min(maxDial, nextGrind + dialStep);
-          notes.push(`Choking & pressure crack: grind +${dialStep} coarser and distribute with WDT`);
+          nextGrind = Math.min(maxDial, nextGrind + slowStep);
+          notes.push(`Choking & pressure crack: grind +${slowStep} coarser and distribute with WDT`);
         } else {
-          nextGrind = Math.max(minDial, nextGrind - dialStep);
-          notes.push(`Fast channeling: grind -${dialStep} finer and de-clump with WDT`);
+          nextGrind = Math.max(minDial, nextGrind - fastStep);
+          notes.push(`Fast channeling: grind -${fastStep} finer and de-clump with WDT`);
         }
         break;
       case 'balanced':

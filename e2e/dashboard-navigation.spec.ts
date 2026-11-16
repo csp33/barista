@@ -77,4 +77,18 @@ test.describe('Barista Dashboard interaction and navigation', () => {
     // Close modal by clicking escape
     await page.keyboard.press('Escape');
   });
+
+  test('exposes valid favicon, svg icon, and apple-touch-icon links in head', async ({ page }) => {
+    await page.goto('/');
+
+    const svgIcon = page.locator('head link[rel="icon"][type="image/svg+xml"]');
+    await expect(svgIcon).toHaveAttribute('href', /\/icon\.svg/);
+    await expect(svgIcon).toHaveAttribute('sizes', 'any');
+
+    const icoIcon = page.locator('head link[rel="icon"][type="image/x-icon"]');
+    await expect(icoIcon).toHaveAttribute('href', /\/favicon\.ico/);
+
+    const appleIcon = page.locator('head link[rel="apple-touch-icon"]');
+    await expect(appleIcon).toHaveAttribute('href', /\/apple-icon\.png/);
+  });
 });

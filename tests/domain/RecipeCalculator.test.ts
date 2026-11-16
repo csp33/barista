@@ -253,4 +253,117 @@ describe('RecipeCalculator Domain Service', () => {
     expect(customRecipe.doseGrams).toBe(20.0);
     expect(customRecipe.yieldGrams).toBe(40); // 20 * 2.0 = 40
   });
+
+  it('scales grind adjustment proportionally to flow rate excess on severe under-extraction (e.g. 60g in 2s)', () => {
+    const coffee = new Coffee({
+      id: 'c-gusher',
+      roaster: 'Nomad',
+      name: 'Fazenda',
+      originCountry: 'Brazil',
+      variety: 'Catuai',
+      process: 'natural',
+      roastLevel: 'medium',
+      tastingNotes: ['chocolate'],
+    });
+
+    const initial = RecipeCalculator.calculateInitial(coffee, testGrinder, testMachine, testUserId); // 12.5, target 36g in 28s
+
+    // Moderate fast shot: 45g in 14s (flowRatio = (45/36)*(28/14) = 2.5 -> round(2.5)=3 -> -1.5 points)
+    const moderateFast = new ExtractionFeedback({
+      id: 'fb-mod-fast',
+      recipeId: initial.id,
+      userId: testUserId,
+      actualGrindSetting: 12.5,
+      actualDoseGrams: 18.0,
+      actualYieldGrams: 45,
+      actualTimeSeconds: 14,
+      tasteProfile: 'sour',
+    });
+    const afterModerate = RecipeCalculator.adjustFromFeedback(initial, moderateFast, testGrinder, testMachine);
+    expect(afterModerate.grindSetting).toBe(11.0); // 12.5 - 1.5 = 11.0
+    expect(afterModerate.yieldGrams).toBe(36); // Keeps target yield instead of inflating runaway 45g
+
+    // Extreme gusher: 60g in 2s (flowRatio = 23.3 -> capped at 10 steps * 0.5 = -5.0 points)
+    const extremeGusher = new ExtractionFeedback({
+      id: 'fb-gusher',
+      recipeId: initial.id,
+      userId: testUserId,
+      actualGrindSetting: 12.5,
+      actualDoseGrams: 18.0,
+      actualYieldGrams: 60,
+      actualTimeSeconds: 2,
+      tasteProfile: 'sour',
+    });
+    const afterExtreme = RecipeCalculator.adjustFromFeedback(initial, extremeGusher, testGrinder, testMachine);
+    expect(afterExtreme.grindSetting).toBe(7.5); // 12.5 - 5.0 = 7.5 (much larger jump than -0.5)
+    expect(afterExtreme.yieldGrams).toBe(36); // Preserves target 36g yield instead of setting 62g
+  });
+
+  it('learns initial grind setting from previously dialed-in peer coffees without mixing Monsooned regime', () => {
+    const brazil1 = new Coffee({
+      id: 'c-br-1',
+      roaster: 'San Jorge',
+      name: 'Fazenda Dutra',
+      originCountry: 'Brazil',
+      altitudeMasl: 1200,
+      variety: 'Red Catuai',
+      process: 'natural',
+      roastLevel: 'medium',
+      tastingNotes: ['chocolate'],
+    });
+
+    // Theoretical initial on testGrinder is 12.5, but user dialed it down to 5.0
+    const initialBrazil1 = RecipeCalculator.calculateInitial(brazil1, testGrinder, testMachine, testUserId);
+    const dialedInBrazil1Recipe = new (initialBrazil1.constructor as typeof import('@/domain/recipe/Recipe').Recipe)({
+      ...initialBrazil1,
+      grindSetting: 5.0,
+    });
+
+    const brazil2 = new Coffee({
+      id: 'c-br-2',
+      roaster: 'Nomad',
+      name: 'Fazenda Ambiental',
+      originCountry: 'Brasil',
+      altitudeMasl: 1150,
+      variety: 'Mundo Novo',
+      process: 'natural',
+      roastLevel: 'medium',
+      tastingNotes: ['hazelnut', 'cocoa'],
+    });
+
+    const peers = [{ coffee: brazil1, recipe: dialedInBrazil1Recipe, hasFeedback: true }];
+    const calibratedBrazil2 = RecipeCalculator.calculateInitial(
+      brazil2,
+      testGrinder,
+      testMachine,
+      testUserId,
+      undefined,
+      peers
+    );
+
+    // Starts directly at 5.0 learned from the dialed-in peer instead of 12.5!
+    expect(calibratedBrazil2.grindSetting).toBe(5.0);
+    expect(calibratedBrazil2.notes.some(n => n.includes('calibrated from your dialed-in peer coffees'))).toBe(true);
+
+    // Monsooned Malabar uses its own regime and is NOT shifted by the standard Arabica -7.5 offset
+    const monsooned = new Coffee({
+      id: 'c-monsoon',
+      roaster: 'Criollo',
+      name: 'India Monsooned Malabar',
+      originCountry: 'India',
+      variety: 'Kent',
+      process: 'washed',
+      roastLevel: 'medium',
+      tastingNotes: ['spices'],
+    });
+    const monsoonedRecipe = RecipeCalculator.calculateInitial(
+      monsooned,
+      testGrinder,
+      testMachine,
+      testUserId,
+      undefined,
+      peers
+    );
+    expect(monsoonedRecipe.grindSetting).toBe(5.5);
+  });
 });
