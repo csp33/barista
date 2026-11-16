@@ -79,13 +79,18 @@ export const RecipeRationaleCard: React.FC<RecipeRationaleCardProps> = ({
   return (
     <div className="bg-[#191411] border border-[#35281E] rounded-2xl p-5 sm:p-6 space-y-4 shadow-sm">
       {latestFeedback && (
-        <div className="bg-[#130F0D] border border-[#2E241D] rounded-xl px-3.5 py-2.5 text-xs text-[#D8C7B9] flex items-center gap-2.5 border-l-2 border-l-[#D96B27] font-metric">
-          <Activity className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0" />
-          <span className="truncate">
-            {language === 'es'
-              ? `Último tiro: ${latestFeedback.actualDoseGrams}g → ${latestFeedback.actualYieldGrams}g en ${latestFeedback.actualTimeSeconds}s (${latestTasteText}) • Dial #${latestFeedback.actualGrindSetting} → #${recipe.grindSetting}`
-              : `Last shot: ${latestFeedback.actualDoseGrams}g → ${latestFeedback.actualYieldGrams}g in ${latestFeedback.actualTimeSeconds}s (${latestTasteText}) • Dial #${latestFeedback.actualGrindSetting} → #${recipe.grindSetting}`}
-          </span>
+        <div className="bg-[#130F0D] border border-[#2E241D] rounded-xl px-3.5 py-2.5 text-xs text-[#D8C7B9] flex items-start gap-2.5 border-l-2 border-l-[#D96B27] font-metric">
+          <Activity className="w-3.5 h-3.5 text-[#D96B27] flex-shrink-0 mt-0.5" />
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 leading-relaxed">
+            <span>
+              {language === 'es'
+                ? `Último tiro: ${latestFeedback.actualDoseGrams}g → ${latestFeedback.actualYieldGrams}g en ${latestFeedback.actualTimeSeconds}s (${latestTasteText})`
+                : `Last shot: ${latestFeedback.actualDoseGrams}g → ${latestFeedback.actualYieldGrams}g in ${latestFeedback.actualTimeSeconds}s (${latestTasteText})`}
+            </span>
+            <span className="text-[#E29D52] font-semibold whitespace-nowrap">
+              {`• Dial #${latestFeedback.actualGrindSetting} → #${recipe.grindSetting}`}
+            </span>
+          </div>
         </div>
       )}
 
