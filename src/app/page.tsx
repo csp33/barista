@@ -11,6 +11,7 @@ import { CoffeeDetailsModal } from '@/infrastructure/ui/components/CoffeeDetails
 import { ProfileSelectModal } from '@/infrastructure/ui/components/ProfileSelectModal';
 import { BottomNav, NavTab } from '@/infrastructure/ui/components/BottomNav';
 import { CoffeeStashManager } from '@/infrastructure/ui/components/CoffeeStashManager';
+import { BrewCalendarView } from '@/infrastructure/ui/components/BrewCalendarView';
 import { EquipmentView } from '@/infrastructure/ui/components/EquipmentView';
 import { StashItemDTO } from '@/application/usecases/GetCoffeeStashUseCase';
 import {
@@ -23,7 +24,17 @@ import { Loader2, Sparkles, ArrowLeft } from 'lucide-react';
 function BaristaDashboard() {
   const { t, isAdmin } = useTranslation();
   const { activeProfile, updateActiveCoffee } = useUserProfile();
-  const [activeTab, setActiveTab] = useState<NavTab>('stash');
+  const [activeTab, setActiveTabState] = useState<NavTab>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('barista_active_tab') as NavTab | null;
+      if (saved && ['bar', 'stash', 'calendar', 'gear'].includes(saved)) return saved;
+    }
+    return 'stash';
+  });
+  const setActiveTab = (tab: NavTab) => {
+    setActiveTabState(tab);
+    if (typeof window !== 'undefined') localStorage.setItem('barista_active_tab', tab);
+  };
   const [items, setItems] = useState<StashItemDTO[]>([]);
   const [activeCoffeeId, setActiveCoffeeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -150,6 +161,9 @@ function BaristaDashboard() {
             )}
             {activeTab === 'stash' && (
               <CoffeeStashManager items={items} onSelectForBrew={handleSelectBrew} onEditCoffee={handleOpenEdit} onToggleStatus={handleToggleStatus} onDeleteCoffee={handleDeleteCoffee} onOpenAddModal={() => setIsAddModalOpen(true)} />
+            )}
+            {activeTab === 'calendar' && (
+              <BrewCalendarView items={items} onSelectCoffee={handleSelectBrew} />
             )}
             {activeTab === 'gear' && <EquipmentView onEquipmentSaved={fetchStash} />}
           </>

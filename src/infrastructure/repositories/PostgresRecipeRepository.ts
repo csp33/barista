@@ -142,6 +142,7 @@ export class PostgresRecipeRepository implements RecipeRepositoryPort {
       tasteProfile: row.taste_profile as TasteProfile,
       userNotes: row.user_notes ? String(row.user_notes) : undefined,
       aiDiagnosis: row.ai_diagnosis ? String(row.ai_diagnosis) : undefined,
+      createdAt: row.created_at ? new Date(String(row.created_at)) : undefined,
     });
   }
 }

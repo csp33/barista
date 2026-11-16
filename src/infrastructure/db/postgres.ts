@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { INITIAL_PROFILES, INITIAL_COFFEES } from './seeds';
+import { INITIAL_PROFILES, INITIAL_COFFEES, buildInitialFeedbacks } from './seeds';
 import { RecipeCalculator } from '@/domain/recipe/RecipeCalculator';
 import { PRESET_GRINDERS, PRESET_MACHINES } from '../equipment/EquipmentCatalogRepository';
 import { MIGRATION_ADVISORY_LOCK_ID, runMigrationsOnClient } from './migrator';
@@ -75,6 +75,17 @@ async function runInitDatabase(): Promise<void> {
          ON CONFLICT (user_id, coffee_id) DO NOTHING`,
         [INITIAL_PROFILES[0].id, c.id, c.status]
       );
+    }
+
+    const feedbacksCountRes = await client.query('SELECT COUNT(*) FROM extraction_feedbacks');
+    if (parseInt(feedbacksCountRes.rows[0].count, 10) === 0) {
+      for (const fb of buildInitialFeedbacks()) {
+        await client.query(
+          `INSERT INTO extraction_feedbacks (id, recipe_id, user_id, actual_grind_setting, actual_dose_grams, actual_yield_grams, actual_time_seconds, actual_temperature, taste_profile, user_notes, ai_diagnosis, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) ON CONFLICT (id) DO NOTHING`,
+          [fb.id, fb.recipeId, fb.userId, fb.actualGrindSetting, fb.actualDoseGrams, fb.actualYieldGrams, fb.actualTimeSeconds, fb.actualTemperature ?? 'normal', fb.tasteProfile, fb.userNotes, fb.aiDiagnosis, fb.createdAt]
+        );
+      }
     }
 
     isInitialized = true;

@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { useTranslation } from '../i18n/LanguageContext';
-import { Coffee, Gauge } from 'lucide-react';
+import { Coffee, CalendarDays, Gauge } from 'lucide-react';
 
-export type NavTab = 'bar' | 'stash' | 'gear';
+export type NavTab = 'bar' | 'stash' | 'calendar' | 'gear';
 
 interface BottomNavProps {
   activeTab: NavTab;
@@ -25,6 +25,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       label: t.navStash,
       icon: <Coffee className="w-5 h-5 stroke-[2.2]" />,
       badge: activeCount,
+    },
+    {
+      id: 'calendar',
+      label: t.navCalendar,
+      icon: <CalendarDays className="w-5 h-5 stroke-[2.2]" />,
     },
     {
       id: 'gear',

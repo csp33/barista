@@ -74,6 +74,7 @@ export interface Translations {
   sampleUrlsLabel: string;
   navBar: string;
   navStash: string;
+  navCalendar: string;
   navGear: string;
   stashCollection: string;
   stashActive: string;
@@ -96,5 +97,30 @@ export interface Translations {
     userRole: string;
     syncSubtitle: string;
     createButton: string;
+  };
+  calendar: {
+    title: string;
+    subtitle: string;
+    today: string;
+    monthlyShots: string;
+    godShotRate: string;
+    activeDays: string;
+    coffeeConsumed: string;
+    noShotsOnDay: string;
+    noShotsHint: string;
+    jumpToLatest: string;
+    shotsCountLabel: string;
+    singleShotLabel: string;
+    openInBar: string;
+    aiDiagnosisLabel: string;
+    weekdays: string[];
+    tasteBadges: {
+      balanced: string;
+      sour: string;
+      bitter: string;
+      astringent: string;
+      weak: string;
+      channeled: string;
+    };
   };
 }
